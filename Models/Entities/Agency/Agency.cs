@@ -3,7 +3,7 @@ using TicketingSystem.Models.Identity;
 
 namespace TicketingSystem.Models.Entities.Agency;
 
-public class Agency : BaseEntity<Ulid>
+public class Agency : BaseEntity
 {
     public required string Name { get; set; }
     public required string Domain { get; set; }

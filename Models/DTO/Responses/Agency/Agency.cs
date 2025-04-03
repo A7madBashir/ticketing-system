@@ -1,8 +1,9 @@
+using TicketingSystem.Models.DTO.Responses.BaseEntity;
 using TicketingSystem.Models.DTO.User;
 
 namespace TicketingSystem.Models.DTO.Responses.Agency;
 
-public class Agency
+public class Agency : BaseEntity<Ulid>
 {
     public string Id { get; set; }
     public string Domain { get; set; }
