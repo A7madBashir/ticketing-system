@@ -4,6 +4,8 @@ using Serilog;
 using TicketingSystem.Data;
 using TicketingSystem.Extensions;
 using TicketingSystem.Models.Identity;
+using TicketingSystem.Services;
+using TicketingSystem.Services.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,8 @@ builder
     .AddDefaultTokenProviders()
     .AddDefaultUI();
 
+builder.Services.CustomServicesInstaller();
+builder.Services.RepositoriesInstall();
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation().AddControllersAsServices();
 builder.Services.AddAuthentication();
 builder.Services.AddHttpContextAccessor();
