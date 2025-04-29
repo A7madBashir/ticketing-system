@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using TicketingSystem.Models.Entities.Agency;
+using TicketingSystem.Models.Common.BaseEntity;
+using TicketingSystem.Models.Entities;
 
-namespace TicketingSystem.Models.FAQs;
-    public class FAQ
+namespace TicketingSystem.Models.Entities;
+
+    public class FAQ : BaseEntity
     {
-        public required int Id { get; set; } // Primary Key
+        public required Ulid Id { get; set; } // Primary Key
 
         // Foreign Key
         public required int AgencyId { get; set; }

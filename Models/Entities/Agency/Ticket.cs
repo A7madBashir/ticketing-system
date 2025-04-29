@@ -3,18 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using TicketingSystem.Models.Common.BaseEntity;
 using System.Threading.Tasks;
-using TicketingSystem.Models.Entities.Agency;
+using TicketingSystem.Models.Entities;
 using TicketingSystem.Models.Identity;
-using TicketingSystem.Models.Categorys;
-using TicketingSystem.Models.Replays;
 
-namespace TicketingSystem.Models.Tickets;
-    public class Ticket : BaseEntity<Ulid>
+namespace TicketingSystem.Models.Entities;
+
+    public class Ticket : BaseEntity
     {
-            public Ticket()
-         {
-            Id = Ulid.NewUlid();
-         }
+
+        public required Ulid Id { get; set; } // Primary Key
         public required string Title { get; set; }
         public required string Description { get; set; }
         public required string Status { get; set; }
@@ -31,7 +28,7 @@ namespace TicketingSystem.Models.Tickets;
         public required DateTime CreatedAt { get; set; }
         public required DateTime UpdatedAt { get; set; }
 
-        public ICollection<Replay> Replies { get; set; }
+        public ICollection<Reply> Replies { get; set; }
 
 
         public Agency Agency { get; set; }
