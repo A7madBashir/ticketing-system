@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TicketingSystem.Models.Entities;
+using TicketingSystem.Models.Tickets;
+using TicketingSystem.Models.Entities.Agency;
 
-namespace TicketingSystem.Models.Entities;
+namespace TicketingSystem.Models.Categorys;
 
     public class Category : BaseEntity
     {

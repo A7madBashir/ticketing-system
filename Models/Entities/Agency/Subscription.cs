@@ -1,15 +1,16 @@
 using System;
+using TicketingSystem.Models.Common.BaseEntity;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TicketingSystem.Models.Common.BaseEntity;
-using TicketingSystem.Models.Entities;
+using TicketingSystem.Models.Entities.Agency;
 
-namespace TicketingSystem.Models.Entities;
+namespace TicketingSystem.Models.Subscription;
 
 public class Subscription : BaseEntity
+
 {
-    public required Ulid Id { get; set; } // Primary Key
+    
     public required string PlanName { get; set; }
     public required decimal Price { get; set; }
 
