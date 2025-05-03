@@ -1,22 +1,18 @@
 using System;
-using TicketingSystem.Models.Common.BaseEntity;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TicketingSystem.Models.Common.BaseEntity;
 using TicketingSystem.Models.Entities.Agency;
 
-namespace TicketingSystem.Models.Subscription;
+namespace TicketingSystem.Models.Subscriptions;
 
 public class Subscription : BaseEntity
-
 {
-    
     public required string PlanName { get; set; }
     public required decimal Price { get; set; }
-
     public required string Features { get; set; }
+    public DateTime CreatedAt { get; set; }
 
-    public required DateTime CreatedAt { get; set; }
-
-    public Agency Agency { get; set; }
+    public ICollection<Agency>? Agencies { get; set; }
 }

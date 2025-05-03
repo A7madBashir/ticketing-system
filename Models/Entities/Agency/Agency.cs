@@ -1,9 +1,10 @@
-using TicketingSystem.Models.Common.BaseEntity;
-using TicketingSystem.Models.Identity;
 using TicketingSystem.Models.Categorys;
-using TicketingSystem.Models.Tickets;
+using TicketingSystem.Models.Common.BaseEntity;
 using TicketingSystem.Models.FAQs;
+using TicketingSystem.Models.Identity;
 using TicketingSystem.Models.Integrations;
+using TicketingSystem.Models.Subscriptions;
+using TicketingSystem.Models.Tickets;
 
 namespace TicketingSystem.Models.Entities.Agency;
 
@@ -12,11 +13,14 @@ public class Agency : BaseEntity
     public required string Name { get; set; }
     public required string Domain { get; set; }
     public required Ulid SubscriptionId { get; set; }
-    public virtual User Subscription { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
 
-    public ICollection<User> Users { get; set; } = new List<User>();
-    public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
-    public ICollection<Category> Categories { get; set; } = new List<Category>();
-    public ICollection<FAQ> FAQs { get; set; } = new List<FAQ>();
-    public ICollection<Integration> Integrations { get; set; } = new List<Integration>();
+    public Subscription? Subscription { get; set; }
+
+    public ICollection<User>? Users { get; set; }
+    public ICollection<Ticket>? Tickets { get; set; }
+    public ICollection<Category>? Categories { get; set; }
+    public ICollection<FAQ>? FAQs { get; set; }
+    public ICollection<Integration>? Integrations { get; set; }
 }

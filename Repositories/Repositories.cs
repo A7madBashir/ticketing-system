@@ -2,14 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TicketingSystem.Data;
 using Microsoft.EntityFrameworkCore;
+using TicketingSystem.Data;
 
 namespace Ticketingsystem.Repositories
 {
-
-   public interface IRepository<T> where T : class
-
+    public interface IRepository<T>
+        where T : class
     {
         Task<IEnumerable<T>> GetAllAsync();
         Task<T?> GetByIdAsync(Ulid id);
@@ -17,18 +16,19 @@ namespace Ticketingsystem.Repositories
         void Update(T entity);
         void Delete(T entity);
         Task SaveChangesAsync();
-    } 
+    }
 
-    public class Repository<T> : IRepository<T> where T : class
+    public class Repository<T> : IRepository<T>
+        where T : class
     {
-      private readonly ApplicationDbContext _context;
-      private readonly DbSet<T> _dbSet;
+        private readonly ApplicationDbContext _context;
+        private readonly DbSet<T> _dbSet;
 
-      public Repository(ApplicationDbContext context)
+        public Repository(ApplicationDbContext context)
         {
             _context = context;
             _dbSet = _context.Set<T>();
-          }
+        }
 
         public async Task<IEnumerable<T>> GetAllAsync() => await _dbSet.ToListAsync();
 
@@ -40,6 +40,6 @@ namespace Ticketingsystem.Repositories
 
         public void Delete(T entity) => _dbSet.Remove(entity);
 
-        public async Task SaveChangesAsync() => await _context.SaveChangesAsync();   
+        public async Task SaveChangesAsync() => await _context.SaveChangesAsync();
     }
 }
