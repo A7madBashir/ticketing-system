@@ -13,20 +13,23 @@ public class User : IdentityUser<Ulid>, IEntity<Ulid>
         Id = Ulid.NewUlid();
     }
 
-    public required string FirstName { get; set; }
-    public required string LastName { get; set; }
-    public required string Gender { get; set; }
-    public required string Nationality { get; set; }
-    public required string PassportNumber { get; set; }
-    public required string Job { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Gender { get; set; }
+    public string Nationality { get; set; }
+    public string PassportNumber { get; set; }
+    public string Job { get; set; }
     public DateTime DateOfBirth { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? LastModifiedAt { get; set; }
+    public DateTime? LastLoginAt { get; set; }
     public Ulid AgencyId { get; set; }
 
-    public Agency? Agency { get; set; }
+    public virtual Agency? Agency { get; set; }
 
-    public ICollection<Ticket>? TicketsCreated { get; set; }
-    public ICollection<Ticket>? TicketsAssigned { get; set; }
-    public ICollection<Reply>? Replies { get; set; }
+    // Navigation properties for related entities
+    public ICollection<Ticket> CreatedTickets { get; set; } // Tickets created by this user
+    public ICollection<Ticket> AssignedTickets { get; set; } // Tickets assigned to this user
+    public ICollection<Reply> Replies { get; set; }
+    public ICollection<Analytic> Analytics { get; set; } // Analytics tracked for this agent
 }

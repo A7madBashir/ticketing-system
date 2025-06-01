@@ -9,11 +9,9 @@ namespace TicketingSystem.Models.FAQs;
 
 public class FAQ : BaseEntity
 {
-    public required Ulid AgencyId { get; set; }
-    public string Question { get; set; }
-    public string Answer { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
+    public Ulid AgencyId { get; set; }
+    public string? Question { get; set; }
+    public string? Answer { get; set; }
 
-    public Agency Agency { get; set; }
+    public virtual Agency? Agency { get; set; }
 }

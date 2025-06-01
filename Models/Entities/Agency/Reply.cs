@@ -10,13 +10,12 @@ namespace TicketingSystem.Models.Replys;
 
 public class Reply : BaseEntity
 {
-    public required Ulid TicketId { get; set; }
-    public required Ulid UserId { get; set; }
+    public Ulid TicketId { get; set; }
+    public Ulid UserId { get; set; }
     public required string Content { get; set; }
-    public required bool IsInternal { get; set; }
-    public required bool IsChatbotReply { get; set; }
-    public DateTime CreatedAt { get; set; }
+    public bool IsInternal { get; set; }
+    public bool IsChatbotReply { get; set; }
 
-    public User? User { get; set; }
-    public Ticket? Ticket { get; set; }
+    public virtual User? User { get; set; }
+    public virtual Ticket? Ticket { get; set; }
 }

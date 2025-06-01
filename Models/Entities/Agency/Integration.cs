@@ -10,10 +10,9 @@ namespace TicketingSystem.Models.Integrations;
 public class Integration : BaseEntity
 {
     public required string Name { get; set; }
-    public required string ApiKeyValue { get; set; }
-    public required Ulid AgencyId { get; set; }
+    public string? ApiKey { get; set; }
+    public Ulid AgencyId { get; set; }
     public bool Enabled { get; set; }
-    public required DateTime CreatedAt { get; set; }
 
-    public Agency Agency { get; set; }
+    public virtual Agency? Agency { get; set; }
 }

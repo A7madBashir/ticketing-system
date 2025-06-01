@@ -11,16 +11,15 @@ namespace TicketingSystem.Models.Entities.Agency;
 public class Agency : BaseEntity
 {
     public required string Name { get; set; }
-    public required string Domain { get; set; }
-    public required Ulid SubscriptionId { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime UpdatedAt { get; set; }
+    public string? Domain { get; set; }
+    public Ulid SubscriptionId { get; set; }
 
-    public Subscription? Subscription { get; set; }
+    public virtual Subscription? Subscription { get; set; }
 
     public ICollection<User>? Users { get; set; }
     public ICollection<Ticket>? Tickets { get; set; }
     public ICollection<Category>? Categories { get; set; }
     public ICollection<FAQ>? FAQs { get; set; }
+    public ICollection<Analytic>? Analytics { get; set; }
     public ICollection<Integration>? Integrations { get; set; }
 }

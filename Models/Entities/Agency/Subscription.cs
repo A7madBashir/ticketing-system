@@ -10,9 +10,8 @@ namespace TicketingSystem.Models.Subscriptions;
 public class Subscription : BaseEntity
 {
     public required string PlanName { get; set; }
-    public required decimal Price { get; set; }
-    public required string Features { get; set; }
-    public DateTime CreatedAt { get; set; }
+    public decimal Price { get; set; }
+    public string? Features { get; set; }
 
     public ICollection<Agency>? Agencies { get; set; }
 }
