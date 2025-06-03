@@ -1,5 +1,7 @@
 using Riok.Mapperly.Abstractions;
 using TicketingSystem.Models.DTO.Requests.Agency;
+using TicketingSystem.Models.DTO.Requests.User;
+using TicketingSystem.Models.DTO.Responses.User;
 using TicketingSystem.Models.DTO.User;
 using TicketingSystem.Models.Entities.Agency;
 using TicketingSystem.Models.Identity;
@@ -36,4 +38,12 @@ public partial class AppMapper
     [MapperIgnoreSource(nameof(Agency.SubscriptionId))]
     [MapperIgnoreSource(nameof(Agency.DeleteTime))]
     public partial Models.DTO.Responses.Agency.Agency ToResponse(Agency model);
+}
+
+[Mapper]
+public partial class UserMapper
+{
+    public partial User ToEntity(UserRequestDto dto);
+
+    public partial UserResponseDto ToResponseDto(User user);
 }

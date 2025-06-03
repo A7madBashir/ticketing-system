@@ -30,6 +30,7 @@ builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation().AddContr
 builder.Services.AddAuthentication();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddRazorPages();
+builder.Services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
 
 if (args.Length != 0 && args[0] == "seed")
 {
