@@ -1,6 +1,6 @@
-namespace TicketingSystem.Models.DTO.User;
+namespace TicketingSystem.Models.DTO.Responses.User;
 
-public class UserProfile
+public class UserResponse
 {
     public Ulid Id { get; set; }
     public string? FirstName { get; set; }

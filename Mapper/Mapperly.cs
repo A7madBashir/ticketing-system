@@ -2,17 +2,25 @@ using Riok.Mapperly.Abstractions;
 using TicketingSystem.Models.DTO.Requests.Agency;
 using TicketingSystem.Models.DTO.Requests.User;
 using TicketingSystem.Models.DTO.Responses.User;
-using TicketingSystem.Models.DTO.User;
 using TicketingSystem.Models.Entities.Agency;
 using TicketingSystem.Models.Identity;
 
-namespace TicketingSystem.Mapper;
+namespace TicketingSystem;
 
 [Mapper(AllowNullPropertyAssignment = false)]
-public partial class AppMapper
+public partial class Mapper
 {
-    [MapPropertyFromSource(nameof(UserProfile.Name), Use = nameof(CombineNames))]
-    public partial UserProfile UserResponse(User user);
+    // User
+    [MapperIgnoreTarget(nameof(User.Agency))]
+    [MapperIgnoreTarget(nameof(User.AgencyId))]
+    public partial User ToEntity(UserRequestDto dto);
+
+    [MapPropertyFromSource(nameof(UserResponse.Name), Use = nameof(CombineNames))]
+    public partial UserResponse ToResponse(User user);
+
+    [MapperIgnoreTarget(nameof(Profile.Roles))]
+    [MapPropertyFromSource(nameof(Profile.Name), Use = nameof(CombineNames))]
+    public partial Profile ToUserProfile(User user);
 
     [UserMapping]
     private string CombineNames(User user)
@@ -37,13 +45,5 @@ public partial class AppMapper
 
     [MapperIgnoreSource(nameof(Agency.SubscriptionId))]
     [MapperIgnoreSource(nameof(Agency.DeleteTime))]
-    public partial Models.DTO.Responses.Agency.Agency ToResponse(Agency model);
-}
-
-[Mapper]
-public partial class UserMapper
-{
-    public partial User ToEntity(UserRequestDto dto);
-
-    public partial UserResponseDto ToResponseDto(User user);
+    public partial Models.DTO.Responses.Agency.AgencyResponse ToResponse(Agency model);
 }
