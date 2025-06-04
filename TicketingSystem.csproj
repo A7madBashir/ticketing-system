@@ -4,6 +4,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-TicketingSystem-33d87713-993a-4cdb-afd0-4de443892e88</UserSecretsId>
+    <RootNamespace>TicketingSystem</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference
