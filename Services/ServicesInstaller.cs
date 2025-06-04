@@ -1,5 +1,3 @@
-using TicketingSystem.Mapper;
-
 namespace TicketingSystem.Services;
 
 public static class ServicesInstaller
@@ -10,6 +8,6 @@ public static class ServicesInstaller
     /// <param name="services"></param>
     public static void CustomServicesInstaller(this IServiceCollection services)
     {
-        services.AddSingleton<AppMapper>();
+        services.AddSingleton<Mapper>();
     }
 }
