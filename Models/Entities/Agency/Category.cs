@@ -2,7 +2,7 @@ using TicketingSystem.Models.Common.BaseEntity;
 using TicketingSystem.Models.Entities.Agency;
 using TicketingSystem.Models.Tickets;
 
-namespace TicketingSystem.Models.Categorys;
+namespace TicketingSystem.Models.Entities.Agency;
 
 public class Category : BaseEntity
 {

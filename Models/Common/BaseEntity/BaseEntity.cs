@@ -8,7 +8,7 @@ public class BaseEntity<T> : IEntity<T>
 
 public class BaseEntity : BaseEntity<Ulid>
 {
-    public DateTime CreateTime { get; set; }
+    public DateTime CreateTime { get; set; } = DateTime.UtcNow;
     public DateTime? ModifiedTime { get; set; }
     public DateTime? DeleteTime { get; set; }
 

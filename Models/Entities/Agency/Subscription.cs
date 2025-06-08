@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using TicketingSystem.Models.Common.BaseEntity;
 using TicketingSystem.Models.Entities.Agency;
 
-namespace TicketingSystem.Models.Subscriptions;
+namespace TicketingSystem.Models.Entities.Agency;
 
 public class Subscription : BaseEntity
 {

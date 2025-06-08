@@ -278,6 +278,54 @@ namespace TicketingSystem.Data.Migrations
                     b.ToTable("FAQs");
                 });
 
+            modelBuilder.Entity("TicketingSystem.Models.Identity.RefreshToken", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("character varying(26)");
+
+                    b.Property<DateTime>("CreateTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedByIp")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeleteTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("Expires")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("ModifiedTime")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ReasonRevoked")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ReplacedByToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("Revoked")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RevokedByIp")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("character varying(26)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("TicketingSystem.Models.Identity.Role", b =>
                 {
                     b.Property<string>("Id")
@@ -313,7 +361,6 @@ namespace TicketingSystem.Data.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("AgencyId")
-                        .IsRequired()
                         .HasColumnType("character varying(26)");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -323,7 +370,7 @@ namespace TicketingSystem.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("DateOfBirth")
+                    b.Property<DateTime?>("DateOfBirth")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
@@ -334,15 +381,12 @@ namespace TicketingSystem.Data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Gender")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Job")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("LastLoginAt")
@@ -352,7 +396,6 @@ namespace TicketingSystem.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<bool>("LockoutEnabled")
@@ -362,7 +405,6 @@ namespace TicketingSystem.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Nationality")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("NormalizedEmail")
@@ -374,7 +416,6 @@ namespace TicketingSystem.Data.Migrations
                         .HasColumnType("character varying(256)");
 
                     b.Property<string>("PassportNumber")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PasswordHash")
@@ -686,13 +727,22 @@ namespace TicketingSystem.Data.Migrations
                     b.Navigation("Agency");
                 });
 
+            modelBuilder.Entity("TicketingSystem.Models.Identity.RefreshToken", b =>
+                {
+                    b.HasOne("TicketingSystem.Models.Identity.User", "User")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("TicketingSystem.Models.Identity.User", b =>
                 {
                     b.HasOne("TicketingSystem.Models.Entities.Agency.Agency", "Agency")
                         .WithMany("Users")
-                        .HasForeignKey("AgencyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AgencyId");
 
                     b.Navigation("Agency");
                 });
@@ -779,6 +829,8 @@ namespace TicketingSystem.Data.Migrations
                     b.Navigation("Analytics");
 
                     b.Navigation("CreatedTickets");
+
+                    b.Navigation("RefreshTokens");
 
                     b.Navigation("Replies");
                 });

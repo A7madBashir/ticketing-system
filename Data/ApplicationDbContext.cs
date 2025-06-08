@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using TicketingSystem.Data.Converter;
-using TicketingSystem.Models.Categorys;
 using TicketingSystem.Models.Entities.Agency;
 using TicketingSystem.Models.FAQs;
 using TicketingSystem.Models.Identity;
 using TicketingSystem.Models.Integrations;
-using TicketingSystem.Models.Replys;
-using TicketingSystem.Models.Subscriptions;
 using TicketingSystem.Models.Tickets;
 
 namespace TicketingSystem.Data;
@@ -38,6 +35,7 @@ public class ApplicationDbContext : IdentityDbContext<User, Role, Ulid>
         base.OnModelCreating(modelBuilder);
     }
 
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<Agency> Agencies { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<Ticket> Tickets { get; set; }

@@ -1,9 +1,7 @@
-using TicketingSystem.Models.Categorys;
 using TicketingSystem.Models.Common.BaseEntity;
 using TicketingSystem.Models.FAQs;
 using TicketingSystem.Models.Identity;
 using TicketingSystem.Models.Integrations;
-using TicketingSystem.Models.Subscriptions;
 using TicketingSystem.Models.Tickets;
 
 namespace TicketingSystem.Models.Entities.Agency;

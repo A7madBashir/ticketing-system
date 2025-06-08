@@ -6,7 +6,7 @@ using TicketingSystem.Models.Common.BaseEntity;
 using TicketingSystem.Models.Identity;
 using TicketingSystem.Models.Tickets;
 
-namespace TicketingSystem.Models.Replys;
+namespace TicketingSystem.Models.Entities.Agency;
 
 public class Reply : BaseEntity
 {
