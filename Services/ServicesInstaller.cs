@@ -22,5 +22,7 @@ public static class ServicesInstaller
 
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IRefreshTokenService, RefreshTokenService>();
+
+        services.AddScoped<IIdentityService, IdentityService>();
     }
 }
