@@ -17,5 +17,7 @@ public static class SeedDataExtension
         }
 
         // Call seed methods
+        await seeder.SeedRoles();
+        await seeder.SeedUsers();
     }
 }

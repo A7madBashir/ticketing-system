@@ -1,3 +1,6 @@
+using TicketingSystem.Data.Seeder;
+using TicketingSystem.Settings;
+
 namespace TicketingSystem.Services;
 
 public static class ServicesInstaller
@@ -9,5 +12,15 @@ public static class ServicesInstaller
     public static void CustomServicesInstaller(this IServiceCollection services)
     {
         services.AddSingleton<Mapper>();
+        services.AddScoped<DataSeeder>();
+
+        services
+            .AddOptions<TokenSettings>()
+            .BindConfiguration(nameof(TokenSettings))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IRefreshTokenService, RefreshTokenService>();
     }
 }

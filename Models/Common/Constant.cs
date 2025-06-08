@@ -15,3 +15,9 @@ public static class ErrorCodes
     public const string InvalidUlid = "Invalid ulid";
     public const string InvalidModelState = "Invalid model state";
 }
+
+public static class AuthenticationSchema
+{
+    public const string Bearer = "Bearer";
+    public const string Identity = "Identity.Application";
+}
