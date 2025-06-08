@@ -10,6 +10,6 @@ namespace TicketingSystem.Models.DTO.Responses.Agency
         public int TicketsResolved { get; set; }
         public TimeSpan AverageResponseTime { get; set; }
         public float CustomerSatisfactionScore { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreateTime { get; set; }
     }
 }

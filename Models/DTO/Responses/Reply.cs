@@ -10,6 +10,6 @@ namespace TicketingSystem.Models.DTO.Responses.Replies
         public string Content { get; set; }
         public bool IsInternal { get; set; }
         public bool IsChatbotReply { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreateTime { get; set; }
     }
 }

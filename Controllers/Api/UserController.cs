@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -23,60 +24,70 @@ public class UserController(
     private readonly IUserRepository _repository = repository;
     private readonly Mapper _mapper = mapper;
 
-    [HttpPost("register")]
-    [AllowAnonymous] // Allow anyone to register
-    public async Task<IActionResult> Register([FromBody] UserRequestDto request)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(
-                ErrorResponse.BadRequest(HttpContext, ModelState, ErrorCodes.InvalidModelState)
-            );
-        }
+    // [HttpPost("register")]
+    // [AllowAnonymous] // Allow anyone to register
+    // public async Task<IActionResult> Register([FromBody] RegisterUser request)
+    // {
+    //     if (!ModelState.IsValid)
+    //     {
+    //         return BadRequest(
+    //             ErrorResponse.BadRequest(HttpContext, ModelState, ErrorCodes.InvalidModelState)
+    //         );
+    //     }
 
-        User user = _mapper.ToEntity(request);
-        user.UserName = user.Email ?? user.PhoneNumber ?? user.FirstName + user.LastName;
+    //     User user = _mapper.ToEntity(request);
+    //     user.UserName = user.Email ?? user.PhoneNumber ?? user.FirstName + user.LastName;
 
-        var result = await _userManager.CreateAsync(user);
-        if (result.Succeeded)
-        {
-            await _userManager.AddToRoleAsync(user, Roles.User);
-        }
-        else
-        {
-            return BadRequest(
-                ErrorResponse.BadRequest(
-                    HttpContext,
-                    ModelState,
-                    "Failed to create new user, please try again!"
-                )
-            );
-        }
+    //     var result = await _userManager.CreateAsync(user);
+    //     if (result.Succeeded)
+    //     {
+    //         await _userManager.AddToRoleAsync(user, Roles.User);
+    //     }
+    //     else
+    //     {
+    //         return BadRequest(
+    //             ErrorResponse.BadRequest(
+    //                 HttpContext,
+    //                 ModelState,
+    //                 "Failed to create new user, please try again!"
+    //             )
+    //         );
+    //     }
 
-        if (!string.IsNullOrEmpty(request.Password))
-        {
-            await _userManager.AddPasswordAsync(user, request.Password);
+    //     if (!string.IsNullOrEmpty(request.Password))
+    //     {
+    //         await _userManager.AddPasswordAsync(user, request.Password);
 
-            // TODO: add validation error for password
-        }
+    //         // TODO: add validation error for password
+    //     }
 
-        return Ok(_mapper.ToUserProfile(user));
-    }
+    //     return Ok(_mapper.ToUserProfile(user));
+    // }
 
     [HttpGet("profile")]
     public async Task<ActionResult<Profile>> GetCurrentUserProfile()
     {
-        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var username = User.Identity.Name ?? "";
+        var userId = User.FindFirst(c => c.Type == JwtRegisteredClaimNames.Jti)?.Value;
 
         bool validUlid = Ulid.TryParse(userId, out Ulid userUlid);
-        if (!validUlid)
+        if (!string.IsNullOrEmpty(userId) && !validUlid)
         {
             return BadRequest(
                 ErrorResponse.BadRequest(HttpContext, ModelState, ErrorCodes.InvalidUlid)
             );
         }
 
-        var user = await _repository.GetByIdAsync(userUlid);
+        User user;
+        if (!string.IsNullOrEmpty(userId))
+        {
+            user = await _repository.GetByIdAsync(userUlid);
+        }
+        else
+        {
+            user = await _repository.FirstOrDefaultAsync(u => u.UserName == username);
+        }
+
         if (user == null)
         {
             return NotFound("User not found.");

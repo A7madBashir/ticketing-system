@@ -8,6 +8,6 @@ namespace TicketingSystem.Models.DTO.Responses.Subscriptions
         public string PlanName { get; set; }
         public decimal Price { get; set; }
         public string? Features { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreateTime { get; set; }
     }
 }

@@ -1,17 +1,19 @@
 using System;
+using System.Text.Json.Serialization;
 
 namespace TicketingSystem.Models.DTO.Requests.Subscriptions
 {
-    public class CreateSubscriptionRequest
+    public class CreateSubscriptionRequest : ICreateRequest
     {
         public required string PlanName { get; set; }
         public decimal Price { get; set; }
         public string? Features { get; set; }
     }
 
-    public class UpdateSubscriptionRequest
+    public class UpdateSubscriptionRequest : IEditRequest<Ulid>
     {
-        public required Ulid Id { get; set; }
+        [JsonIgnore]
+        public Ulid Id { get; set; }
         public required string PlanName { get; set; }
         public decimal Price { get; set; }
         public string? Features { get; set; }

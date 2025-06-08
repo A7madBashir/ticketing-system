@@ -9,6 +9,6 @@ namespace TicketingSystem.Models.DTO.Responses.Integrations
         public string? ApiKey { get; set; }
         public Ulid AgencyId { get; set; }
         public bool Enabled { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreateTime { get; set; }
     }
 }
