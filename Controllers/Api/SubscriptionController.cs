@@ -19,4 +19,14 @@ public class SubscriptionController
 {
     public SubscriptionController(ISubscriptionRepository repository, Mapper mapper)
         : base(repository, mapper) { }
+
+    protected override string[] GetSearchableProperties()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override string[] IncludeNavigation()
+    {
+        throw new NotImplementedException();
+    }
 }

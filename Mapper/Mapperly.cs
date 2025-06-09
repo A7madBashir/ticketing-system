@@ -70,7 +70,8 @@ public partial class Mapper
     [MapperIgnoreSource(nameof(Agency.DeleteTime))]
     public partial Models.DTO.Responses.Agency.AgencyResponse ToResponse(Agency model);
 
-    public partial Models.Entities.Agency.Subscription ToResponse(CreateSubscriptionRequest source);
+    // Subscription
+    public partial Models.Entities.Agency.Subscription ToEntity(CreateSubscriptionRequest source);
 
     public partial Models.DTO.Responses.Subscriptions.SubscriptionResponse ToResponse(
         Subscription source

@@ -66,4 +66,14 @@ public class TicketController(
 
         return new Success();
     }
+
+    protected override string[] GetSearchableProperties()
+    {
+        return [nameof(Ticket.Title), nameof(Ticket.Description), nameof(Ticket.Status)];
+    }
+
+    protected override string[] IncludeNavigation()
+    {
+        return [nameof(Ticket.Category), nameof(Ticket.Agency)];
+    }
 }

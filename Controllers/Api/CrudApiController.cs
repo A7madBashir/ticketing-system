@@ -1,10 +1,14 @@
+using System.Linq.Expressions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.UI.V4.Pages.Internal;
 using Microsoft.AspNetCore.Mvc;
 using OneOf;
 using OneOf.Types;
+using TicketingSystem.Handlers.DataTable;
 using TicketingSystem.Models.Common;
 using TicketingSystem.Models.Common.BaseEntity;
 using TicketingSystem.Models.DTO.Requests;
+using TicketingSystem.Models.DTO.Responses;
 using TicketingSystem.Services.Repositories;
 
 namespace TicketingSystem.Controllers.Api;
@@ -19,15 +23,62 @@ public abstract class CrudController<TEntity, T, TResponse, TCreateRequest, TUpd
     where T : IEquatable<T>
     where TCreateRequest : ICreateRequest
     where TUpdateRequest : IEditRequest<T>
+    where TResponse : BaseResponse
 {
     protected readonly IRepository<TEntity, T> _repository;
     private readonly Mapper _mapper;
+    private readonly DataTableHandler<TEntity, T> _dataTable;
 
     // Constructor injection
     public CrudController(IRepository<TEntity, T> repository, Mapper mapper)
     {
         _repository = repository;
         _mapper = mapper;
+        _dataTable = new DataTableHandler<TEntity, T>(repository, mapper);
+    }
+
+    /// <summary>
+    /// Derived classes MUST implement this to tell the DataTableService what properties to search within
+    /// for the general search term.
+    /// </summary>
+    protected abstract string[] GetSearchableProperties();
+
+    /// <summary>
+    /// Specify navigation models
+    /// </summary>
+    protected abstract string[] IncludeNavigation();
+
+    /// <summary>
+    /// Derived classes can override this to provide a default ordering expression for their data table.
+    /// If not overridden, it defaults to ordering by 'Id'.
+    /// </summary>
+    protected virtual Expression<Func<TEntity, object>> GetDefaultOrderBy()
+    {
+        // Default to ordering by 'Id' if no specific order is provided
+        return e => e.Id;
+    }
+
+    /// <summary>
+    /// Derived classes can override this to apply a default or global filter to their table data.
+    /// This filter is applied *before* any other searching, filtering, or pagination.
+    /// </summary>
+    protected virtual Expression<Func<TEntity, bool>>? GetInitialWhereClause()
+    {
+        return null; // Default to no initial filter
+    }
+
+    /// <summary>
+    /// Custom override point to build the base query before any pagination, sorting, or general searching.
+    /// This is where derived classes can include navigation properties, apply advanced filters,
+    /// or change the starting point of the query.
+    /// </summary>
+    /// <param name="initialQuery">The initial IQueryable from the repository.</param>
+    /// <returns>The IQueryable after applying custom includes/filters.</returns>
+    protected virtual IQueryable<TEntity>? BuildBaseQuery()
+    {
+        // By default, do nothing and return the initial query.
+        // Derived classes will override this to add .Include(), .Where(), etc.
+        return null;
     }
 
     // --- Hooks / Event Methods (Virtual, to be overridden by derived controllers) ---
@@ -106,6 +157,38 @@ public abstract class CrudController<TEntity, T, TResponse, TCreateRequest, TUpd
 
     // --- CRUD Endpoints ---
 
+    [HttpGet("DataTable")]
+    public async Task<ActionResult<PaginatedResponse<TResponse>>> DataTable(
+        [FromQuery] DataTableRequest req
+    )
+    {
+        if (req.Page < 1)
+        {
+            return BadRequest("Page number not valid");
+        }
+
+        if (req.Count < -1)
+        {
+            return BadRequest("Count less than zero");
+        }
+
+        var res = await _dataTable.PaginatedDataAsync<TResponse>(
+            req.Page,
+            req.Count,
+            req.Draw,
+            BuildBaseQuery(),
+            req.Search,
+            GetSearchableProperties(),
+            GetInitialWhereClause(),
+            GetDefaultOrderBy(),
+            orderByDescending: req.OrderByDescending,
+            includeNavigations: IncludeNavigation(),
+            selector: _mapper.ToResponse<TResponse, T>
+        );
+
+        return Ok(res);
+    }
+
     // GET: api/[controller]/{id}
     [HttpGet("{id}")]
     public virtual async Task<ActionResult<TResponse>> Get(T id)
@@ -120,6 +203,7 @@ public abstract class CrudController<TEntity, T, TResponse, TCreateRequest, TUpd
 
     // GET: api/[controller]
     [HttpGet]
+    [Authorize(Roles = Roles.Admin)]
     public virtual async Task<ActionResult<IEnumerable<TResponse>>> GetAll()
     {
         var entities = (await _repository.GetAllAsync()).Select(_mapper.ToResponse<TResponse, T>);

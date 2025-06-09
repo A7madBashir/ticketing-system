@@ -39,4 +39,14 @@ public class CategoryController(
 
         return new Success();
     }
+
+    protected override string[] GetSearchableProperties()
+    {
+        throw new NotImplementedException();
+    }
+
+    protected override string[] IncludeNavigation()
+    {
+        throw new NotImplementedException();
+    }
 }
