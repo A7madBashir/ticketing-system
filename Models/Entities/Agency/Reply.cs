@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using TicketingSystem.Models.Common.BaseEntity;
 using TicketingSystem.Models.Identity;
-using TicketingSystem.Models.Tickets;
+using TicketingSystem.Models.Entities.Tickets;
 
 namespace TicketingSystem.Models.Entities.Agency;
 

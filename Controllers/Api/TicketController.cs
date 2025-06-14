@@ -7,7 +7,7 @@ using OneOf.Types;
 using TicketingSystem.Models.DTO.Requests.Ticket;
 using TicketingSystem.Models.DTO.Responses.Ticket;
 using TicketingSystem.Models.Identity;
-using TicketingSystem.Models.Tickets;
+using TicketingSystem.Models.Entities.Tickets;
 using TicketingSystem.Services;
 using TicketingSystem.Services.Repositories;
 

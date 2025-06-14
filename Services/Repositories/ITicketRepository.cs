@@ -1,5 +1,5 @@
 using TicketingSystem.Data;
-using TicketingSystem.Models.Tickets;
+using TicketingSystem.Models.Entities.Tickets;
 
 namespace TicketingSystem.Services.Repositories;
 

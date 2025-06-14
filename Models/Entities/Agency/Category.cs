@@ -1,6 +1,6 @@
 using TicketingSystem.Models.Common.BaseEntity;
 using TicketingSystem.Models.Entities.Agency;
-using TicketingSystem.Models.Tickets;
+using TicketingSystem.Models.Entities.Tickets;
 
 namespace TicketingSystem.Models.Entities.Agency;
 

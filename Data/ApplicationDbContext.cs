@@ -5,7 +5,7 @@ using TicketingSystem.Models.Entities.Agency;
 using TicketingSystem.Models.FAQs;
 using TicketingSystem.Models.Identity;
 using TicketingSystem.Models.Integrations;
-using TicketingSystem.Models.Tickets;
+using TicketingSystem.Models.Entities.Tickets;
 
 namespace TicketingSystem.Data;
 

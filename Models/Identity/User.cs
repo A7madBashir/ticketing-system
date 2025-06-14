@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using TicketingSystem.Models.Common.BaseEntity;
 using TicketingSystem.Models.Entities.Agency;
-using TicketingSystem.Models.Tickets;
+using TicketingSystem.Models.Entities.Tickets;
 
 namespace TicketingSystem.Models.Identity;
 
@@ -30,8 +30,8 @@ public class User : IdentityUser<Ulid>, IEntity<Ulid>
     public virtual List<RefreshToken>? RefreshTokens { get; set; }
 
     // Navigation properties for related entities
-    public ICollection<Ticket> CreatedTickets { get; set; } // Tickets created by this user
-    public ICollection<Ticket> AssignedTickets { get; set; } // Tickets assigned to this user
-    public ICollection<Reply> Replies { get; set; }
-    public ICollection<Analytic> Analytics { get; set; } // Analytics tracked for this agent
+    public ICollection<Ticket>? CreatedTickets { get; set; } // Tickets created by this user
+    public ICollection<Ticket>? AssignedTickets { get; set; } // Tickets assigned to this user
+    public ICollection<Reply>? Replies { get; set; }
+    public ICollection<Analytic>? Analytics { get; set; } // Analytics tracked for this agent
 }

@@ -11,7 +11,7 @@ using TicketingSystem.Models.DTO.Responses.Ticket;
 using TicketingSystem.Models.DTO.Responses.User;
 using TicketingSystem.Models.Entities.Agency;
 using TicketingSystem.Models.Identity;
-using TicketingSystem.Models.Tickets;
+using TicketingSystem.Models.Entities.Tickets;
 
 namespace TicketingSystem;
 

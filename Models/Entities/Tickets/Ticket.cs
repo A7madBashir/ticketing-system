@@ -2,7 +2,7 @@ using TicketingSystem.Models.Common.BaseEntity;
 using TicketingSystem.Models.Entities.Agency;
 using TicketingSystem.Models.Identity;
 
-namespace TicketingSystem.Models.Tickets;
+namespace TicketingSystem.Models.Entities.Tickets;
 
 public class Ticket : BaseEntity
 {
@@ -15,7 +15,7 @@ public class Ticket : BaseEntity
     public Ulid AgencyId { get; set; }
     public bool OriginatedFromChatbot { get; set; }
 
-    public virtual Agency? Agency { get; set; }
+    public virtual Agency.Agency? Agency { get; set; }
     public virtual User? CreatedBy { get; set; }
     public virtual Category? Category { get; set; }
 
