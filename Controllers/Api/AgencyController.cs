@@ -8,19 +8,5 @@ using TicketingSystem.Services.Repositories;
 
 namespace TicketingSystem.Controllers.Api;
 
-public class AgencyController
-    : CrudController<Agency, Ulid, AgencyResponse, CreateAgency, EditAgency>
-{
-    public AgencyController(IAgencyRepository repository, Mapper mapper)
-        : base(repository, mapper) { }
-
-    protected override string[] GetSearchableProperties()
-    {
-        throw new NotImplementedException();
-    }
-
-    protected override string[] IncludeNavigation()
-    {
-        throw new NotImplementedException();
-    }
-}
+public class AgencyController(IAgencyRepository repository, Mapper mapper)
+    : CrudController<Agency, Ulid, AgencyResponse, CreateAgency, EditAgency>(repository, mapper) { }
