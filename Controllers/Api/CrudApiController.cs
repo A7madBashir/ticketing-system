@@ -41,12 +41,18 @@ public abstract class CrudController<TEntity, T, TResponse, TCreateRequest, TUpd
     /// Derived classes MUST implement this to tell the DataTableService what properties to search within
     /// for the general search term.
     /// </summary>
-    protected abstract string[] GetSearchableProperties();
+    protected virtual string[]? GetSearchableProperties()
+    {
+        return null;
+    }
 
     /// <summary>
     /// Specify navigation models
     /// </summary>
-    protected abstract string[] IncludeNavigation();
+    protected virtual string[]? IncludeNavigation()
+    {
+        return null;
+    }
 
     /// <summary>
     /// Derived classes can override this to provide a default ordering expression for their data table.
