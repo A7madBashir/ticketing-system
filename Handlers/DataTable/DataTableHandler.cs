@@ -95,12 +95,12 @@ public class DataTableHandler<TEntity, T>(IRepository<TEntity, T> repository, Ma
         }
 
         var data = await paginatedQuery
-        // .Select(selector) // Apply the projection (mapping)
+        .Select((r) => selector(r)) // Apply the projection (mapping)
         .ToListAsync();
 
         return new PaginatedResponse<TResponse>
         {
-            Data = data.Select(selector),
+            Data = data,
             Draw = draw,
             RecordsFiltered = filteredRecords,
             RecordsTotal = totalRecords,
