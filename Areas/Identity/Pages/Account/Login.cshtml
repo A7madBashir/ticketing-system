@@ -1,0 +1,103 @@
+@page
+@model TicketingSystem.Areas.Identity.Pages.Account.LoginModel
+
+@{
+    ViewData["Title"] = "Login";
+    Layout = "_Layout"; // Assuming you have a _Layout.cshtml for basic structure
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">User Login</h3>
+                </div>
+                <div class="card-body">
+                    <div id="loginMessage" class="alert d-none" role="alert"></div>
+
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="email" name="Email" required
+                                placeholder="Enter your email">
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="Password" required
+                                placeholder="Enter your password">
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary" id="loginButton">
+                                <span id="buttonText">Login</span>
+                                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"
+                                    id="loginSpinner"></span>
+                                <span class="visually-hidden d-none" id="spinnerText">Loading...</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            const loginForm = $('#loginForm');
+            const loginMessage = $('#loginMessage');
+            const loginButton = $('#loginButton');
+            const buttonText = $('#buttonText');
+            const loginSpinner = $('#loginSpinner');
+            const spinnerText = $('#spinnerText');
+
+            loginForm.on('submit', function (e) {
+                e.preventDefault(); // Prevent default form submission
+
+                // Clear previous messages
+                loginMessage.removeClass('alert-success alert-danger').addClass('d-none').text('');
+
+                // Show loader and disable button
+                loginButton.prop('disabled', true);
+                buttonText.addClass('d-none');
+                loginSpinner.removeClass('d-none');
+                spinnerText.removeClass('d-none');
+
+
+                const email = $('#email').val();
+                const password = $('#password').val();
+
+                const data = {
+                    Email: email,
+                    Password: password
+                };
+
+                $.ajax({
+                    url: '/api/account/v2/login?useCookies=true',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    error: function (xhr, status, error) {
+                        loginMessage.removeClass('d-none').addClass('alert-danger').text('An error occurred during login. Please try again.');
+                        console.error('AJAX error:', status, error, xhr.responseText);
+                    },
+                    complete: function (res) {
+                        // Hide loader and re-enable button after request completes (success or error)
+                        loginButton.prop('disabled', false);
+                        buttonText.removeClass('d-none');
+                        loginSpinner.addClass('d-none');
+                        spinnerText.addClass('d-none');
+                        if (res.status == 200) {
+                            loginMessage.removeClass(['d-none', 'alert-danger']).addClass('alert-success').text("Login successfully");
+                            // In a real app, you would redirect here after successful login
+                            window.location.href = '/';
+                        } else {
+                            loginMessage.removeClass(['d-none', 'alert-success']).addClass('alert-danger').text("Invalid email and password");
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+}

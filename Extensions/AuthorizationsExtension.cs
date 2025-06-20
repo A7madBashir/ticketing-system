@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using TicketingSystem.Models.Common;
 using TicketingSystem.Settings;
 
 namespace TicketingSystem.Extensions;
@@ -13,7 +14,7 @@ public static class AuthorizationsExtension
     )
     {
         services
-            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddAuthentication(AuthenticationSchema.Identity)
             .AddJwtBearer(
                 JwtBearerDefaults.AuthenticationScheme,
                 opt =>
@@ -61,7 +62,7 @@ public static class AuthorizationsExtension
                 "Cookies",
                 options =>
                 {
-                    options.LoginPath = "/Identity/Account/login";
+                    options.LoginPath = "/Account/Login";
                     options.SlidingExpiration = true;
                     options.Cookie.HttpOnly = true;
                     options.Cookie.SameSite = SameSiteMode.None;
