@@ -6,7 +6,14 @@ using TicketingSystem.Models.Common;
 
 namespace TicketingSystem.Controllers.Web;
 
-[Route("[controller]")]
 [ApiExplorerSettings(IgnoreApi = true)]
 [Authorize(Roles = Roles.Admin)]
-public class WebBaseController : Controller { }
+public class WebBaseController : Controller
+{
+    public override RedirectToActionResult RedirectToAction(string? actionName)
+    {
+        string controllerName =
+            "/" + this.ControllerContext.RouteData.Values["controller"]!.ToString()!;
+        return base.RedirectToAction(actionName, controllerName);
+    }
+}

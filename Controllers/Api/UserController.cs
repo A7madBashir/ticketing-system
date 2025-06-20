@@ -17,7 +17,7 @@ public class UserController(
     RoleManager<Role> roleManager,
     IUserRepository repository,
     Mapper mapper
-) : ApiBaseController
+) : CrudController<User, Ulid, UserResponse, RegisterUser, UpdateUserRequest>(repository, mapper)
 {
     private readonly UserManager<User> _userManager = userManager;
 
@@ -126,30 +126,30 @@ public class UserController(
         return Ok();
     }
 
-    [HttpDelete("{id}")]
-    [Authorize(Roles = Roles.Admin)]
-    public async Task<IActionResult> DeleteUser(string id)
-    {
-        var user = await _userManager.FindByIdAsync(id);
-        if (user == null)
-        {
-            return NotFound("User not found.");
-        }
+    // [HttpDelete("{id}")]
+    // [Authorize(Roles = Roles.Admin)]
+    // public async Task<IActionResult> DeleteUser(string id)
+    // {
+    //     var user = await _userManager.FindByIdAsync(id);
+    //     if (user == null)
+    //     {
+    //         return NotFound("User not found.");
+    //     }
 
-        var result = await _userManager.DeleteAsync(user);
+    //     var result = await _userManager.DeleteAsync(user);
 
-        if (result.Succeeded)
-        {
-            return NoContent(); // 204 No Content
-        }
+    //     if (result.Succeeded)
+    //     {
+    //         return NoContent(); // 204 No Content
+    //     }
 
-        return BadRequest(
-            ErrorResponse.OnlyMessage(
-                null,
-                ModelState,
-                "Delete user failed",
-                "Failed to delete user please try again!"
-            )
-        );
-    }
+    //     return BadRequest(
+    //         ErrorResponse.OnlyMessage(
+    //             null,
+    //             ModelState,
+    //             "Delete user failed",
+    //             "Failed to delete user please try again!"
+    //         )
+    //     );
+    // }
 }

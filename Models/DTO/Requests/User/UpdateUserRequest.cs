@@ -1,6 +1,6 @@
 namespace TicketingSystem.Models.DTO.Requests.User;
 
-public class UpdateUserRequest : RegisterUser
+public class UpdateUserRequest : RegisterUser, IEditRequest<Ulid>
 {
-    public required string Id { get; set; }
+    public Ulid Id { get; set; }
 }

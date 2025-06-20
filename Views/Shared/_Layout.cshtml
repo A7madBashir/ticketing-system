@@ -1,20 +1,38 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var routeValues = Context.Request.RouteValues;
+    string? Title = "";
+    @if (routeValues["action"]?.ToString() != "Index")
+    {
+        Title = $"{routeValues["controller"]} / {routeValues["action"]}";
+    }
+    else
+    {
+        Title = $"{routeValues["controller"]}";
+    }
+}
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - TicketingSystem</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    @await RenderSectionAsync("Styles", required: false)
+    <link href="~/lib/metronic/css/style.bundle.css" rel="stylesheet" type="text/css" />
+    <link href="~/lib/metronic/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/TicketingSystem.styles.css" asp-append-version="true" />
 </head>
-<body>
-    <header>
+
+<body id="kt_body"
+    class="header-fixed header-tablet-and-mobile-fixed toolbar-enabled toolbar-fixed aside-disabled aside-fixed"
+    style="--kt-toolbar-height:55px;--kt-toolbar-height-tablet-and-mobile:55px">
+
+    @* <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">TicketingSystem</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
@@ -23,28 +41,91 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home"
+                                asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>
             </div>
         </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+    </header> *@
+    <!--begin::Root-->
+    <div class="d-flex flex-column flex-root">
+        <!--begin::Page-->
+        <div class="page d-flex flex-row flex-column-fluid">
+            <!--begin::Aside-->
+            @* <partial name="_Aside" /> *@
+            <!--end::Aside-->
+            <!--begin::Wrapper-->
+            <div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
+                <!--begin::Header-->
+                <div id="kt_header" style="" class="header align-items-stretch">
+                    @* TODO: Add Header (User menu) partial view *@
+                </div>
+                <!--end::Header-->
+                <div class="d-flex flex-column flex-column-fluid" id="kt_content">
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        @* <partial name="_MessagePartial" /> *@
+                        <div class="toolbar shadow-sm d-none d-lg-flex" id="kt_toolbar">
+                            <!--begin::Container-->
+                            <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
+                                <!--begin::Page title-->
+                                <div data-kt-swapper="true" data-kt-swapper-mode="prepend"
+                                    data-kt-swapper-parent="{default: '[role=main]', 'lg': '#kt_toolbar_container'}"
+                                    class="page-title d-flex align-items-center mx-auto flex-wrap mx-3 mb-3 mb-md-1 mt-md-1">
+                                    <!--begin::Title-->
+                                    <h1 class="d-flex text-dark fw-bolder fs-3 align-items-center mx-auto">
+                                        @Title</h1>
+                                    <!--end::Title-->
+                                </div>
+                                <!--end::Page title-->
+                            </div>
+                            <!--end::Container-->
+                        </div>
+                    }
+                    <!--begin::Post-->
+                    <div class="post d-flex flex-column-fluid pb-5" id="kt_post">
+                        <main role="main" class="w-100 px-xl-15 mt-10">
+                            @RenderBody()
+                        </main>
+                    </div>
+                    <!--end::Post-->
+                </div>
+            </div>
+            <!--end::Wrapper-->
+        </div>
+        <!--end::Page-->
     </div>
+    <!--end::Root-->
 
-    <footer class="border-top footer text-muted">
+    <footer class="footer mt-auto d-flex flex-lg-column" id="kt_footer">
         <div class="container">
             &copy; 2025 - TicketingSystem - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+    <!--begin::Scrolltop-->
+    <div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">
+        <!--begin::Svg Icon | path: icons/duotune/arrows/arr066.svg-->
+        <span class="svg-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <rect opacity="0.5" x="13" y="6" width="13" height="2" rx="1" transform="rotate(90 13 6)"
+                    fill="black" />
+                <path
+                    d="M12.5657 8.56569L16.75 12.75C17.1642 13.1642 17.8358 13.1642 18.25 12.75C18.6642 12.3358 18.6642 11.6642 18.25 11.25L12.7071 5.70711C12.3166 5.31658 11.6834 5.31658 11.2929 5.70711L5.75 11.25C5.33579 11.6642 5.33579 12.3358 5.75 12.75C6.16421 13.1642 6.83579 13.1642 7.25 12.75L11.4343 8.56569C11.7467 8.25327 12.2533 8.25327 12.5657 8.56569Z"
+                    fill="black" />
+            </svg>
+        </span>
+        <!--end::Svg Icon-->
+    </div>
+    <!--end::Scrolltop-->
+    <!--begin::Global Javascript Bundle(used by all pages)-->
+    <script src="~/lib/metronic/plugins/global/plugins.bundle.js"></script>
+    <script src="~/lib/metronic/js/scripts.bundle.js"></script>
+    <!--end::Global Javascript Bundle-->
+    <script src="~/js/app.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
+
 </html>

@@ -5,6 +5,7 @@ using TicketingSystem.Models;
 
 namespace TicketingSystem.Controllers;
 
+[Route("")]
 public class HomeController(ILogger<HomeController> logger) : WebBaseController
 {
     private readonly ILogger<HomeController> _logger = logger;
@@ -12,18 +13,5 @@ public class HomeController(ILogger<HomeController> logger) : WebBaseController
     public IActionResult Index()
     {
         return View();
-    }
-
-    public IActionResult Privacy()
-    {
-        return View();
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(
-            new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier }
-        );
     }
 }

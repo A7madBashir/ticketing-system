@@ -1,0 +1,235 @@
+@{
+    ViewData["Title"] = "User Management";
+}
+
+@section Styles {
+    <link rel="stylesheet" type="text/css" href="~/lib/metronic/plugins/custom/datatables/datatables.bundle.css">
+    <style>
+        /* Optional: Add some custom styling for better card spacing or filter layout */
+        .card {
+            margin-bottom: 20px;
+        }
+
+        .filter-controls .form-group {
+            margin-bottom: 1rem;
+        }
+
+        /* Style for DataTables buttons if needed */
+        div.dt-button-collection button.dt-button {
+            background-color: #007bff;
+            /* Primary color */
+            color: white;
+            border: none;
+        }
+
+        /* Make filter inputs slightly wider on small screens if desired */
+        @@media (max-width: 767.98px) {
+
+            .filter-controls .col-md-3,
+            .filter-controls .col-md-4 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
+}
+
+@* <div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Filter Users</h5>
+    </div>
+    <div class="card-body">
+        <form id="userFilterForm" class="row filter-controls">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <label for="searchQuery">Search Name/Email:</label>
+                    <input type="text" class="form-control" id="searchQuery" placeholder="Enter name or email">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <label for="statusFilter">Status:</label>
+                    <select class="form-control" id="statusFilter">
+                        <option value="">All</option>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                        <option value="Pending">Pending</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <label for="roleFilter">Role:</label>
+                    <select class="form-control" id="roleFilter">
+                        <option value="">All</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Editor">Editor</option>
+                        <option value="Viewer">Viewer</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 d-flex align-items-end justify-content-end">
+                <div class="form-group">
+                    <button type="button" class="btn btn-primary me-2" id="applyFiltersBtn">Apply Filters</button>
+                    <button type="button" class="btn btn-secondary" id="resetFiltersBtn">Reset Filters</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div> *@
+
+<div class="card">
+    <table id="data-table" class="table table-row-bordered table-stripped align-middle fs-6 gs-7 gy-5" style="width:100%">
+        <thead>
+            <tr>
+                @* <td>Username</td> *@
+                <td>Name</td>
+                <td>Email</td>
+                <td>Last Login At</td>
+                <td></td>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script src="~/lib/metronic/plugins/custom/datatables/datatables.bundle.js"></script> @* Adjust path as needed *@
+    <script src="~/js/dataTable/init.js"></script> @* Adjust path as needed *@
+
+    <script>
+        $(document).ready(function () {
+            let usersDataTableInstance; // Declare a variable to hold the DataTable API instance
+
+            const usersTableColumns = [
+                { data: 'id', title: 'ID', width: '5%' },
+                {
+                    data: 'fullName',
+                    title: 'Name',
+                    // Example of a custom renderer if you need to combine first/last name
+                    // or add a link to user details
+                    render: function (data, type, row) {
+                        return `<a href="/Users/Details/${row.id}">${data}</a>`;
+                    }
+                },
+                { data: 'email', title: 'Email' },
+                {
+                    data: 'status',
+                    title: 'Status',
+                    render: function (data, type, row) {
+                        // Example: Custom styling based on status
+                        let badgeClass = '';
+                        switch (data.toLowerCase()) {
+                            case 'active': badgeClass = 'bg-success'; break;
+                            case 'inactive': badgeClass = 'bg-danger'; break;
+                            case 'pending': badgeClass = 'bg-warning'; break;
+                            default: badgeClass = 'bg-secondary'; break;
+                        }
+                        return `<span class="badge ${badgeClass}">${data}</span>`;
+                    }
+                },
+                { data: 'role', title: 'Role' },
+                {
+                    data: 'lastLogin',
+                    title: 'Last Login',
+                    render: function (data, type, row) {
+                        // Format date nicely
+                        if (data) {
+                            return new Date(data).toLocaleString();
+                        }
+                        return 'N/A';
+                    }
+                },
+                {
+                    data: null, // This column doesn't map directly to a data property
+                    title: 'Actions',
+                    orderable: false, // Don't allow sorting on this column
+                    searchable: false, // Don't allow searching on this column
+                    responsivePriority: 1, // Make sure this column is always visible on smaller screens
+                    render: function (data, type, row) {
+                        return `
+                                            <button class="btn btn-sm btn-info view-btn" data-id="${row.id}" title="View Details">
+                                                <i class="bi bi-eye"></i> View
+                                            </button>
+                                            <button class="btn btn-sm btn-warning edit-btn" data-id="${row.id}" title="Edit User">
+                                                <i class="bi bi-pencil"></i> Edit
+                                            </button>
+                                            <button class="btn btn-sm btn-danger delete-btn" data-id="${row.id}" title="Delete User">
+                                                <i class="bi bi-trash"></i> Delete
+                                            </button>
+                                        `;
+                    }
+                }
+            ];
+
+            function initializeUsersDataTable() {
+                var dataTable = new DataTableSSR("/api/User/DataTable", [
+                    { data: "name", "name": "Name", class: "" },
+                    { data: "email", "name": "Email", class: "" },
+                    { data: "lastLoginAt", "name": "LastLoginAt", class: "" },
+                    { "data": null, class: "text-end" }], [
+                    {
+                        targets: -1,
+                        render: function (data, full, row) {
+                            let res = dataTable.generateEditLinkDataTableRow(`#`, null, [`item-id='${data.id}'`])
+                                + " | " + dataTable.generateDeleteLinkDataTableRow(data.id);
+
+                            return res
+                        }
+                    }
+                ]);
+
+                dataTable.initDataTableObj("#data-table", null, null, [{
+                    event: "draw", action: () => {
+                        dataTable.deleteRowsBtnEvents("[data-kt-docs-table-filter='delete_row']", null, 1)
+                        dataTable.initialTooltip()
+
+                    }
+                }])
+
+                // Attach event handlers for action buttons inside the table
+                $('#usersDataTable tbody').on('click', '.view-btn', function () {
+                    const userId = $(this).data('id');
+                    alert('View user details for ID: ' + userId);
+                    window.location.href = `/Users/Details/${userId}`; // Navigate to a details page
+                });
+
+                $('#usersDataTable tbody').on('click', '.edit-btn', function () {
+                    const userId = $(this).data('id');
+                    alert('Edit user with ID: ' + userId);
+                    window.location.href = `/Users/Edit/${userId}`; // Navigate to an edit page
+                });
+
+                $('#usersDataTable tbody').on('click', '.delete-btn', function () {
+                    const userId = $(this).data('id');
+                    if (confirm('Are you sure you want to delete user with ID: ' + userId + '?')) {
+                        // Here you would make an AJAX call to your backend to delete the user
+                        console.log('Deleting user with ID:', userId);
+                        // Example:
+                        // $.ajax({
+                        //     url: `/Users/Delete/${userId}`,
+                        //     type: 'POST', // Or 'DELETE' if your API supports it
+                        //     success: function(response) {
+                        //         if (response.success) {
+                        //             alert('User deleted successfully!');
+                        //             usersDataTableInstance.ajax.reload(); // Reload the table
+                        //         } else {
+                        //             alert('Error deleting user: ' + response.message);
+                        //         }
+                        //     },
+                        //     error: function() {
+                        //         alert('An error occurred during deletion.');
+                        //     }
+                        // });
+                        alert('Deletion logic would go here. Reloading table...');
+                        usersDataTableInstance.ajax.reload(); // Reload table after hypothetical delete
+                    }
+                });
+            }
+
+            // Initialize the DataTable on page load
+            initializeUsersDataTable();
+        });
+    </script>
+}

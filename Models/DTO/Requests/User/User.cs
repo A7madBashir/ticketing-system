@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TicketingSystem.Models.DTO.Requests.User;
 
-public class RegisterUser
+public class RegisterUser : ICreateRequest
 {
     public required string FirstName { get; set; }
     public required string LastName { get; set; }
