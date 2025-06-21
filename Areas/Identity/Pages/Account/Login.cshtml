@@ -3,36 +3,42 @@
 
 @{
     ViewData["Title"] = "Login";
-    Layout = "_Layout"; // Assuming you have a _Layout.cshtml for basic structure
 }
+@* This view will be rendered within your main _Layout.cshtml.
+   Ensure that Metronic's CSS files (plugins.bundle.css, style.bundle.css)
+   are correctly linked in your _Layout.cshtml's <head> section. *@
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
+<div class="container mt-5"> @* 'container' and 'mt-5' are still effective with Metronic. *@
+    <div class="row justify-content-center"> @* Metronic's grid system is compatible with 'row' and 'justify-content-center'. *@
+        <div class="col-md-6"> @* Metronic's grid system is compatible with 'col-md-6'. *@
+            <div class="card card-flush h-md-100"> @* Replaced 'card' with Metronic's 'card card-flush' for a modern, flat card look. *@
                 <div class="card-header">
-                    <h3 class="text-center">User Login</h3>
+                    <h3 class="card-title text-center fw-bolder fs-3 mb-0">User Login</h3> @* 'card-title' for Metronic's card header title, 'fw-bolder' for font weight, 'fs-3' for font size, 'mb-0' to remove bottom margin. *@
                 </div>
                 <div class="card-body">
-                    <div id="loginMessage" class="alert d-none" role="alert"></div>
-
+                    <div id="loginMessage" class="alert d-none" role="alert"> @* 'alert' and 'd-none' are compatible. Add 'alert-danger' or 'alert-success' dynamically via your own JS if needed. *@
+                        <div class="d-flex flex-column"> @* Metronic utility class for stacked content. *@
+                            <h4 class="mb-1 text-danger"></h4> @* Placeholder for message title, styled by Metronic. *@
+                            <span class="fs-7"></span> @* Placeholder for message content, styled by Metronic. *@
+                        </div>
+                    </div>
                     <form id="loginForm">
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email address</label>
-                            <input type="email" class="form-control" id="email" name="Email" required
-                                placeholder="Enter your email">
+                        <div class="fv-row mb-8"> @* 'fv-row' is Metronic's standard wrapper for form validation fields (even without JS validation, it helps with spacing), 'mb-8' for bottom margin. *@
+                            <label for="email" class="form-label fs-6 fw-bolder text-dark">Email address</label> @* Metronic label styling: 'fs-6' for font size, 'fw-bolder' for bold, 'text-dark' for color. *@
+                            <input type="email" class="form-control form-control-solid form-control-lg" id="email"
+                                name="Email" required placeholder="Enter your email" /> @* 'form-control-solid' for a filled input background, 'form-control-lg' for a larger size. *@
                         </div>
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" name="Password" required
-                                placeholder="Enter your password">
+                        <div class="fv-row mb-10"> @* 'fv-row' and 'mb-10' for spacing. *@
+                            <label for="password" class="form-label fs-6 fw-bolder text-dark">Password</label> @* Metronic label styling. *@
+                            <input type="password" class="form-control form-control-solid form-control-lg" id="password"
+                                name="Password" required placeholder="Enter your password" /> @* Metronic input styling. *@
                         </div>
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary" id="loginButton">
+                        <div class="d-grid"> @* 'd-grid' is compatible. *@
+                            <button type="submit" class="btn btn-lg btn-primary w-100" id="loginButton"> @* Metronic button styling: 'btn-lg' for large, 'btn-primary' for primary color, 'w-100' for full width. *@
                                 <span id="buttonText">Login</span>
-                                <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"
-                                    id="loginSpinner"></span>
-                                <span class="visually-hidden d-none" id="spinnerText">Loading...</span>
+                                <span class="spinner-border spinner-border-sm d-none ms-2" role="status"
+                                    aria-hidden="true" id="loginSpinner"></span> @* 'spinner-border' is Bootstrap, which Metronic is compatible with. 'd-none' is for hiding, 'ms-2' for margin-left. *@
+                                <span class="visually-hidden d-none" id="spinnerText">Loading...</span> @* Compatible with Metronic. *@
                             </button>
                         </div>
                     </form>

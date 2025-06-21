@@ -20,54 +20,29 @@
     @await RenderSectionAsync("Styles", required: false)
     <link href="~/lib/metronic/css/style.bundle.css" rel="stylesheet" type="text/css" />
     <link href="~/lib/metronic/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/font-awesome/font-awesome.6.5.2.all.min.css" asp-append-version="true" type="text/css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" type="text/css" />
 </head>
 
 <body id="kt_body"
-    class="header-fixed header-tablet-and-mobile-fixed toolbar-enabled toolbar-fixed aside-disabled aside-fixed"
+    class="header-fixed header-tablet-and-mobile-fixed toolbar-enabled toolbar-fixed @(User.Identity.IsAuthenticated ? "aside-enabled" :"aside-disabled") aside-fixed"
     style="--kt-toolbar-height:55px;--kt-toolbar-height-tablet-and-mobile:55px">
-
-    @* <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">TicketingSystem</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
-                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home"
-                                asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                    <partial name="_LoginPartial" />
-                </div>
-            </div>
-        </nav>
-    </header> *@
     <!--begin::Root-->
     <div class="d-flex flex-column flex-root">
         <!--begin::Page-->
         <div class="page d-flex flex-row flex-column-fluid">
             <!--begin::Aside-->
-            @* <partial name="_Aside" /> *@
+            <partial name="_AsidePartial" />
             <!--end::Aside-->
             <!--begin::Wrapper-->
             <div class="wrapper d-flex flex-column flex-row-fluid" id="kt_wrapper">
                 <!--begin::Header-->
-                <div id="kt_header" style="" class="header align-items-stretch">
-                    @* TODO: Add Header (User menu) partial view *@
-                </div>
+                <partial name="_HeaderPartial"/>
+                <partial name="_BreadcrumbPartial"/>
                 <!--end::Header-->
                 <div class="d-flex flex-column flex-column-fluid" id="kt_content">
-                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    @* @if (User.Identity != null && User.Identity.IsAuthenticated)
                     {
-                        @* <partial name="_MessagePartial" /> *@
                         <div class="toolbar shadow-sm d-none d-lg-flex" id="kt_toolbar">
                             <!--begin::Container-->
                             <div id="kt_toolbar_container" class="container-fluid d-flex flex-stack">
@@ -84,7 +59,7 @@
                             </div>
                             <!--end::Container-->
                         </div>
-                    }
+                    } *@
                     <!--begin::Post-->
                     <div class="post d-flex flex-column-fluid pb-5" id="kt_post">
                         <main role="main" class="w-100 px-xl-15 mt-10">
