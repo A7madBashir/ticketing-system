@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity.UI.V4.Pages.Internal;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OneOf;
 using OneOf.Types;
 using TicketingSystem.Handlers.DataTable;
@@ -270,7 +271,9 @@ public abstract class CrudController<TEntity, T, TResponse, TCreateRequest, TUpd
             updateDto.Id = (dynamic)ulid;
         }
 
-        var existingEntity = await _repository.GetByIdAsync(updateDto.Id);
+        var existingEntity = await _repository
+            .Query() // using query for no tracking purpose
+            .FirstOrDefaultAsync(e => e.Id.Equals(updateDto.Id));
         if (existingEntity == null)
         {
             return NotFound();
