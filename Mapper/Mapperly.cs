@@ -100,6 +100,7 @@ public partial class Mapper
 
     // Subscription
     public partial Models.Entities.Agency.Subscription ToEntity(CreateSubscriptionRequest source);
+    public partial Models.Entities.Agency.Subscription ToEntity(UpdateSubscriptionRequest source);
 
     public partial Models.DTO.Responses.Subscriptions.SubscriptionResponse ToResponse(
         Subscription source

@@ -29,8 +29,6 @@ public class ApplicationDbContext : IdentityDbContext<User, Role, Ulid>
             .WithMany(c => c.CreatedTickets)
             .HasForeignKey(t => t.CreatedById);
 
-        modelBuilder.Entity<Subscription>().Property(s => s.Features).HasColumnType("jsonb"); // For PostgreSQL, this will generate a jsonb column
-
         // Ensure base.OnModelCreating(modelBuilder) is called if you inherit from a base DbContext
         base.OnModelCreating(modelBuilder);
     }
