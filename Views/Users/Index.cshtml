@@ -1,37 +1,37 @@
 @{
-    ViewData["Title"] = "User Management";
+  ViewData["Title"] = "User Management";
 }
 
 @section Styles {
-    <link rel="stylesheet" type="text/css" href="~/lib/metronic/plugins/custom/datatables/datatables.bundle.css">
-    <style>
-        /* Optional: Add some custom styling for better card spacing or filter layout */
-        .card {
-            margin-bottom: 20px;
-        }
+  <link rel="stylesheet" type="text/css" href="~/lib/metronic/plugins/custom/datatables/datatables.bundle.css">
+  <style>
+    /* Optional: Add some custom styling for better card spacing or filter layout */
+    .card {
+      margin-bottom: 20px;
+    }
 
-        .filter-controls .form-group {
-            margin-bottom: 1rem;
-        }
+    .filter-controls .form-group {
+      margin-bottom: 1rem;
+    }
 
-        /* Style for DataTables buttons if needed */
-        div.dt-button-collection button.dt-button {
-            background-color: #007bff;
-            /* Primary color */
-            color: white;
-            border: none;
-        }
+    /* Style for DataTables buttons if needed */
+    div.dt-button-collection button.dt-button {
+      background-color: #007bff;
+      /* Primary color */
+      color: white;
+      border: none;
+    }
 
-        /* Make filter inputs slightly wider on small screens if desired */
-        @@media (max-width: 767.98px) {
+    /* Make filter inputs slightly wider on small screens if desired */
+    @@media (max-width: 767.98px) {
 
-            .filter-controls .col-md-3,
-            .filter-controls .col-md-4 {
-                flex: 0 0 100%;
-                max-width: 100%;
-            }
-        }
-    </style>
+      .filter-controls .col-md-3,
+      .filter-controls .col-md-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+      }
+    }
+  </style>
 }
 
 @* <div class="card">
@@ -79,157 +79,671 @@
 </div> *@
 
 <div class="card">
-    <table id="data-table" class="table table-row-bordered table-stripped align-middle fs-6 gs-7 gy-5" style="width:100%">
+
+  <!--begin::Card header-->
+  <div class="card-header border-0 pt-6">
+    <!--begin::Card title-->
+    <div class="card-title">
+      <!--begin::Search-->
+      <div class="d-flex align-items-center position-relative my-1">
+        <!--begin::Svg Icon | path: icons/duotune/general/gen021.svg-->
+        <span class="svg-icon svg-icon-1 position-absolute ms-6">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546" height="2" rx="1"
+              transform="rotate(45 17.0365 15.1223)" fill="black"></rect>
+            <path
+              d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z"
+              fill="black"></path>
+          </svg>
+        </span>
+        <!--end::Svg Icon-->
+        <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-15"
+          placeholder="Search Customers" />
+      </div>
+      <!--end::Search-->
+    </div>
+    <!--begin::Card title-->
+    <!--begin::Card toolbar-->
+    <div class="card-toolbar">
+      <!--begin::Toolbar-->
+      <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
+        <!--begin::Filter-->
+        <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click"
+          data-kt-menu-placement="bottom-end">
+          <!--begin::Svg Icon | path: icons/duotune/general/gen031.svg-->
+          <span class="svg-icon svg-icon-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z"
+                fill="black"></path>
+            </svg>
+          </span>
+          <!--end::Svg Icon-->Filter
+        </button>
+        <!--begin::Menu 1-->
+        <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true" id="kt-toolbar-filter">
+          <!--begin::Header-->
+          <div class="px-7 py-5">
+            <div class="fs-4 text-dark fw-bolder">Filter Options</div>
+          </div>
+          <!--end::Header-->
+          <!--begin::Separator-->
+          <div class="separator border-gray-200"></div>
+          <!--end::Separator-->
+          <!--begin::Content-->
+          <div class="px-7 py-5">
+            <!--begin::Input group-->
+            <div class="mb-10">
+              <!--begin::Label-->
+              <label class="form-label fs-5 fw-bold mb-3">Month:</label>
+              <!--end::Label-->
+              <!--begin::Input-->
+              <select class="form-select form-select-solid fw-bolder select2-hidden-accessible" data-kt-select2="true"
+                data-placeholder="Select option" data-allow-clear="true" data-kt-customer-table-filter="month"
+                data-dropdown-parent="#kt-toolbar-filter" data-select2-id="select2-data-10-bqyi" tabindex="-1"
+                aria-hidden="true">
+                <option data-select2-id="select2-data-12-ty8c"></option>
+                <option value="aug">August</option>
+                <option value="sep">September</option>
+                <option value="oct">October</option>
+                <option value="nov">November</option>
+                <option value="dec">December</option>
+              </select><span class="select2 select2-container select2-container--bootstrap5" dir="ltr"
+                data-select2-id="select2-data-11-9y2b" style="width: 100%"><span class="selection"><span
+                    class="select2-selection select2-selection--single form-select form-select-solid fw-bolder"
+                    role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-disabled="false"
+                    aria-labelledby="select2-zo5l-container" aria-controls="select2-zo5l-container"><span
+                      class="select2-selection__rendered" id="select2-zo5l-container" role="textbox"
+                      aria-readonly="true" title="Select option"><span class="select2-selection__placeholder">Select
+                        option</span></span><span class="select2-selection__arrow" role="presentation"><b
+                        role="presentation"></b></span></span></span><span class="dropdown-wrapper"
+                  aria-hidden="true"></span></span>
+              <!--end::Input-->
+            </div>
+            <!--end::Input group-->
+            <!--begin::Input group-->
+            <div class="mb-10">
+              <!--begin::Label-->
+              <label class="form-label fs-5 fw-bold mb-3">Payment Type:</label>
+              <!--end::Label-->
+              <!--begin::Options-->
+              <div class="d-flex flex-column flex-wrap fw-bold" data-kt-customer-table-filter="payment_type">
+                <!--begin::Option-->
+                <label class="form-check form-check-sm form-check-custom form-check-solid mb-3 me-5">
+                  <input class="form-check-input" type="radio" name="payment_type" value="all" checked="checked" />
+                  <span class="form-check-label text-gray-600">All</span>
+                </label>
+                <!--end::Option-->
+                <!--begin::Option-->
+                <label class="form-check form-check-sm form-check-custom form-check-solid mb-3 me-5">
+                  <input class="form-check-input" type="radio" name="payment_type" value="visa" />
+                  <span class="form-check-label text-gray-600">Visa</span>
+                </label>
+                <!--end::Option-->
+                <!--begin::Option-->
+                <label class="form-check form-check-sm form-check-custom form-check-solid mb-3">
+                  <input class="form-check-input" type="radio" name="payment_type" value="mastercard" />
+                  <span class="form-check-label text-gray-600">Mastercard</span>
+                </label>
+                <!--end::Option-->
+                <!--begin::Option-->
+                <label class="form-check form-check-sm form-check-custom form-check-solid">
+                  <input class="form-check-input" type="radio" name="payment_type" value="american_express" />
+                  <span class="form-check-label text-gray-600">American Express</span>
+                </label>
+                <!--end::Option-->
+              </div>
+              <!--end::Options-->
+            </div>
+            <!--end::Input group-->
+            <!--begin::Actions-->
+            <div class="d-flex justify-content-end">
+              <button type="reset" class="btn btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true"
+                data-kt-customer-table-filter="reset">
+                Reset
+              </button>
+              <button type="submit" class="btn btn-primary" data-kt-menu-dismiss="true"
+                data-kt-customer-table-filter="filter">
+                Apply
+              </button>
+            </div>
+            <!--end::Actions-->
+          </div>
+          <!--end::Content-->
+        </div>
+        <!--end::Menu 1-->
+        <!--end::Filter-->
+        <!--begin::Add customer-->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_user">
+          Add Customer
+        </button>
+        <!--end::Add customer-->
+      </div>
+      <!--end::Toolbar-->
+      <!--begin::Group actions-->
+      <div class="d-flex justify-content-end align-items-center d-none" data-kt-customer-table-toolbar="selected">
+        <div class="fw-bolder me-5">
+          <span class="me-2" data-kt-customer-table-select="selected_count"></span>Selected
+        </div>
+        <button type="button" class="btn btn-danger" data-kt-customer-table-select="delete_selected">
+          Delete Selected
+        </button>
+      </div>
+      <!--end::Group actions-->
+    </div>
+    <!--end::Card toolbar-->
+  </div>
+  <!--end::Card header-->
+
+  <div class="card-body pt-0">
+    <div class="table-responsive">
+      <table id="data-table" class="table table-row-bordered table-stripped align-middle fs-6 gs-7 gy-5"
+        style="width:100%">
         <thead>
-            <tr>
-                @* <td>Username</td> *@
-                <td>Name</td>
-                <td>Email</td>
-                <td>Last Login At</td>
-                <td></td>
-            </tr>
+          <tr>
+            @* <td>Username</td> *@
+            <td>Name</td>
+            <td>Email</td>
+            <td>Last Login At</td>
+            <td></td>
+          </tr>
         </thead>
         <tbody>
         </tbody>
-    </table>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="kt_modal_add_user" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" id="kt_modal_add_user_header">
+        <h2 class="fw-bolder">Add New User Details</h2>
+        <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
+          <span class="svg-icon svg-icon-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)"
+                fill="black" />
+              <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="black" />
+            </svg>
+          </span>
+        </div>
+      </div>
+      <div class="modal-body mx-5 mx-xl-15 my-7">
+        <form id="kt_modal_add_user_form" method="post" class="form">
+          <div class="d-flex flex-column scroll-y me-n7 pe-7" id="kt_modal_add_user_scroll" data-kt-scroll="true"
+            data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto"
+            data-kt-scroll-offset="300px">
+
+            <div class="row g-9 mb-7"> @* 'g-9' provides a larger gap between columns *@
+              <div class="col-md-6 fv-row"> @* 'col-md-6' makes it half width on medium screens and up *@
+                <label class="required fw-bold fs-6 mb-2">First Name</label>
+                <input type="text" name="FirstName" class="form-control form-control-solid" placeholder="e.g., John"
+                  required />
+              </div>
+              <div class="col-md-6 fv-row">
+                <label class="required fw-bold fs-6 mb-2">Last Name</label>
+                <input type="text" name="LastName" class="form-control form-control-solid" placeholder="e.g., Doe"
+                  required />
+              </div>
+            </div>
+            <div class="row g-9 mb-7">
+              <div class="col-md-6 fv-row">
+                <label class="fw-bold fs-6 mb-2">Email</label>
+                <input type="email" name="Email" class="form-control form-control-solid"
+                  placeholder="e.g., john.doe@example.com" />
+              </div>
+              <div class="col-md-6 fv-row">
+                <label class="required fw-bold fs-6 mb-2">Phone Number</label>
+                <input type="tel" name="PhoneNumber" class="form-control form-control-solid"
+                  placeholder="e.g., +1 (555) 123-4567" required />
+              </div>
+            </div>
+            <div class="row g-9 mb-7">
+              <div class="col-md-6 fv-row">
+                <label class="fw-bold fs-6 mb-2">Gender</label>
+                <select name="Gender" class="form-select form-select-solid fw-bold" data-kt-select2="true"
+                  data-placeholder="Select option" data-allow-clear="true" data-hide-search="true">
+                  <option></option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                  <option value="Prefer not to say">Prefer not to say</option>
+                </select>
+              </div>
+              <div class="col-md-6 fv-row">
+                <label class="fw-bold fs-6 mb-2">Nationality</label>
+                <input type="text" name="Nationality" class="form-control form-control-solid"
+                  placeholder="e.g., American, Canadian" />
+              </div>
+            </div>
+            <div class="row g-9 mb-7">
+              <div class="col-md-6 fv-row">
+                <label class="fw-bold fs-6 mb-2">Passport Number</label>
+                <input type="text" name="PassportNumber" class="form-control form-control-solid"
+                  placeholder="e.g., G12345678" />
+              </div>
+              <div class="col-md-6 fv-row">
+                <label class="fw-bold fs-6 mb-2">Job Title</label>
+                <input type="text" name="Job" class="form-control form-control-solid"
+                  placeholder="e.g., Software Engineer" />
+              </div>
+            </div>
+            <div class="row g-9 mb-7">
+              <div class="col-md-6 fv-row"> @* Still use col-md-6 to align with the grid, even if it's alone *@
+                <label class="required fw-bold fs-6 mb-2">Date of Birth</label>
+                <input type="date" name="DateOfBirth" class="form-control form-control-solid" required />
+              </div>
+            </div>
+            <div class="row g-9 mb-7">
+              <div class="col-md-6 fv-row"> @* Still use col-md-6 to align with the grid, even if it's alone *@
+                <label class="required fw-bold fs-6 mb-2">Password</label>
+                <input type="password" name="Password" class="form-control form-control-solid" required />
+              </div>
+              <div class="col-md-6 fv-row"> @* Still use col-md-6 to align with the grid, even if it's alone *@
+                <label class="required fw-bold fs-6 mb-2">Confirm Password</label>
+                <input type="password" name="ConfirmPassword" class="form-control form-control-solid" required />
+              </div>
+            </div>
+          </div>
+          <div class="text-center pt-15">
+            <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">Discard</button>
+            <button type="submit" id="kt_add_user_submit_button" class="btn btn-primary"
+              data-kt-users-modal-action="submit">
+              <span class="indicator-label">Submit</span>
+              <span class="indicator-progress">Please wait...
+                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+              </span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="kt_modal_edit_user" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" id="kt_modal_edit_user_header">
+        <h2 class="fw-bolder">Edit User Details</h2>
+        <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
+          <span class="svg-icon svg-icon-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)"
+                fill="black" />
+              <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="black" />
+            </svg>
+          </span>
+        </div>
+      </div>
+      <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
+        <form id="kt_modal_edit_user_form" class="form">
+          <input type="hidden" name="Id" id="editUserId" value="" />
+
+          <div class="d-flex flex-column scroll-y me-n7 pe-7" id="kt_modal_edit_user_scroll" data-kt-scroll="true"
+            data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto"
+            data-kt-scroll-offset="300px">
+
+            <div class="row g-9 mb-7">
+              <div class="col-md-6 fv-row">
+                <label class="required fw-bold fs-6 mb-2">First Name</label>
+                <input type="text" name="FirstName" class="form-control form-control-solid" placeholder="e.g., John"
+                  required />
+              </div>
+              <div class="col-md-6 fv-row">
+                <label class="required fw-bold fs-6 mb-2">Last Name</label>
+                <input type="text" name="LastName" class="form-control form-control-solid" placeholder="e.g., Doe"
+                  required />
+              </div>
+            </div>
+            <div class="row g-9 mb-7">
+              <div class="col-md-6 fv-row">
+                <label class="fw-bold fs-6 mb-2">Email</label>
+                <input type="email" name="Email" class="form-control form-control-solid"
+                  placeholder="e.g., john.doe@example.com" />
+              </div>
+              <div class="col-md-6 fv-row">
+                <label class="required fw-bold fs-6 mb-2">Phone Number</label>
+                <input type="tel" name="PhoneNumber" class="form-control form-control-solid"
+                  placeholder="e.g., +1 (555) 123-4567" required />
+              </div>
+            </div>
+            <div class="row g-9 mb-7">
+              <div class="col-md-6 fv-row">
+                <label class="fw-bold fs-6 mb-2">Gender</label>
+                <select name="Gender" class="form-select form-select-solid fw-bold" data-kt-select2="true"
+                  data-placeholder="Select option" data-allow-clear="true" data-hide-search="true">
+                  <option></option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                  <option value="Prefer not to say">Prefer not to say</option>
+                </select>
+              </div>
+              <div class="col-md-6 fv-row">
+                <label class="fw-bold fs-6 mb-2">Nationality</label>
+                <input type="text" name="Nationality" class="form-control form-control-solid"
+                  placeholder="e.g., American, Canadian" />
+              </div>
+            </div>
+            <div class="row g-9 mb-7">
+              <div class="col-md-6 fv-row">
+                <label class="fw-bold fs-6 mb-2">Passport Number</label>
+                <input type="text" name="PassportNumber" class="form-control form-control-solid"
+                  placeholder="e.g., G12345678" />
+              </div>
+              <div class="col-md-6 fv-row">
+                <label class="fw-bold fs-6 mb-2">Job Title</label>
+                <input type="text" name="Job" class="form-control form-control-solid"
+                  placeholder="e.g., Software Engineer" />
+              </div>
+            </div>
+            <div class="row g-9 mb-7">
+              <div class="col-md-6 fv-row">
+                <label class="required fw-bold fs-6 mb-2">Date of Birth</label>
+                <input type="date" name="DateOfBirth" class="form-control form-control-solid" required />
+              </div>
+            </div>
+            <div class="row g-9 mb-7">
+            <div class="col-md-6 fv-row"> @* Still use col-md-6 to align with the grid, even if it's alone *@
+              <label class="required fw-bold fs-6 mb-2">Password</label>
+              <input type="password" name="Password" class="form-control form-control-solid" required />
+            </div>
+            <div class="col-md-6 fv-row"> @* Still use col-md-6 to align with the grid, even if it's alone *@
+              <label class="required fw-bold fs-6 mb-2">Confirm Password</label>
+              <input type="password" name="ConfirmPassword" class="form-control form-control-solid" required />
+            </div>
+          </div>
+      </div>
+      <div class="text-center pt-15">
+        <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="kt_edit_user_submit_button">
+          <span class="indicator-label">Save Changes</span>
+          <span class="indicator-progress">Please wait...
+            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+          </span>
+        </button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
 </div>
 
 @section Scripts {
-    <script src="~/lib/metronic/plugins/custom/datatables/datatables.bundle.js"></script> @* Adjust path as needed *@
-    <script src="~/js/dataTable/init.js"></script> @* Adjust path as needed *@
+  <script src="~/lib/metronic/plugins/custom/datatables/datatables.bundle.js"></script> @* Adjust path as needed *@
+  <script src="~/js/dataTable/init.js"></script> @* Adjust path as needed *@
+  <script src="~/js/forms/form-submit-handler.js"></script> @* Adjust path as needed *@
 
-    <script>
-        $(document).ready(function () {
-            let usersDataTableInstance; // Declare a variable to hold the DataTable API instance
+  <script>
+    $(document).ready(function () {
+      let usersDataTableInstance; // Declare a variable to hold the DataTable API instance
+      var dataTable;
 
-            const usersTableColumns = [
-                { data: 'id', title: 'ID', width: '5%' },
-                {
-                    data: 'fullName',
-                    title: 'Name',
-                    // Example of a custom renderer if you need to combine first/last name
-                    // or add a link to user details
-                    render: function (data, type, row) {
-                        return `<a href="/Users/Details/${row.id}">${data}</a>`;
-                    }
-                },
-                { data: 'email', title: 'Email' },
-                {
-                    data: 'status',
-                    title: 'Status',
-                    render: function (data, type, row) {
-                        // Example: Custom styling based on status
-                        let badgeClass = '';
-                        switch (data.toLowerCase()) {
-                            case 'active': badgeClass = 'bg-success'; break;
-                            case 'inactive': badgeClass = 'bg-danger'; break;
-                            case 'pending': badgeClass = 'bg-warning'; break;
-                            default: badgeClass = 'bg-secondary'; break;
-                        }
-                        return `<span class="badge ${badgeClass}">${data}</span>`;
-                    }
-                },
-                { data: 'role', title: 'Role' },
-                {
-                    data: 'lastLogin',
-                    title: 'Last Login',
-                    render: function (data, type, row) {
-                        // Format date nicely
-                        if (data) {
-                            return new Date(data).toLocaleString();
-                        }
-                        return 'N/A';
-                    }
-                },
-                {
-                    data: null, // This column doesn't map directly to a data property
-                    title: 'Actions',
-                    orderable: false, // Don't allow sorting on this column
-                    searchable: false, // Don't allow searching on this column
-                    responsivePriority: 1, // Make sure this column is always visible on smaller screens
-                    render: function (data, type, row) {
-                        return `
-                                            <button class="btn btn-sm btn-info view-btn" data-id="${row.id}" title="View Details">
-                                                <i class="bi bi-eye"></i> View
-                                            </button>
-                                            <button class="btn btn-sm btn-warning edit-btn" data-id="${row.id}" title="Edit User">
-                                                <i class="bi bi-pencil"></i> Edit
-                                            </button>
-                                            <button class="btn btn-sm btn-danger delete-btn" data-id="${row.id}" title="Delete User">
-                                                <i class="bi bi-trash"></i> Delete
-                                            </button>
-                                        `;
-                    }
-                }
-            ];
-
-            function initializeUsersDataTable() {
-                var dataTable = new DataTableSSR("/api/User/DataTable", [
-                    { data: "name", "name": "Name", class: "" },
-                    { data: "email", "name": "Email", class: "" },
-                    { data: "lastLoginAt", "name": "LastLoginAt", class: "" },
-                    { "data": null, class: "text-end" }], [
-                    {
-                        targets: -1,
-                        render: function (data, full, row) {
-                            let res = dataTable.generateEditLinkDataTableRow(`#`, null, [`item-id='${data.id}'`])
-                                + " | " + dataTable.generateDeleteLinkDataTableRow(data.id);
-
-                            return res
-                        }
-                    }
-                ]);
-
-                dataTable.initDataTableObj("#data-table", null, null, [{
-                    event: "draw", action: () => {
-                        dataTable.deleteRowsBtnEvents("[data-kt-docs-table-filter='delete_row']", null, 1)
-                        dataTable.initialTooltip()
-
-                    }
-                }])
-
-                // Attach event handlers for action buttons inside the table
-                $('#usersDataTable tbody').on('click', '.view-btn', function () {
-                    const userId = $(this).data('id');
-                    alert('View user details for ID: ' + userId);
-                    window.location.href = `/Users/Details/${userId}`; // Navigate to a details page
-                });
-
-                $('#usersDataTable tbody').on('click', '.edit-btn', function () {
-                    const userId = $(this).data('id');
-                    alert('Edit user with ID: ' + userId);
-                    window.location.href = `/Users/Edit/${userId}`; // Navigate to an edit page
-                });
-
-                $('#usersDataTable tbody').on('click', '.delete-btn', function () {
-                    const userId = $(this).data('id');
-                    if (confirm('Are you sure you want to delete user with ID: ' + userId + '?')) {
-                        // Here you would make an AJAX call to your backend to delete the user
-                        console.log('Deleting user with ID:', userId);
-                        // Example:
-                        // $.ajax({
-                        //     url: `/Users/Delete/${userId}`,
-                        //     type: 'POST', // Or 'DELETE' if your API supports it
-                        //     success: function(response) {
-                        //         if (response.success) {
-                        //             alert('User deleted successfully!');
-                        //             usersDataTableInstance.ajax.reload(); // Reload the table
-                        //         } else {
-                        //             alert('Error deleting user: ' + response.message);
-                        //         }
-                        //     },
-                        //     error: function() {
-                        //         alert('An error occurred during deletion.');
-                        //     }
-                        // });
-                        alert('Deletion logic would go here. Reloading table...');
-                        usersDataTableInstance.ajax.reload(); // Reload table after hypothetical delete
-                    }
-                });
+      const usersTableColumns = [
+        { data: 'id', title: 'ID', width: '5%' },
+        {
+          data: 'fullName',
+          title: 'Name',
+          // Example of a custom renderer if you need to combine first/last name
+          // or add a link to user details
+          render: function (data, type, row) {
+            return `<a href="/Users/Details/${row.id}">${data}</a>`;
+          }
+        },
+        { data: 'email', title: 'Email' },
+        {
+          data: 'status',
+          title: 'Status',
+          render: function (data, type, row) {
+            // Example: Custom styling based on status
+            let badgeClass = '';
+            switch (data.toLowerCase()) {
+              case 'active': badgeClass = 'bg-success'; break;
+              case 'inactive': badgeClass = 'bg-danger'; break;
+              case 'pending': badgeClass = 'bg-warning'; break;
+              default: badgeClass = 'bg-secondary'; break;
             }
+            return `<span class="badge ${badgeClass}">${data}</span>`;
+          }
+        },
+        { data: 'role', title: 'Role' },
+        {
+          data: 'lastLogin',
+          title: 'Last Login',
+          render: function (data, type, row) {
+            // Format date nicely
+            if (data) {
+              return new Date(data).toLocaleString();
+            }
+            return 'N/A';
+          }
+        },
+        {
+          data: null, // This column doesn't map directly to a data property
+          title: 'Actions',
+          orderable: false, // Don't allow sorting on this column
+          searchable: false, // Don't allow searching on this column
+          responsivePriority: 1, // Make sure this column is always visible on smaller screens
+          render: function (data, type, row) {
+            return `
+                          <button class="btn btn-sm btn-info view-btn" data-id="${row.id}" title="View Details">
+                              <i class="bi bi-eye"></i> View
+                          </button>
+                          <button class="btn btn-sm btn-warning edit-btn" data-id="${row.id}" title="Edit User">
+                              <i class="bi bi-pencil"></i> Edit
+                          </button>
+                          <button class="btn btn-sm btn-danger delete-btn" data-id="${row.id}" title="Delete User">
+                              <i class="bi bi-trash"></i> Delete
+                          </button>
+                      `;
+          }
+        }
+      ];
 
-            // Initialize the DataTable on page load
-            initializeUsersDataTable();
+      function initializeUsersDataTable() {
+        dataTable = new DataTableSSR("/api/User", [
+          { data: "name", "name": "Name", class: "" },
+          { data: "email", "name": "Email", class: "" },
+          { data: "lastLoginAt", "name": "LastLoginAt", class: "" },
+          { "data": null, class: "text-end" }], [
+          {
+            targets: -1,
+            render: function (data, full, row) {
+              let res = dataTable.generateEditLinkDataTableRow(`#`, null, [`item-id='${data.id}'`])
+                + " | " + dataTable.generateDeleteLinkDataTableRow(data.id);
+
+              return res
+            }
+          }
+        ]);
+
+        dataTable.initDataTableObj("#data-table", null, null, [{
+          event: "draw", action: () => {
+            dataTable.deleteRowsBtnEvents("[data-kt-docs-table-filter='delete_row']", null, 1)
+            dataTable.initialTooltip()
+            handleUserEditModalListener()
+          }
+        }])
+
+        function handleUserEditModalListener() {
+          $("#data-table tr [data-kt-docs-table-filter='edit_row']").on("click", async (e) => {
+            let userId = e.currentTarget.getAttribute("item-id");
+            $("#kt_modal_edit_user").modal("show")
+            await fetchAndAppendUserModal(userId)
+          })
+        }
+
+        // Attach event handlers for action buttons inside the table
+        $('#usersDataTable tbody').on('click', '.view-btn', function () {
+          const userId = $(this).data('id');
+          alert('View user details for ID: ' + userId);
+          window.location.href = `/Users/Details/${userId}`; // Navigate to a details page
         });
-    </script>
+
+        $('#usersDataTable tbody').on('click', '.edit-btn', function () {
+          const userId = $(this).data('id');
+          alert('Edit user with ID: ' + userId);
+          window.location.href = `/Users/Edit/${userId}`; // Navigate to an edit page
+        });
+
+        $('#usersDataTable tbody').on('click', '.delete-btn', function () {
+          const userId = $(this).data('id');
+          if (confirm('Are you sure you want to delete user with ID: ' + userId + '?')) {
+            // Here you would make an AJAX call to your backend to delete the user
+            console.log('Deleting user with ID:', userId);
+            // Example:
+            // $.ajax({
+            //     url: `/Users/Delete/${userId}`,
+            //     type: 'POST', // Or 'DELETE' if your API supports it
+            //     success: function(response) {
+            //         if (response.success) {
+            //             alert('User deleted successfully!');
+            //             usersDataTableInstance.ajax.reload(); // Reload the table
+            //         } else {
+            //             alert('Error deleting user: ' + response.message);
+            //         }
+            //     },
+            //     error: function() {
+            //         alert('An error occurred during deletion.');
+            //     }
+            // });
+            alert('Deletion logic would go here. Reloading table...');
+            usersDataTableInstance.ajax.reload(); // Reload table after hypothetical delete
+          }
+        });
+      }
+
+      // Initialize the DataTable on page load
+      initializeUsersDataTable();
+
+      const addUserFormHandler = new FormSubmitHandler({
+        formSelector: '#kt_modal_add_user_form',
+        submitButtonSelector: '#kt_add_user_submit_button',
+        apiEndpoint: '/api/User', // Example: Your MVC action for creating users
+        clearFormOnSuccess: true,
+        onBeforeSubmit: () => {
+          console.log("Before form submission: Performing custom checks.");
+          // Return false here to prevent submission if custom checks fail
+          return true;
+        },
+        onSuccess: (data) => {
+          console.log("User created successfully:", data);
+          // Optionally, you can hide the modal here
+          const modalElement = document.getElementById('kt_modal_add_user');
+          const modal = bootstrap.Modal.getInstance(modalElement);
+          if (modal) {
+            dataTable.reDraw();
+            setTimeout(() => modal.hide(), 1000); // Hide after a short delay
+          }
+          // Trigger a table reload if you have a data table on the page
+          // KTUsersList.reload(); // Example if using Metronic's table list handler
+        },
+        onError: (errorData) => {
+          console.error("Failed to create user:", errorData);
+          // You might want to log specific error details from errorData
+        },
+        formDataType: 'json' // Or 'formData' if your API expects standard form data
+      });
+
+      const editUserFormHandler = new FormSubmitHandler({
+        formSelector: '#kt_modal_edit_user_form',
+        submitButtonSelector: '#kt_edit_user_submit_button',
+        apiEndpoint: "", // This will be set dynamically in your population logic
+        clearFormOnSuccess: false, // Typically don't clear form on edit success, modal closes instead
+        onSuccess: (data) => {
+          console.log("User updated successfully:", data);
+          const modalElement = document.getElementById('kt_modal_edit_user');
+          const modal = bootstrap.Modal.getInstance(modalElement);
+          if (modal) {
+            dataTable.reDraw()
+            setTimeout(() => modal.hide(), 1000); // Hide after a short delay
+          }
+          // Refresh your user list/table here
+          // KTUsersList.reload();
+        },
+        onError: (errorData) => {
+          console.error("Failed to update user:", errorData);
+        },
+        formDataType: 'json' // Or 'formData'
+        // You might also add a 'method' option to the handler:
+        // method: 'PUT' // Or 'PATCH'
+      });
+
+      // --- CONCEPTUAL JAVASCRIPT FOR POPULATING THE EDIT MODAL ---
+      // This is crucial for an edit modal. You'd attach this to your "Edit" buttons.
+      async function fetchAndAppendUserModal(userId) {
+        if (!userId) {
+          console.error("Edit button missing data-user-id attribute.");
+          return;
+        }
+
+        // Show a loading state in the modal or a global spinner if desired
+        // (Not part of the FormSubmitHandler, but important for UX)
+
+        try {
+          // 1. Fetch user data (replace with your actual API call)
+          toggleBlockUI()
+          const response = await fetch(`/api/user/${userId}`);
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const userData = await response.json();
+
+          toggleBlockUI()
+
+          // 2. Populate the form fields
+          const form = document.getElementById('kt_modal_edit_user_form');
+          form.querySelector('[name="Id"]').value = userData.id || ''; // Set the hidden ID
+          form.querySelector('[name="FirstName"]').value = userData.firstName || '';
+          form.querySelector('[name="LastName"]').value = userData.lastName || '';
+          form.querySelector('[name="Email"]').value = userData.email || '';
+          form.querySelector('[name="PhoneNumber"]').value = userData.phoneNumber || '';
+          form.querySelector('[name="Nationality"]').value = userData.nationality || '';
+          form.querySelector('[name="PassportNumber"]').value = userData.passportNumber || '';
+          form.querySelector('[name="Job"]').value = userData.job || '';
+          // Format date for input type="date" (YYYY-MM-DD)
+          if (userData.dateOfBirth) {
+            const dob = new Date(userData.dateOfBirth);
+            form.querySelector('[name="DateOfBirth"]').value = dob.toISOString().split('T')[0];
+          } else {
+            form.querySelector('[name="DateOfBirth"]').value = '';
+          }
+
+          // For Select2 dropdowns, you need to set the value and then trigger change to update UI
+          const genderSelect = form.querySelector('[name="Gender"]');
+          if (genderSelect) {
+            genderSelect.value = userData.gender || '';
+            // If Select2 is initialized, you need to trigger its update:
+            $(genderSelect).trigger('change');
+          }
+
+          // 3. Dynamically set the API endpoint for update
+          editUserFormHandler.options.apiEndpoint = `/api/User/${userId}`; // Or your PUT/PATCH endpoint
+          editUserFormHandler.options.method = 'PUT'; // Set the HTTP method for update
+          console.log(editUserFormHandler)
+          editUserFormHandler.reInit();
+
+          // 4. Show the modal (handled by data-bs-toggle="modal")
+          // No explicit show() call here, as data-bs-toggle="modal" handles it.
+          // Ensure all elements are populated before the modal is visible to the user.
+
+        } catch (error) {
+          toggleBlockUI()
+          console.error('Error fetching user data for edit:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error Loading Data!',
+            text: 'Failed to load user details. Please try again.',
+          });
+          // Hide modal or indicate error if fetch fails before modal can be shown
+        } finally {
+          // Hide any loading indicator
+        }
+      }
+      // --- END CONCEPTUAL JAVASCRIPT ---
+
+    });
+  </script>
 }
