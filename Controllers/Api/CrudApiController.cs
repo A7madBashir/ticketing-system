@@ -163,7 +163,7 @@ public abstract class CrudController<TEntity, T, TResponse, TCreateRequest, TUpd
 
     // --- CRUD Endpoints ---
 
-    [HttpGet("DataTable")]
+    [HttpGet]
     public async Task<ActionResult<PaginatedResponse<TResponse>>> DataTable(
         [FromQuery] DataTableRequest req
     )
@@ -205,15 +205,6 @@ public abstract class CrudController<TEntity, T, TResponse, TCreateRequest, TUpd
             return NotFound();
         }
         return Ok(_mapper.ToResponse<TResponse, T>(entity)); // Map entity to DTO
-    }
-
-    // GET: api/[controller]
-    [HttpGet]
-    [Authorize(Roles = Roles.Admin)]
-    public virtual async Task<ActionResult<IEnumerable<TResponse>>> GetAll()
-    {
-        var entities = (await _repository.GetAllAsync()).Select(_mapper.ToResponse<TResponse, T>);
-        return Ok(entities); // Map entities to DTOs
     }
 
     // POST: api/[controller]
@@ -299,7 +290,7 @@ public abstract class CrudController<TEntity, T, TResponse, TCreateRequest, TUpd
         // Execute AfterUpdate hook
         await AfterUpdateAsync(item);
 
-        return NoContent(); // 204 No Content
+        return Ok(); // 200
     }
 
     // DELETE: api/[controller]/{id}
@@ -346,6 +337,6 @@ public abstract class CrudController<TEntity, T, TResponse, TCreateRequest, TUpd
         // Execute AfterDelete hook
         await AfterDeleteAsync(entityToDelete);
 
-        return NoContent(); // 204 No Content
+        return Ok();
     }
 }
