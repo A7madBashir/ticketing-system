@@ -36,7 +36,35 @@ public partial class Mapper
     // User
     [MapperIgnoreTarget(nameof(User.Agency))]
     [MapperIgnoreTarget(nameof(User.AgencyId))]
+    [MapperIgnoreTarget(nameof(User.SecurityStamp))]
+    [MapperIgnoreTarget(nameof(User.ConcurrencyStamp))]
+    [MapperIgnoreTarget(nameof(User.EmailConfirmed))]
+    [MapperIgnoreTarget(nameof(User.AccessFailedCount))]
+    [MapperIgnoreTarget(nameof(User.LastLoginAt))]
+    [MapperIgnoreTarget(nameof(User.LastModifiedAt))]
+    [MapperIgnoreTarget(nameof(User.LockoutEnd))]
+    [MapperIgnoreTarget(nameof(User.LockoutEnabled))]
+    [MapperIgnoreTarget(nameof(User.NormalizedUserName))]
+    [MapperIgnoreTarget(nameof(User.NormalizedEmail))]
+    [MapperIgnoreTarget(nameof(User.TwoFactorEnabled))]
+    [MapperIgnoreTarget(nameof(User.PasswordHash))]
+    [MapperIgnoreTarget(nameof(User.PhoneNumberConfirmed))]
     public partial User ToEntity(RegisterUser dto);
+
+    [MapperIgnoreTarget(nameof(User.SecurityStamp))]
+    [MapperIgnoreTarget(nameof(User.ConcurrencyStamp))]
+    [MapperIgnoreTarget(nameof(User.EmailConfirmed))]
+    [MapperIgnoreTarget(nameof(User.AccessFailedCount))]
+    [MapperIgnoreTarget(nameof(User.LastLoginAt))]
+    [MapperIgnoreTarget(nameof(User.LockoutEnd))]
+    [MapperIgnoreTarget(nameof(User.LastModifiedAt))]
+    [MapperIgnoreTarget(nameof(User.LockoutEnabled))]
+    [MapperIgnoreTarget(nameof(User.NormalizedUserName))]
+    [MapperIgnoreTarget(nameof(User.NormalizedEmail))]
+    [MapperIgnoreTarget(nameof(User.TwoFactorEnabled))]
+    [MapperIgnoreTarget(nameof(User.PasswordHash))]
+    [MapperIgnoreTarget(nameof(User.PhoneNumberConfirmed))]
+    public partial void UpdateUserEntity(UpdateUserRequest dto, User entity);
 
     [MapPropertyFromSource(nameof(UserResponse.Name), Use = nameof(CombineNames))]
     public partial UserResponse ToResponse(User user);
