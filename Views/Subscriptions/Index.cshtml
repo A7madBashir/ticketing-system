@@ -1,0 +1,678 @@
+@{
+    ViewData["Title"] = "Subscriptions";
+}
+
+@section Styles {
+    <link rel="stylesheet" type="text/css" href="~/lib/metronic/plugins/custom/datatables/datatables.bundle.css">
+    <style>
+        /* Optional: Add some custom styling for better card spacing or filter layout */
+        .card {
+            margin-bottom: 20px;
+        }
+
+        .filter-controls .form-group {
+            margin-bottom: 1rem;
+        }
+
+        /* Style for DataTables buttons if needed */
+        div.dt-button-collection button.dt-button {
+            background-color: #007bff;
+            /* Primary color */
+            color: white;
+            border: none;
+        }
+
+        /* Make filter inputs slightly wider on small screens if desired */
+        @@media (max-width: 767.98px) {
+
+            .filter-controls .col-md-3,
+            .filter-controls .col-md-4 {
+                flex: 0 0 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
+}
+
+@* <div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Filter Users</h5>
+    </div>
+    <div class="card-body">
+        <form id="userFilterForm" class="row filter-controls">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <label for="searchQuery">Search Name/Email:</label>
+                    <input type="text" class="form-control" id="searchQuery" placeholder="Enter name or email">
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <label for="statusFilter">Status:</label>
+                    <select class="form-control" id="statusFilter">
+                        <option value="">All</option>
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                        <option value="Pending">Pending</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <label for="roleFilter">Role:</label>
+                    <select class="form-control" id="roleFilter">
+                        <option value="">All</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Editor">Editor</option>
+                        <option value="Viewer">Viewer</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 d-flex align-items-end justify-content-end">
+                <div class="form-group">
+                    <button type="button" class="btn btn-primary me-2" id="applyFiltersBtn">Apply Filters</button>
+                    <button type="button" class="btn btn-secondary" id="resetFiltersBtn">Reset Filters</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div> *@
+
+<div class="card">
+
+    <!--begin::Card header-->
+    <div class="card-header border-0 pt-6">
+        <!--begin::Card title-->
+        <div class="card-title">
+            <!--begin::Search-->
+            <div class="d-flex align-items-center position-relative my-1">
+                <!--begin::Svg Icon | path: icons/duotune/general/gen021.svg-->
+                <span class="svg-icon svg-icon-1 position-absolute ms-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546" height="2" rx="1"
+                            transform="rotate(45 17.0365 15.1223)" fill="black"></rect>
+                        <path
+                            d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z"
+                            fill="black"></path>
+                    </svg>
+                </span>
+                <!--end::Svg Icon-->
+                <input type="text" data-kt-table-filter="search"
+                    class="form-control form-control-solid w-250px ps-15" placeholder="Search Subscriptions" />
+            </div>
+            <!--end::Search-->
+        </div>
+        <!--begin::Card title-->
+        <!--begin::Card toolbar-->
+        <div class="card-toolbar">
+            <!--begin::Toolbar-->
+            <div class="d-flex justify-content-end" data-kt-customer-table-toolbar="base">
+                <!--begin::Filter-->
+                <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click"
+                    data-kt-menu-placement="bottom-end">
+                    <!--begin::Svg Icon | path: icons/duotune/general/gen031.svg-->
+                    <span class="svg-icon svg-icon-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path
+                                d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z"
+                                fill="black"></path>
+                        </svg>
+                    </span>
+                    <!--end::Svg Icon-->Filter
+                </button>
+                <!--begin::Menu 1-->
+                <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true"
+                    id="kt-toolbar-filter">
+                    <!--begin::Header-->
+                    <div class="px-7 py-5">
+                        <div class="fs-4 text-dark fw-bolder">Filter Options</div>
+                    </div>
+                    <!--end::Header-->
+                    <!--begin::Separator-->
+                    <div class="separator border-gray-200"></div>
+                    <!--end::Separator-->
+                    <!--begin::Content-->
+                    <div class="px-7 py-5">
+                        <!--begin::Input group-->
+                        <div class="mb-10">
+                            <!--begin::Label-->
+                            <label class="form-label fs-5 fw-bold mb-3">Month:</label>
+                            <!--end::Label-->
+                            <!--begin::Input-->
+                            <select class="form-select form-select-solid fw-bolder select2-hidden-accessible"
+                                data-kt-select2="true" data-placeholder="Select option" data-allow-clear="true"
+                                data-kt-customer-table-filter="month" data-dropdown-parent="#kt-toolbar-filter"
+                                data-select2-id="select2-data-10-bqyi" tabindex="-1" aria-hidden="true">
+                                <option data-select2-id="select2-data-12-ty8c"></option>
+                                <option value="aug">August</option>
+                                <option value="sep">September</option>
+                                <option value="oct">October</option>
+                                <option value="nov">November</option>
+                                <option value="dec">December</option>
+                            </select><span class="select2 select2-container select2-container--bootstrap5" dir="ltr"
+                                data-select2-id="select2-data-11-9y2b" style="width: 100%"><span class="selection"><span
+                                        class="select2-selection select2-selection--single form-select form-select-solid fw-bolder"
+                                        role="combobox" aria-haspopup="true" aria-expanded="false" tabindex="0"
+                                        aria-disabled="false" aria-labelledby="select2-zo5l-container"
+                                        aria-controls="select2-zo5l-container"><span class="select2-selection__rendered"
+                                            id="select2-zo5l-container" role="textbox" aria-readonly="true"
+                                            title="Select option"><span class="select2-selection__placeholder">Select
+                                                option</span></span><span class="select2-selection__arrow"
+                                            role="presentation"><b role="presentation"></b></span></span></span><span
+                                    class="dropdown-wrapper" aria-hidden="true"></span></span>
+                            <!--end::Input-->
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Input group-->
+                        <div class="mb-10">
+                            <!--begin::Label-->
+                            <label class="form-label fs-5 fw-bold mb-3">Payment Type:</label>
+                            <!--end::Label-->
+                            <!--begin::Options-->
+                            <div class="d-flex flex-column flex-wrap fw-bold"
+                                data-kt-customer-table-filter="payment_type">
+                                <!--begin::Option-->
+                                <label class="form-check form-check-sm form-check-custom form-check-solid mb-3 me-5">
+                                    <input class="form-check-input" type="radio" name="payment_type" value="all"
+                                        checked="checked" />
+                                    <span class="form-check-label text-gray-600">All</span>
+                                </label>
+                                <!--end::Option-->
+                                <!--begin::Option-->
+                                <label class="form-check form-check-sm form-check-custom form-check-solid mb-3 me-5">
+                                    <input class="form-check-input" type="radio" name="payment_type" value="visa" />
+                                    <span class="form-check-label text-gray-600">Visa</span>
+                                </label>
+                                <!--end::Option-->
+                                <!--begin::Option-->
+                                <label class="form-check form-check-sm form-check-custom form-check-solid mb-3">
+                                    <input class="form-check-input" type="radio" name="payment_type"
+                                        value="mastercard" />
+                                    <span class="form-check-label text-gray-600">Mastercard</span>
+                                </label>
+                                <!--end::Option-->
+                                <!--begin::Option-->
+                                <label class="form-check form-check-sm form-check-custom form-check-solid">
+                                    <input class="form-check-input" type="radio" name="payment_type"
+                                        value="american_express" />
+                                    <span class="form-check-label text-gray-600">American Express</span>
+                                </label>
+                                <!--end::Option-->
+                            </div>
+                            <!--end::Options-->
+                        </div>
+                        <!--end::Input group-->
+                        <!--begin::Actions-->
+                        <div class="d-flex justify-content-end">
+                            <button type="reset" class="btn btn-light btn-active-light-primary me-2"
+                                data-kt-menu-dismiss="true" data-kt-customer-table-filter="reset">
+                                Reset
+                            </button>
+                            <button type="submit" class="btn btn-primary" data-kt-menu-dismiss="true"
+                                data-kt-customer-table-filter="filter">
+                                Apply
+                            </button>
+                        </div>
+                        <!--end::Actions-->
+                    </div>
+                    <!--end::Content-->
+                </div>
+                <!--end::Menu 1-->
+                <!--end::Filter-->
+                <!--begin::Add customer-->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#kt_modal_add_plan">
+                    Add Subscription
+                </button>
+                <!--end::Add customer-->
+            </div>
+            <!--end::Toolbar-->
+            <!--begin::Group actions-->
+            <div class="d-flex justify-content-end align-items-center d-none" data-kt-customer-table-toolbar="selected">
+                <div class="fw-bolder me-5">
+                    <span class="me-2" data-kt-customer-table-select="selected_count"></span>Selected
+                </div>
+                <button type="button" class="btn btn-danger" data-kt-customer-table-select="delete_selected">
+                    Delete Selected
+                </button>
+            </div>
+            <!--end::Group actions-->
+        </div>
+        <!--end::Card toolbar-->
+    </div>
+    <!--end::Card header-->
+
+    <div class="card-body pt-0">
+        <div class="table-responsive">
+            <table id="data-table" class="table table-row-bordered table-stripped align-middle fs-6 gs-7 gy-5"
+                style="width:100%">
+                <thead>
+                    <tr>
+                        <td>Plan Name</td>
+                        <td>Price</td>
+                        <td></td>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- HTML for the Create Plan Modal -->
+<div class="modal fade" id="kt_modal_add_plan" tabindex="-1" aria-hidden="true">
+    <!--begin::Modal dialog-->
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <!--begin::Modal content-->
+        <div class="modal-content">
+            <!--begin::Modal header-->
+            <div class="modal-header" id="kt_modal_add_plan_header">
+                <!--begin::Modal title-->
+                <h2 class="fw-bolder">Add New Plan</h2>
+                <!--end::Modal title-->
+                <!--begin::Close-->
+                <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
+                    <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                    <span class="svg-icon svg-icon-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1"
+                                transform="rotate(-45 6 17.3137)" fill="black" />
+                            <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)"
+                                fill="black" />
+                        </svg>
+                    </span>
+                    <!--end::Svg Icon-->
+                </div>
+                <!--end::Close-->
+            </div>
+            <!--end::Modal header-->
+            <!--begin::Modal body-->
+            <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
+                <!--begin::Form-->
+                <form id="kt_modal_add_plan_form" class="form" method="post">
+                    <!--begin::Scrollable form-->
+                    <div class="d-flex flex-column scroll-y me-n7 pe-7" id="kt_modal_add_plan_scroll"
+                        data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}"
+                        data-kt-scroll-max-height="auto" data-kt-scroll-offset="300px">
+
+                        <!--begin::Row 1: Plan Name & Price-->
+                        <div class="row g-9 mb-7">
+                            <!--begin::Col Plan Name-->
+                            <div class="col-md-6 fv-row">
+                                <label class="required fw-bold fs-6 mb-2">Plan Name</label>
+                                <input type="text" name="PlanName" class="form-control form-control-solid"
+                                    placeholder="e.g., Basic, Premium" required />
+                            </div>
+                            <!--end::Col Plan Name-->
+
+                            <!--begin::Col Price-->
+                            <div class="col-md-6 fv-row">
+                                <label class="required fw-bold fs-6 mb-2">Price ($)</label>
+                                <input type="number" name="Price" class="form-control form-control-solid"
+                                    placeholder="e.g., 9.99" step="0.01" min="0.01" required />
+                            </div>
+                            <!--end::Col Price-->
+                        </div>
+                        <!--end::Row 1-->
+
+                        <!--begin::Row 2: Features-->
+                        <div class="row g-9 mb-7">
+                            <!--begin::Col Features-->
+                            <div class="col-md-12 fv-row">
+                                <label class="fw-bold fs-6 mb-2">Features</label>
+                                <div id="create_plan_features_editor" class="min-h-150px border border-gray-300 rounded" style="height: 200px;"></div>
+                                <input type="hidden" name="Features" />
+                            </div>
+                            <!--end::Col Features-->
+                        </div>
+                        <!--end::Row 2-->
+
+                    </div>
+                    <!--end::Scrollable form-->
+
+                    <!--begin::Actions-->
+                    <div class="text-center pt-15">
+                        <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">Discard</button>
+                        <button type="submit" class="btn btn-primary" id="kt_add_plan_submit_button">
+                            <span class="indicator-label">Create Plan</span>
+                            <span class="indicator-progress">Please wait...
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                            </span>
+                        </button>
+                    </div>
+                    <!--end::Actions-->
+                </form>
+                <!--end::Form-->
+            </div>
+            <!--end::Modal body-->
+        </div>
+        <!--end::Modal content-->
+    </div>
+    <!--end::Modal dialog-->
+</div>
+<!--end::Modal Create Plan -->
+
+<!-- HTML for the Edit Plan Modal -->
+<div class="modal fade" id="kt_modal_edit_plan" tabindex="-1" aria-hidden="true">
+    <!--begin::Modal dialog-->
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <!--begin::Modal content-->
+        <div class="modal-content">
+            <!--begin::Modal header-->
+            <div class="modal-header" id="kt_modal_edit_plan_header">
+                <!--begin::Modal title-->
+                <h2 class="fw-bolder">Edit Plan Details</h2>
+                <!--end::Modal title-->
+                <!--begin::Close-->
+                <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
+                    <!--begin::Svg Icon | path: icons/duotune/arrows/arr061.svg-->
+                    <span class="svg-icon svg-icon-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1"
+                                transform="rotate(-45 6 17.3137)" fill="black" />
+                            <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)"
+                                fill="black" />
+                        </svg>
+                    </span>
+                    <!--end::Svg Icon-->
+                </div>
+                <!--end::Close-->
+            </div>
+            <!--end::Modal header-->
+            <!--begin::Modal body-->
+            <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
+                <!--begin::Form-->
+                <form id="kt_modal_edit_plan_form" class="form" method="post">
+                    <!-- Hidden input for the Plan ID (Crucial for editing) -->
+                    <input type="hidden" name="Id" id="editPlanId" value="" />
+
+                    <!--begin::Scrollable form-->
+                    <div class="d-flex flex-column scroll-y me-n7 pe-7" id="kt_modal_edit_plan_scroll"
+                        data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}"
+                        data-kt-scroll-max-height="auto" data-kt-scroll-offset="300px">
+
+                        <!--begin::Row 1: Plan Name & Price-->
+                        <div class="row g-9 mb-7">
+                            <!--begin::Col Plan Name-->
+                            <div class="col-md-6 fv-row">
+                                <label class="required fw-bold fs-6 mb-2">Plan Name</label>
+                                <input type="text" name="PlanName" class="form-control form-control-solid"
+                                    placeholder="e.g., Basic, Premium" required />
+                            </div>
+                            <!--end::Col Plan Name-->
+
+                            <!--begin::Col Price-->
+                            <div class="col-md-6 fv-row">
+                                <label class="required fw-bold fs-6 mb-2">Price ($)</label>
+                                <input type="number" name="Price" class="form-control form-control-solid"
+                                    placeholder="e.g., 9.99" step="0.01" min="0.01" required />
+                            </div>
+                            <!--end::Col Price-->
+                        </div>
+                        <!--end::Row 1-->
+
+                        <!--begin::Row 2: Features-->
+                        <div class="row g-9 mb-7">
+                            <!--begin::Col Features-->
+                            <div class="col-md-12 fv-row">
+                                <label class="fw-bold fs-6 mb-2">Features</label>
+                                <div id="edit_plan_features_editor" class="min-h-150px border border-gray-300 rounded" style="height: 200px;"></div>
+                                <input type="hidden" name="Features" />
+                            </div>
+                            <!--end::Col Features-->
+                        </div>
+                        <!--end::Row 2-->
+
+                    </div>
+                    <!--end::Scrollable form-->
+
+                    <!--begin::Actions-->
+                    <div class="text-center pt-15">
+                        <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="kt_edit_plan_submit_button">
+                            <span class="indicator-label">Save Changes</span>
+                            <span class="indicator-progress">Please wait...
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                            </span>
+                        </button>
+                    </div>
+                    <!--end::Actions-->
+                </form>
+                <!--end::Form-->
+            </div>
+            <!--end::Modal body-->
+        </div>
+        <!--end::Modal content-->
+    </div>
+    <!--end::Modal dialog-->
+</div>
+<!--end::Modal Edit Plan -->
+
+@section Scripts {
+    <script src="~/lib/metronic/plugins/custom/datatables/datatables.bundle.js"></script> @* Adjust path as needed *@
+    <script src="~/js/dataTable/init.js"></script> @* Adjust path as needed *@
+    <script src="~/js/forms/form-submit-handler.js"></script> @* Adjust path as needed *@
+    <script src="~/js/forms/quill-editor.js"></script> @* Adjust path as needed *@
+
+    <script>
+        $(document).ready(function () {
+            // Instantiate the FormSubmitHandler for the Create Plan modal
+            let plansDataTableInstance; // Declare a variable to hold the DataTable API instance
+            var dataTable;
+            var quillEditPlanEditor = null;
+
+            const usersTableColumns = [
+                { data: 'id', title: 'ID', width: '5%' },
+                {
+                    data: 'fullName',
+                    title: 'Name',
+                    // Example of a custom renderer if you need to combine first/last name
+                    // or add a link to user details
+                    render: function (data, type, row) {
+                        return `<a href="/Users/Details/${row.id}">${data}</a>`;
+                    }
+                },
+                { data: 'email', title: 'Email' },
+                {
+                    data: 'status',
+                    title: 'Status',
+                    render: function (data, type, row) {
+                        // Example: Custom styling based on status
+                        let badgeClass = '';
+                        switch (data.toLowerCase()) {
+                            case 'active': badgeClass = 'bg-success'; break;
+                            case 'inactive': badgeClass = 'bg-danger'; break;
+                            case 'pending': badgeClass = 'bg-warning'; break;
+                            default: badgeClass = 'bg-secondary'; break;
+                        }
+                        return `<span class="badge ${badgeClass}">${data}</span>`;
+                    }
+                },
+                { data: 'role', title: 'Role' },
+                {
+                    data: 'lastLogin',
+                    title: 'Last Login',
+                    render: function (data, type, row) {
+                        // Format date nicely
+                        if (data) {
+                            return new Date(data).toLocaleString();
+                        }
+                        return 'N/A';
+                    }
+                },
+                {
+                    data: null, // This column doesn't map directly to a data property
+                    title: 'Actions',
+                    orderable: false, // Don't allow sorting on this column
+                    searchable: false, // Don't allow searching on this column
+                    responsivePriority: 1, // Make sure this column is always visible on smaller screens
+                    render: function (data, type, row) {
+                        return `
+                                            <button class="btn btn-sm btn-info view-btn" data-id="${row.id}" title="View Details">
+                                                <i class="bi bi-eye"></i> View
+                                            </button>
+                                            <button class="btn btn-sm btn-warning edit-btn" data-id="${row.id}" title="Edit User">
+                                                <i class="bi bi-pencil"></i> Edit
+                                            </button>
+                                            <button class="btn btn-sm btn-danger delete-btn" data-id="${row.id}" title="Delete User">
+                                                <i class="bi bi-trash"></i> Delete
+                                            </button>
+                                        `;
+                    }
+                }
+            ];
+
+            // quill editor for create plan
+            let hiddenFeaturesInput = document.querySelector("#kt_modal_add_plan_form [name='Features']");
+            let quillEditorCreateElement = document.querySelector("#kt_modal_add_plan_form #create_plan_features_editor");
+            initializeQuillEditor(quillEditorCreateElement,hiddenFeaturesInput);
+
+            function initializeSubscriptionsDataTable() {
+                dataTable = new DataTableSSR("/api/subscription", [
+                    { data: "planName", "name": "PlaneName", class: "" },
+                    { data: "price", "name": "Price", class: "" },
+                    { "data": null, class: "text-end" }], [
+                    {
+                        targets: -1,
+                        render: function (data, full, row) {
+                            let res = dataTable.generateEditLinkDataTableRow(`#`, null, [`item-id='${data.id}'`])
+                                + " | " + dataTable.generateDeleteLinkDataTableRow(data.id);
+
+                            return res
+                        }
+                    }
+                ]);
+
+                dataTable.initDataTableObj("#data-table", null, null, [{
+                    event: "draw", action: () => {
+                        dataTable.deleteRowsBtnEvents("[data-kt-docs-table-filter='delete_row']", null, 0)
+                        dataTable.initialTooltip()
+                        handleUserEditModalListener()
+                    }
+                }])
+
+                function handleUserEditModalListener() {
+                    $("#data-table tr [data-kt-docs-table-filter='edit_row']").on("click", async (e) => {
+                        let id = e.currentTarget.getAttribute("item-id");
+                        $("#kt_modal_edit_plan").modal("show")
+                        await fetchAndAppendPlanModal(id)
+                    })
+                }
+
+                dataTable.customSearchDataTable("[data-kt-table-filter='search']")
+            }
+
+            initializeSubscriptionsDataTable();
+
+            const createPlanFormHandler = new FormSubmitHandler({
+                formSelector: '#kt_modal_add_plan_form',
+                submitButtonSelector: '#kt_add_plan_submit_button',
+                apiEndpoint: '/api/subscription', // Your API endpoint for creating plans (e.g., POST /api/plans)
+                method: 'POST',
+                clearFormOnSuccess: true,
+                onSuccess: (data) => {
+                    console.log("Plan created successfully:", data);
+                    // Optionally close the modal
+                    const modalElement = document.getElementById('kt_modal_add_plan');
+                    const modal = bootstrap.Modal.getInstance(modalElement);
+                    if (modal) {
+                        dataTable.reDraw();
+                        setTimeout(() => modal.hide(), 1000);
+                    }
+                    // Trigger a data table reload if you have one
+                    // KTPlansList.reload();
+                },
+                onError: (errorData) => {
+                    console.error("Failed to create plan:", errorData);
+                },
+                formDataType: 'json' // Or 'formData' if your API expects standard form data
+            });
+
+            // Instantiate the FormSubmitHandler for the Edit Plan modal
+            const editPlanFormHandler = new FormSubmitHandler({
+                formSelector: '#kt_modal_edit_plan_form',
+                submitButtonSelector: '#kt_edit_plan_submit_button',
+                apiEndpoint: "/api/subscription", // This will be set dynamically when editing
+                clearFormOnSuccess: false, // Don't clear form on edit success, modal closes instead
+                onSuccess: (data) => {
+                    console.log("Plan updated successfully:", data);
+                    const modalElement = document.getElementById('kt_modal_edit_plan');
+                    const modal = bootstrap.Modal.getInstance(modalElement);
+                    if (modal) {
+                        dataTable.reDraw()
+                        setTimeout(() => modal.hide(), 1000);
+                    }
+                    // Trigger a data table reload if you have one
+                    // KTPlansList.reload();
+                },
+                onError: (errorData) => {
+                    console.error("Failed to update plan:", errorData);
+                },
+                formDataType: 'json' // Or 'formData'
+            });
+
+            // --- Logic to Populate Edit Modal when its Trigger Button is Clicked ---
+            async function fetchAndAppendPlanModal(planId) {
+                if (!planId) {
+                    console.error("Edit button missing data-plan-id attribute.");
+                    Swal.fire('Error', 'Could not determine Plan ID for editing.', 'error');
+                    return;
+                }
+
+                // Show a temporary loading indicator (e.g., a full-screen Metronic block UI)
+                // if you expect the data fetch to take time.
+
+                try {
+                    // 1. Fetch Plan data (replace with your actual API call)
+                    const response = await fetch(`/api/subscription/${planId}`); // e.g., GET /api/plans/5
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const planData = await response.json();
+
+                    // 2. Populate the form fields in the Edit modal
+                    const form = document.querySelector('#kt_modal_edit_plan_form');
+                    form.querySelector('[name="Id"]').value = planData.id || '';
+                    form.querySelector('[name="PlanName"]').value = planData.planName || '';
+                    form.querySelector('[name="Price"]').value = planData.price || '';
+                    form.querySelector('[name="Features"]').value = planData.features || '';
+
+                    // 3. Dynamically set the API endpoint and method for the edit form handler
+                    editPlanFormHandler.options.apiEndpoint = `/api/subscription/${planId}`; // Or your PUT/PATCH endpoint
+                    editPlanFormHandler.options.method = 'PUT'; // Set the HTTP method for update
+                    // editPlanFormHandler.reInit();
+
+                    // quill editor for edit plan
+                    let hiddenFeaturesInputEditPlan = document.querySelector("#kt_modal_edit_plan_form [name='Features']");
+                    let quillEditorEditElement = document.querySelector("#kt_modal_edit_plan_form #edit_plan_features_editor");
+                    quillEditPlanEditor = initializeQuillEditor(quillEditorEditElement,hiddenFeaturesInputEditPlan,planData.features);
+
+                } catch (error) {
+                    console.error('Error fetching plan data for edit:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error Loading Plan Data!',
+                        text: 'Failed to load plan details. Please try again.',
+                    });
+                    // Close modal if it opened with no data
+                    const modalElement = document.getElementById('kt_modal_edit_plan');
+                    const modal = bootstrap.Modal.getInstance(modalElement);
+                    if (modal) {
+                        modal.hide();
+                    }
+                } finally {
+                    // Hide any temporary loading indicator
+                }
+            }
+
+            $("#kt_modal_edit_plan").on("hidden.bs.modal",(e) => {
+                if(quillEditPlanEditor){
+                    quillEditPlanEditor = null;
+                    $("#kt_modal_edit_plan .ql-toolbar.ql-snow").remove()
+                    $("#kt_modal_edit_plan #edit_plan_features_editor").html('')
+                }
+            })
+        });
+    </script>
+}

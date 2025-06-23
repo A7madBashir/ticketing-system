@@ -97,7 +97,7 @@
           </svg>
         </span>
         <!--end::Svg Icon-->
-        <input type="text" data-kt-customer-table-filter="search" class="form-control form-control-solid w-250px ps-15"
+        <input type="text" data-kt-table-filter="search" class="form-control form-control-solid w-250px ps-15"
           placeholder="Search Customers" />
       </div>
       <!--end::Search-->
@@ -574,6 +574,8 @@
             await fetchAndAppendUserModal(userId)
           })
         }
+          
+        dataTable.customSearchDataTable("[data-kt-table-filter='search']")
 
         // Attach event handlers for action buttons inside the table
         $('#usersDataTable tbody').on('click', '.view-btn', function () {
@@ -722,8 +724,6 @@
           // 3. Dynamically set the API endpoint for update
           editUserFormHandler.options.apiEndpoint = `/api/User/${userId}`; // Or your PUT/PATCH endpoint
           editUserFormHandler.options.method = 'PUT'; // Set the HTTP method for update
-          console.log(editUserFormHandler)
-          editUserFormHandler.reInit();
 
           // 4. Show the modal (handled by data-bs-toggle="modal")
           // No explicit show() call here, as data-bs-toggle="modal" handles it.

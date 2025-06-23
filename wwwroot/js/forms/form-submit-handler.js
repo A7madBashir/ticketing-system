@@ -18,7 +18,7 @@ class FormSubmitHandler {
       redirectUrl: null, // Optional: URL to redirect to on successful submission
       clearFormOnSuccess: true, // Optional: Whether to clear form fields after successful submission
       // Callbacks
-      onBeforeSubmit: () => true, // Optional: Callback before submission. Return false to prevent submission.
+      onBeforeSubmit: (form) => true, // Optional: Callback before submission. Return false to prevent submission.
       onSuccess: (responseData) => {
         console.log("Form submitted successfully:", responseData);
       }, // Optional: Callback on success
@@ -76,17 +76,13 @@ class FormSubmitHandler {
     this.form.addEventListener("submit", this.handleSubmit.bind(this));
   }
 
-  reInit() {
-    Object.assign(this.options,new FormSubmitHandler(this.options));
-  }
-
   handleSubmit(event) {
     event.preventDefault(); // Prevent default form submission
 
     // Execute onBeforeSubmit callback
     if (
       typeof this.options.onBeforeSubmit === "function" &&
-      !this.options.onBeforeSubmit()
+      !this.options.onBeforeSubmit(this.form)
     ) {
       console.log("Form submission prevented by onBeforeSubmit callback.");
       return;
