@@ -16,13 +16,15 @@
 
         /* Style for DataTables buttons if needed */
         div.dt-button-collection button.dt-button {
-            background-color: #007bff; /* Primary color */
+            background-color: #007bff;
+            /* Primary color */
             color: white;
             border: none;
         }
 
         /* Make filter inputs slightly wider on small screens if desired */
         @@media (max-width: 767.98px) {
+
             .filter-controls .col-md-3,
             .filter-controls .col-md-4 {
                 flex: 0 0 100%;
@@ -74,7 +76,8 @@
                     <!--end::Svg Icon-->Filter
                 </button>
                 <!--begin::Menu 1-->
-                <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true" id="kt-toolbar-filter">
+                <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true"
+                    id="kt-toolbar-filter">
                     <!--begin::Header-->
                     <div class="px-7 py-5">
                         <div class="fs-4 text-dark fw-bolder">Filter Options</div>
@@ -90,16 +93,15 @@
                             <label class="form-label fs-5 fw-bold mb-3">Subscription Plan:</label>
                             <select class="form-select form-select-solid fw-bolder" data-kt-select2="true"
                                 data-placeholder="Select Subscription Plan" data-allow-clear="true"
-                                data-kt-agency-table-filter="subscription_id"
-                                data-dropdown-parent="#kt-toolbar-filter">
+                                data-kt-agency-table-filter="subscription_id" data-dropdown-parent="#kt-toolbar-filter">
                                 <option></option>
                                 <!-- Options will be dynamically loaded by JavaScript -->
                             </select>
                         </div>
                         <!--begin::Actions-->
                         <div class="d-flex justify-content-end">
-                            <button type="reset" class="btn btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true"
-                                data-kt-agency-table-filter="reset">
+                            <button type="reset" class="btn btn-light btn-active-light-primary me-2"
+                                data-kt-menu-dismiss="true" data-kt-agency-table-filter="reset">
                                 Reset
                             </button>
                             <button type="submit" class="btn btn-primary" data-kt-menu-dismiss="true"
@@ -114,7 +116,8 @@
                 <!--end::Menu 1-->
                 <!--end::Filter-->
                 <!--begin::Add agency-->
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_agency">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#kt_modal_add_agency">
                     Add Agency
                 </button>
                 <!--end::Add agency-->
@@ -163,38 +166,40 @@
                 <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
                     <span class="svg-icon svg-icon-1">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)"
+                            <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1"
+                                transform="rotate(-45 6 17.3137)" fill="black" />
+                            <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)"
                                 fill="black" />
-                            <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="black" />
                         </svg>
                     </span>
                 </div>
             </div>
             <div class="modal-body mx-5 mx-xl-15 my-7">
                 <form id="kt_modal_add_agency_form" method="post" class="form">
-                    <div class="d-flex flex-column scroll-y me-n7 pe-7" id="kt_modal_add_agency_scroll" data-kt-scroll="true"
-                        data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto"
-                        data-kt-scroll-offset="300px">
+                    <div class="d-flex flex-column scroll-y me-n7 pe-7" id="kt_modal_add_agency_scroll"
+                        data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}"
+                        data-kt-scroll-max-height="auto" data-kt-scroll-offset="300px">
 
                         <div class="row g-9 mb-7">
                             <div class="col-md-12 fv-row">
                                 <label class="required fw-bold fs-6 mb-2">Agency Name</label>
-                                <input type="text" name="Name" class="form-control form-control-solid" placeholder="e.g., My Awesome Agency"
-                                    required />
+                                <input type="text" name="Name" class="form-control form-control-solid"
+                                    placeholder="e.g., My Awesome Agency" required />
                             </div>
                         </div>
                         <div class="row g-9 mb-7">
                             <div class="col-md-12 fv-row">
                                 <label class="fw-bold fs-6 mb-2">Domain</label>
-                                <input type="text" name="Domain" class="form-control form-control-solid" placeholder="e.g., myagency.com" />
+                                <input type="text" name="Domain" class="form-control form-control-solid"
+                                    placeholder="e.g., myagency.com" />
                             </div>
                         </div>
                         <div class="row g-9 mb-7">
                             <div class="col-md-12 fv-row">
                                 <label class="required fw-bold fs-6 mb-2">Subscription Plan</label>
-                                <select name="SubscriptionId" class="form-select form-select-solid fw-bolder" data-kt-select2="true"
-                                    data-placeholder="Select a Subscription Plan" data-allow-clear="true" data-hide-search="true"
-                                    id="addAgencySubscriptionSelect">
+                                <select name="SubscriptionId" class="form-select form-select-solid fw-bolder"
+                                    data-kt-select2="true" data-placeholder="Select a Subscription Plan"
+                                    data-allow-clear="true" data-hide-search="true" id="addAgencySubscriptionSelect">
                                     <option></option>
                                     <!-- Options will be dynamically loaded by JavaScript -->
                                 </select>
@@ -226,9 +231,10 @@
                 <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
                     <span class="svg-icon svg-icon-1">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)"
+                            <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1"
+                                transform="rotate(-45 6 17.3137)" fill="black" />
+                            <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)"
                                 fill="black" />
-                            <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="black" />
                         </svg>
                     </span>
                 </div>
@@ -237,29 +243,30 @@
                 <form id="kt_modal_edit_agency_form" class="form">
                     <input type="hidden" name="Id" id="editAgencyId" value="" />
 
-                    <div class="d-flex flex-column scroll-y me-n7 pe-7" id="kt_modal_edit_agency_scroll" data-kt-scroll="true"
-                        data-kt-scroll-activate="{default: false, lg: true}" data-kt-scroll-max-height="auto"
-                        data-kt-scroll-offset="300px">
+                    <div class="d-flex flex-column scroll-y me-n7 pe-7" id="kt_modal_edit_agency_scroll"
+                        data-kt-scroll="true" data-kt-scroll-activate="{default: false, lg: true}"
+                        data-kt-scroll-max-height="auto" data-kt-scroll-offset="300px">
 
                         <div class="row g-9 mb-7">
                             <div class="col-md-12 fv-row">
                                 <label class="required fw-bold fs-6 mb-2">Agency Name</label>
-                                <input type="text" name="Name" class="form-control form-control-solid" placeholder="e.g., My Awesome Agency"
-                                    required />
+                                <input type="text" name="Name" class="form-control form-control-solid"
+                                    placeholder="e.g., My Awesome Agency" required />
                             </div>
                         </div>
                         <div class="row g-9 mb-7">
                             <div class="col-md-12 fv-row">
                                 <label class="fw-bold fs-6 mb-2">Domain</label>
-                                <input type="text" name="Domain" class="form-control form-control-solid" placeholder="e.g., myagency.com" />
+                                <input type="text" name="Domain" class="form-control form-control-solid"
+                                    placeholder="e.g., myagency.com" />
                             </div>
                         </div>
                         <div class="row g-9 mb-7">
                             <div class="col-md-12 fv-row">
                                 <label class="required fw-bold fs-6 mb-2">Subscription Plan</label>
-                                <select name="SubscriptionId" class="form-select form-select-solid fw-bolder" data-kt-select2="true"
-                                    data-placeholder="Select a Subscription Plan" data-allow-clear="true" data-hide-search="true"
-                                    id="editAgencySubscriptionSelect">
+                                <select name="SubscriptionId" class="form-select form-select-solid fw-bolder"
+                                    data-kt-select2="true" data-placeholder="Select a Subscription Plan"
+                                    data-allow-clear="true" data-hide-search="true" id="editAgencySubscriptionSelect">
                                     <option></option>
                                     <!-- Options will be dynamically loaded by JavaScript -->
                                 </select>
@@ -282,11 +289,9 @@
 </div>
 
 @section Scripts {
-    <script src="~/lib/metronic/plugins/custom/datatables/datatables.bundle.js"></script> @* Adjust path as needed *@
-    <script src="~/js/dataTable/init.js"></script> @* Adjust path as needed *@
-    <script src="~/js/forms/form-submit-handler.js"></script> @* Adjust path as needed *@
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> @* SweetAlert2 for alerts *@
-
+    <script src="~/lib/metronic/plugins/custom/datatables/datatables.bundle.js"></script>
+    <script src="~/js/dataTable/init.js"></script>
+    <script src="~/js/forms/form-submit-handler.js"></script>
     <script>
         $(document).ready(function () {
             let agenciesDataTableInstance; // Variable to hold the DataTableSSR instance
@@ -334,10 +339,9 @@
 
             // Define the columns for the Agency DataTable
             const agenciesTableColumnDefinitions = [
-                { data: 'id', title: 'ID', width: '5%', visible: false }, // Hide ID but keep for data reference
                 {
                     data: 'name',
-                    title: 'Agency Name',
+                    title: 'Name',
                     render: function (data, type, row) {
                         // Example: Link to agency details page if one exists
                         return `<a href="/Agencies/Details/${row.id}" class="text-dark fw-bolder text-hover-primary fs-6">${data}</a>`;
@@ -345,10 +349,12 @@
                 },
                 { data: 'domain', title: 'Domain' },
                 {
-                    data: 'subscription.planName', // Assuming your API returns a nested 'subscription' object
+                    data: 'subscription', // Assuming your API returns a nested 'subscription' object
                     title: 'Subscription Plan',
                     render: function (data, type, row) {
-                        return data || 'N/A';
+                        if(data)
+                            return data?.planName
+                        else return 'N/A';
                     }
                 },
                 {
@@ -361,45 +367,48 @@
                     render: function (data, type, row) {
                         // Metronic-style action dropdown
                         return `
-                            <a href="#" class="btn btn-sm btn-light btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">
-                                Actions
-                                <span class="svg-icon svg-icon-5 m-0">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <path d="M11.4343 12.7343L7.25 8.55C6.83579 8.13579 6.16421 8.13579 5.75 8.55C5.33579 8.96421 5.33579 9.63579 5.75 10.05L11.2929 15.5929C11.6834 15.9834 12.3166 15.9834 12.7071 15.5929L18.25 10.05C18.6642 9.63579 18.6642 8.96421 18.25 8.55C17.8358 8.13579 17.1642 8.13579 16.75 8.55L12.5657 12.7343C12.2533 13.0467 11.7467 13.0467 11.4343 12.7343Z" fill="black" />
-                                    </svg>
-                                </span>
-                            </a>
-                            <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
-                                <div class="menu-item px-3">
-                                    <a href="/Agencies/Details/${row.id}" class="menu-link px-3 view-btn">View</a>
-                                </div>
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3 edit-btn" data-id="${row.id}" data-bs-toggle="modal" data-bs-target="#kt_modal_edit_agency">Edit</a>
-                                </div>
-                                <div class="menu-item px-3">
-                                    <a href="#" class="menu-link px-3 delete-btn" data-id="${row.id}">Delete</a>
-                                </div>
-                            </div>
-                        `;
+                                    <a href="#" class="btn btn-sm btn-light btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">
+                                        Actions
+                                        <span class="svg-icon svg-icon-5 m-0">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                                <path d="M11.4343 12.7343L7.25 8.55C6.83579 8.13579 6.16421 8.13579 5.75 8.55C5.33579 8.96421 5.33579 9.63579 5.75 10.05L11.2929 15.5929C11.6834 15.9834 12.3166 15.9834 12.7071 15.5929L18.25 10.05C18.6642 9.63579 18.6642 8.96421 18.25 8.55C17.8358 8.13579 17.1642 8.13579 16.75 8.55L12.5657 12.7343C12.2533 13.0467 11.7467 13.0467 11.4343 12.7343Z" fill="black" />
+                                            </svg>
+                                        </span>
+                                    </a>
+                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
+                                        <div class="menu-item px-3">
+                                            <a href="/Agencies/Details/${row.id}" class="menu-link px-3 view-btn">View</a>
+                                        </div>
+                                        <div class="menu-item px-3">
+                                            <a href="#" class="menu-link px-3 edit-btn" data-id="${row.id}" data-bs-toggle="modal" data-bs-target="#kt_modal_edit_agency">Edit</a>
+                                        </div>
+                                        <div class="menu-item px-3">
+                                            <a href="#" class="menu-link px-3 delete-btn" data-id="${row.id}">Delete</a>
+                                        </div>
+                                    </div>
+                                `;
                     }
                 }
             ];
 
             // Initialize DataTableSSR for Agencies
-            agenciesDataTableInstance = new DataTableSSR("/api/Agency", agenciesTableColumnDefinitions, []);
+            function initializeSubscriptionsDataTable() {
+                agenciesDataTableInstance = new DataTableSSR("/api/Agency", agenciesTableColumnDefinitions, []);
 
-            agenciesDataTableInstance.initDataTableObj("#data-table", null, null, [{
-                event: "draw", action: () => {
-                    // Re-initiate Metronic menus after each draw to ensure dropdowns work
-                    KTMenu.init();
-                    handleAgencyActionButtons();
-                    agenciesDataTableInstance.deleteRowsBtnEvents("[data-kt-docs-table-filter='delete_row']", null, 1);
-                    agenciesDataTableInstance.initialTooltip();
-                }
-            }]);
+                agenciesDataTableInstance.initDataTableObj("#data-table", null, null, [{
+                    event: "draw", action: () => {
+                        agenciesDataTableInstance.deleteRowsBtnEvents("[data-kt-docs-table-filter='delete_row']", null, 1);
+                        agenciesDataTableInstance.initialTooltip();
+                        handleAgencyActionButtons();
+                        KTMenu.init()
+                    }
+                }]);
 
-            // Handle custom search input for DataTable
-            agenciesDataTableInstance.customSearchDataTable("[data-kt-table-filter='search']");
+                // Handle custom search input for DataTable
+                agenciesDataTableInstance.customSearchDataTable("[data-kt-table-filter='search']");
+            }
+
+            initializeSubscriptionsDataTable()
 
             // Add event listeners for the filter button
             $("[data-kt-agency-table-filter='filter']").on("click", function () {
@@ -497,7 +506,8 @@
             const addAgencyFormHandler = new FormSubmitHandler({
                 formSelector: '#kt_modal_add_agency_form',
                 submitButtonSelector: '#kt_add_agency_submit_button',
-                apiEndpoint: '/api/Agency', // API endpoint for creating agencies (POST)
+                apiEndpoint: '/api/Agency',
+                method: "POST",
                 clearFormOnSuccess: true,
                 onBeforeSubmit: () => {
                     console.log("Before add agency form submission.");
@@ -541,7 +551,7 @@
             const editAgencyFormHandler = new FormSubmitHandler({
                 formSelector: '#kt_modal_edit_agency_form',
                 submitButtonSelector: '#kt_edit_agency_submit_button',
-                apiEndpoint: "", // This will be set dynamically
+                apiEndpoint: "/api/Agency", // This will be set dynamically
                 method: 'PUT', // Assuming PUT for updates
                 clearFormOnSuccess: false,
                 onBeforeSubmit: () => {
@@ -615,7 +625,7 @@
                     subscriptionSelect.val(agencyData.subscriptionId || '').trigger('change');
 
                     // Dynamically set the API endpoint for the edit form handler
-                    editAgencyFormHandler.apiEndpoint = `/api/Agency/${agencyId}`;
+                    editAgencyFormHandler.options.apiEndpoint = `/api/Agency/${agencyId}`;
                     console.log("Edit API Endpoint set to:", editAgencyFormHandler.apiEndpoint);
 
                 } catch (error) {
