@@ -13,6 +13,7 @@ using TicketingSystem.Models.Identity;
 using TicketingSystem.Services;
 using TicketingSystem.Services.Repositories;
 using TicketingSystem.Settings;
+using TicketingSystem.Data.Seeder;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,6 +63,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddRazorPages();
 builder.Services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddScoped<DataSeeder>();
+
 
 if (args.Length != 0 && args[0] == "seed")
 {
