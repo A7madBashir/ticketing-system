@@ -24,7 +24,6 @@
 
         /* Make filter inputs slightly wider on small screens if desired */
         @@media (max-width: 767.98px) {
-
             .filter-controls .col-md-3,
             .filter-controls .col-md-4 {
                 flex: 0 0 100%;
@@ -294,22 +293,30 @@
     <script src="~/js/forms/form-submit-handler.js"></script>
     <script>
         $(document).ready(function () {
-            let agenciesDataTableInstance; // Variable to hold the DataTableSSR instance
+            let dataTable;
             let allSubscriptions = []; // To store subscription data for dropdowns
 
             // Function to fetch all subscriptions for dropdowns
             async function fetchSubscriptionsForDropdown() {
                 try {
-                    const response = await fetch('/api/Subscription'); // Your API endpoint for fetching all subscriptions
+                    const response = await fetch('/api/Subscription');
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     const subscriptions = await response.json();
-                    allSubscriptions = subscriptions.data || []; // Assuming your API returns { data: [...] }
+                    allSubscriptions = subscriptions.data || [];
                     populateSubscriptionDropdowns();
                 } catch (error) {
                     console.error("Failed to fetch subscriptions for dropdown:", error);
-                    // Optionally show an error to the user
+                    Swal.fire({
+                        text: "Failed to load subscription plans. Please refresh the page.",
+                        icon: "error",
+                        buttonsStyling: false,
+                        confirmButtonText: "Ok, got it!",
+                        customClass: {
+                            confirmButton: "btn btn-primary"
+                        }
+                    });
                 }
             }
 
@@ -317,15 +324,18 @@
             function populateSubscriptionDropdowns() {
                 const addSelect = $('#addAgencySubscriptionSelect');
                 const editSelect = $('#editAgencySubscriptionSelect');
+                const filterSelect = $("[data-kt-agency-table-filter='subscription_id']");
 
                 // Clear existing options, keep the placeholder
                 addSelect.find('option:not(:first)').remove();
                 editSelect.find('option:not(:first)').remove();
+                filterSelect.find('option:not(:first)').remove();
 
                 allSubscriptions.forEach(sub => {
                     const option = `<option value="${sub.id}">${sub.planName} ($${parseFloat(sub.price).toFixed(2)})</option>`;
                     addSelect.append(option);
                     editSelect.append(option);
+                    filterSelect.append(option);
                 });
 
                 // Re-initialize Select2 if it's already bound
@@ -335,186 +345,81 @@
                 if (editSelect.data('select2')) {
                     editSelect.trigger('change');
                 }
+                if (filterSelect.data('select2')) {
+                    filterSelect.trigger('change');
+                }
             }
 
-            // Define the columns for the Agency DataTable
-            const agenciesTableColumnDefinitions = [
-                {
-                    data: 'name',
-                    title: 'Name',
-                    render: function (data, type, row) {
-                        // Example: Link to agency details page if one exists
-                        return `<a href="/Agencies/Details/${row.id}" class="text-dark fw-bolder text-hover-primary fs-6">${data}</a>`;
-                    }
-                },
-                { data: 'domain', title: 'Domain' },
-                {
-                    data: 'subscription', // Assuming your API returns a nested 'subscription' object
-                    title: 'Subscription Plan',
-                    render: function (data, type, row) {
-                        if(data)
-                            return data?.planName
-                        else return 'N/A';
-                    }
-                },
-                {
-                    data: null, // This column doesn't map directly to a data property
-                    title: 'Actions',
-                    orderable: false, // Don't allow sorting on this column
-                    searchable: false, // Don't allow searching on this column
-                    responsivePriority: 1, // Make sure this column is always visible on smaller screens
-                    className: 'text-end', // Align buttons to the end
-                    render: function (data, type, row) {
-                        // Metronic-style action dropdown
-                        return `
-                                    <a href="#" class="btn btn-sm btn-light btn-active-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">
-                                        Actions
-                                        <span class="svg-icon svg-icon-5 m-0">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                                <path d="M11.4343 12.7343L7.25 8.55C6.83579 8.13579 6.16421 8.13579 5.75 8.55C5.33579 8.96421 5.33579 9.63579 5.75 10.05L11.2929 15.5929C11.6834 15.9834 12.3166 15.9834 12.7071 15.5929L18.25 10.05C18.6642 9.63579 18.6642 8.96421 18.25 8.55C17.8358 8.13579 17.1642 8.13579 16.75 8.55L12.5657 12.7343C12.2533 13.0467 11.7467 13.0467 11.4343 12.7343Z" fill="black" />
-                                            </svg>
-                                        </span>
-                                    </a>
-                                    <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-bold fs-7 w-125px py-4" data-kt-menu="true">
-                                        <div class="menu-item px-3">
-                                            <a href="/Agencies/Details/${row.id}" class="menu-link px-3 view-btn">View</a>
-                                        </div>
-                                        <div class="menu-item px-3">
-                                            <a href="#" class="menu-link px-3 edit-btn" data-id="${row.id}" data-bs-toggle="modal" data-bs-target="#kt_modal_edit_agency">Edit</a>
-                                        </div>
-                                        <div class="menu-item px-3">
-                                            <a href="#" class="menu-link px-3 delete-btn" data-id="${row.id}">Delete</a>
-                                        </div>
-                                    </div>
-                                `;
-                    }
-                }
-            ];
+            function initializeAgenciesDataTable() {
+                dataTable = new DataTableSSR("/api/Agency", [
+                    { data: "name", "name": "Name", class: "" },
+                    { data: "domain", "name": "Domain", class: "" },
+                    { 
+                        data: "subscription", 
+                        "name": "Subscription", 
+                        class: "",
+                        render: function(data) {
+                            return data?.planName || 'N/A';
+                        }
+                    },
+                    { "data": null, class: "text-end" }
+                ], [
+                    {
+                        targets: -1,
+                        render: function (data, full, row) {
+                            let res = dataTable.generateEditLinkDataTableRow(`#`, null, [`item-id='${data.id}'`])
+                                + " | " + dataTable.generateDeleteLinkDataTableRow(data.id);
 
-            // Initialize DataTableSSR for Agencies
-            function initializeSubscriptionsDataTable() {
-                agenciesDataTableInstance = new DataTableSSR("/api/Agency", agenciesTableColumnDefinitions, []);
+                            return res;
+                        }
+                    }
+                ]);
 
-                agenciesDataTableInstance.initDataTableObj("#data-table", null, null, [{
-                    event: "draw", action: () => {
-                        agenciesDataTableInstance.deleteRowsBtnEvents("[data-kt-docs-table-filter='delete_row']", null, 1);
-                        agenciesDataTableInstance.initialTooltip();
-                        handleAgencyActionButtons();
-                        KTMenu.init()
+                dataTable.initDataTableObj("#data-table", null, null, [{
+                    event: "draw", 
+                    action: () => {
+                        dataTable.deleteRowsBtnEvents("[data-kt-docs-table-filter='delete_row']", null, 0);
+                        dataTable.initialTooltip();
+                        handleEditModalListener();
                     }
                 }]);
 
-                // Handle custom search input for DataTable
-                agenciesDataTableInstance.customSearchDataTable("[data-kt-table-filter='search']");
-            }
-
-            initializeSubscriptionsDataTable()
-
-            // Add event listeners for the filter button
-            $("[data-kt-agency-table-filter='filter']").on("click", function () {
-                const subscriptionIdFilter = $("[data-kt-agency-table-filter='subscription_id']").val();
-
-                // Pass this as a custom filter to your DataTableSSR instance
-                agenciesDataTableInstance.setCustomFilters({ subscriptionId: subscriptionIdFilter });
-                agenciesDataTableInstance.reDraw();
-            });
-
-            $("[data-kt-agency-table-filter='reset']").on("click", function () {
-                // Reset filter inputs
-                $("[data-kt-agency-table-filter='subscription_id']").val("").trigger("change"); // For Select2
-
-                // Clear custom filters and redraw
-                agenciesDataTableInstance.clearCustomFilters();
-                agenciesDataTableInstance.reDraw();
-            });
-
-
-            // Function to handle click events for dynamic action buttons
-            function handleAgencyActionButtons() {
-                $('#data-table tbody').off('click', '.edit-btn').on('click', '.edit-btn', async function (e) {
-                    e.preventDefault();
-                    const agencyId = $(this).data('id');
-                    await fetchAndAppendAgencyModal(agencyId);
-                    // The modal is already triggered by data-bs-toggle and data-bs-target
-                });
-
-                $('#data-table tbody').off('click', '.delete-btn').on('click', '.delete-btn', function (e) {
-                    e.preventDefault();
-                    const agencyId = $(this).data('id');
-                    Swal.fire({
-                        text: "Are you sure you want to delete this agency? This action cannot be undone.",
-                        icon: "warning",
-                        showCancelButton: true,
-                        buttonsStyling: false,
-                        confirmButtonText: "Yes, delete it!",
-                        cancelButtonText: "No, cancel",
-                        customClass: {
-                            confirmButton: "btn fw-bold btn-danger",
-                            cancelButton: "btn fw-bold btn-active-light-primary"
-                        }
-                    }).then(function (result) {
-                        if (result.value) { // If user clicked "Yes, delete it!"
-                            toggleBlockUI(); // Show loading indicator
-
-                            $.ajax({
-                                url: `/api/Agency/${agencyId}`, // Your API endpoint for deleting an agency
-                                type: 'DELETE',
-                                success: function (response) {
-                                    toggleBlockUI(); // Hide loading indicator
-                                    Swal.fire({
-                                        text: "Agency deleted successfully!",
-                                        icon: "success",
-                                        buttonsStyling: false,
-                                        confirmButtonText: "Ok, got it!",
-                                        customClass: {
-                                            confirmButton: "btn btn-primary"
-                                        }
-                                    }).then(function () {
-                                        agenciesDataTableInstance.reDraw(); // Reload the table
-                                    });
-                                },
-                                error: function (xhr, status, error) {
-                                    toggleBlockUI(); // Hide loading indicator
-                                    const errorData = xhr.responseJSON || { message: "An unknown error occurred." };
-                                    Swal.fire({
-                                        text: `Error deleting agency: ${errorData.message || error}`,
-                                        icon: "error",
-                                        buttonsStyling: false,
-                                        confirmButtonText: "Ok, got it!",
-                                        customClass: {
-                                            confirmButton: "btn btn-primary"
-                                        }
-                                    });
-                                    console.error("Error deleting agency:", errorData);
-                                }
-                            });
-                        }
+                function handleEditModalListener() {
+                    $("#data-table tr [data-kt-docs-table-filter='edit_row']").on("click", async (e) => {
+                        let id = e.currentTarget.getAttribute("item-id");
+                        $("#kt_modal_edit_agency").modal("show");
+                        await fetchAndAppendAgencyModal(id);
                     });
-                });
+                }
 
-                // The view-btn handler can remain simple or be enhanced with SweetAlerts if needed
-                $('#data-table tbody').off('click', '.view-btn').on('click', '.view-btn', function (e) {
-                    // No e.preventDefault() here if you want the link to navigate directly
-                    // e.preventDefault(); // Uncomment if you want to handle navigation via JS
-                    const agencyId = $(this).data('id');
-                    console.log('View agency details for ID: ' + agencyId);
-                    // window.location.href = `/Agencies/Details/${agencyId}`; // This will be handled by the <a> tag's href
-                });
+                dataTable.customSearchDataTable("[data-kt-table-filter='search']");
             }
 
-            // Initialize form submit handlers
+            // Initialize the DataTable
+            initializeAgenciesDataTable();
+
+            // Handle filter button click
+            $("[data-kt-agency-table-filter='filter']").on("click", function () {
+                const subscriptionId = $("[data-kt-agency-table-filter='subscription_id']").val();
+                dataTable.setCustomFilters({ subscriptionId: subscriptionId });
+                dataTable.reDraw();
+            });
+
+            // Handle reset filter button click
+            $("[data-kt-agency-table-filter='reset']").on("click", function () {
+                $("[data-kt-agency-table-filter='subscription_id']").val("").trigger("change");
+                dataTable.clearCustomFilters();
+                dataTable.reDraw();
+            });
+
+            // Instantiate the FormSubmitHandler for the Add Agency modal
             const addAgencyFormHandler = new FormSubmitHandler({
                 formSelector: '#kt_modal_add_agency_form',
                 submitButtonSelector: '#kt_add_agency_submit_button',
                 apiEndpoint: '/api/Agency',
-                method: "POST",
+                method: 'POST',
                 clearFormOnSuccess: true,
-                onBeforeSubmit: () => {
-                    console.log("Before add agency form submission.");
-                    return true; // Allow submission
-                },
                 onSuccess: (data) => {
-                    console.log("Agency created successfully:", data);
                     Swal.fire({
                         text: "Agency created successfully!",
                         icon: "success",
@@ -523,13 +428,13 @@
                         customClass: {
                             confirmButton: "btn btn-primary"
                         }
-                    }).then(function () {
+                    }).then(() => {
                         const modalElement = document.getElementById('kt_modal_add_agency');
                         const modal = bootstrap.Modal.getInstance(modalElement);
                         if (modal) {
                             modal.hide();
                         }
-                        agenciesDataTableInstance.reDraw(); // Refresh the table
+                        dataTable.reDraw();
                     });
                 },
                 onError: (errorData) => {
@@ -543,23 +448,18 @@
                             confirmButton: "btn btn-primary"
                         }
                     });
-                    console.error("Failed to create agency:", errorData);
                 },
                 formDataType: 'json'
             });
 
+            // Instantiate the FormSubmitHandler for the Edit Agency modal
             const editAgencyFormHandler = new FormSubmitHandler({
                 formSelector: '#kt_modal_edit_agency_form',
                 submitButtonSelector: '#kt_edit_agency_submit_button',
-                apiEndpoint: "/api/Agency", // This will be set dynamically
-                method: 'PUT', // Assuming PUT for updates
+                apiEndpoint: "/api/Agency", // This will be set dynamically when editing
+                method: 'PUT', // Default method, will be overridden for specific agency
                 clearFormOnSuccess: false,
-                onBeforeSubmit: () => {
-                    console.log("Before edit agency form submission.");
-                    return true; // Allow submission
-                },
                 onSuccess: (data) => {
-                    console.log("Agency updated successfully:", data);
                     Swal.fire({
                         text: "Agency updated successfully!",
                         icon: "success",
@@ -568,13 +468,13 @@
                         customClass: {
                             confirmButton: "btn btn-primary"
                         }
-                    }).then(function () {
+                    }).then(() => {
                         const modalElement = document.getElementById('kt_modal_edit_agency');
                         const modal = bootstrap.Modal.getInstance(modalElement);
                         if (modal) {
                             modal.hide();
                         }
-                        agenciesDataTableInstance.reDraw(); // Refresh the table
+                        dataTable.reDraw();
                     });
                 },
                 onError: (errorData) => {
@@ -588,7 +488,6 @@
                             confirmButton: "btn btn-primary"
                         }
                     });
-                    console.error("Failed to update agency:", errorData);
                 },
                 formDataType: 'json'
             });
@@ -596,7 +495,7 @@
             // Function to fetch agency data and populate the edit modal
             async function fetchAndAppendAgencyModal(agencyId) {
                 if (!agencyId) {
-                    console.error("Edit button missing data-id attribute or agencyId is null.");
+                    console.error("Edit button missing data-id attribute.");
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
@@ -608,25 +507,23 @@
                 toggleBlockUI(); // Show loading indicator
 
                 try {
-                    const response = await fetch(`/api/Agency/${agencyId}`); // Your API endpoint for getting a single agency
+                    const response = await fetch(`/api/Agency/${agencyId}`);
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     const agencyData = await response.json();
-                    console.log("Fetched agency data:", agencyData);
 
                     // Populate form fields
                     $('#kt_modal_edit_agency_form #editAgencyId').val(agencyData.id);
                     $('#kt_modal_edit_agency_form input[name="Name"]').val(agencyData.name);
                     $('#kt_modal_edit_agency_form input[name="Domain"]').val(agencyData.domain);
 
-                    // Set the subscription dropdown value and trigger change for Select2
+                    // Set the subscription dropdown value
                     const subscriptionSelect = $('#editAgencySubscriptionSelect');
                     subscriptionSelect.val(agencyData.subscriptionId || '').trigger('change');
 
                     // Dynamically set the API endpoint for the edit form handler
                     editAgencyFormHandler.options.apiEndpoint = `/api/Agency/${agencyId}`;
-                    console.log("Edit API Endpoint set to:", editAgencyFormHandler.apiEndpoint);
 
                 } catch (error) {
                     console.error("Failed to fetch agency details:", error);
