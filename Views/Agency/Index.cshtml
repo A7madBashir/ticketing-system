@@ -24,6 +24,7 @@
 
         /* Make filter inputs slightly wider on small screens if desired */
         @@media (max-width: 767.98px) {
+
             .filter-controls .col-md-3,
             .filter-controls .col-md-4 {
                 flex: 0 0 100%;
@@ -198,7 +199,8 @@
                                 <label class="required fw-bold fs-6 mb-2">Subscription Plan</label>
                                 <select name="SubscriptionId" class="form-select form-select-solid fw-bolder"
                                     data-kt-select2="true" data-placeholder="Select a Subscription Plan"
-                                    data-allow-clear="true" data-hide-search="true" id="addAgencySubscriptionSelect">
+                                    data-allow-clear="true" required data-hide-search="true"
+                                    id="addAgencySubscriptionSelect">
                                     <option></option>
                                     <!-- Options will be dynamically loaded by JavaScript -->
                                 </select>
@@ -265,7 +267,8 @@
                                 <label class="required fw-bold fs-6 mb-2">Subscription Plan</label>
                                 <select name="SubscriptionId" class="form-select form-select-solid fw-bolder"
                                     data-kt-select2="true" data-placeholder="Select a Subscription Plan"
-                                    data-allow-clear="true" data-hide-search="true" id="editAgencySubscriptionSelect">
+                                    data-allow-clear="true" required data-hide-search="true"
+                                    id="editAgencySubscriptionSelect">
                                     <option></option>
                                     <!-- Options will be dynamically loaded by JavaScript -->
                                 </select>
@@ -291,6 +294,7 @@
     <script src="~/lib/metronic/plugins/custom/datatables/datatables.bundle.js"></script>
     <script src="~/js/dataTable/init.js"></script>
     <script src="~/js/forms/form-submit-handler.js"></script>
+    <script src="~/js/forms/ajaxSelect2Handler.js"></script>
     <script>
         $(document).ready(function () {
             let dataTable;
@@ -324,18 +328,40 @@
             function populateSubscriptionDropdowns() {
                 const addSelect = $('#addAgencySubscriptionSelect');
                 const editSelect = $('#editAgencySubscriptionSelect');
-                const filterSelect = $("[data-kt-agency-table-filter='subscription_id']");
+                // const filterSelect = $("[data-kt-agency-table-filter='subscription_id']");
 
                 // Clear existing options, keep the placeholder
                 addSelect.find('option:not(:first)').remove();
                 editSelect.find('option:not(:first)').remove();
-                filterSelect.find('option:not(:first)').remove();
+                // filterSelect.find('option:not(:first)').remove();
+
+                select2AjaxSearchHandleListener("[data-kt-agency-table-filter='subscription_id']", { multiple: false }, "/api/Subscription",
+                    (params) => {
+                        var query = {
+                            search: params.term,
+                            length: 15,
+                            draw: 1,
+                            page: (params.page + 1) || 1
+                        }
+                        return query;
+                    }, (data, params) => {
+                        return {
+                            results: data.data,
+                            pagination: {
+                                more: ((params.page || 1) * 15) < data.recordsFiltered
+                            }
+                        }
+                    }, "search for a subscription", (data) => {
+                        return data.planName || data.id
+                    }, (data) => {
+                        return data.planName || data.text || data.id
+                    });
 
                 allSubscriptions.forEach(sub => {
                     const option = `<option value="${sub.id}">${sub.planName} ($${parseFloat(sub.price).toFixed(2)})</option>`;
                     addSelect.append(option);
                     editSelect.append(option);
-                    filterSelect.append(option);
+                    // filterSelect.append(option);
                 });
 
                 // Re-initialize Select2 if it's already bound
@@ -345,20 +371,20 @@
                 if (editSelect.data('select2')) {
                     editSelect.trigger('change');
                 }
-                if (filterSelect.data('select2')) {
-                    filterSelect.trigger('change');
-                }
+                //if (filterSelect.data('select2')) {
+                // filterSelect.trigger('change');
+                //}
             }
 
             function initializeAgenciesDataTable() {
                 dataTable = new DataTableSSR("/api/Agency", [
                     { data: "name", "name": "Name", class: "" },
                     { data: "domain", "name": "Domain", class: "" },
-                    { 
-                        data: "subscription", 
-                        "name": "Subscription", 
+                    {
+                        data: "subscription",
+                        "name": "Subscription",
                         class: "",
-                        render: function(data) {
+                        render: function (data) {
                             return data?.planName || 'N/A';
                         }
                     },
@@ -376,7 +402,7 @@
                 ]);
 
                 dataTable.initDataTableObj("#data-table", null, null, [{
-                    event: "draw", 
+                    event: "draw",
                     action: () => {
                         dataTable.deleteRowsBtnEvents("[data-kt-docs-table-filter='delete_row']", null, 0);
                         dataTable.initialTooltip();
@@ -393,6 +419,13 @@
                 }
 
                 dataTable.customSearchDataTable("[data-kt-table-filter='search']");
+                dataTable.customizeDataTableQueryParams = () => {
+                    let q = {};
+                    q.filters = {
+                        subscriptionId : $('[data-kt-agency-table-filter="subscription_id"]').val()
+                    }
+                    return q
+                };
             }
 
             // Initialize the DataTable
@@ -401,7 +434,6 @@
             // Handle filter button click
             $("[data-kt-agency-table-filter='filter']").on("click", function () {
                 const subscriptionId = $("[data-kt-agency-table-filter='subscription_id']").val();
-                dataTable.setCustomFilters({ subscriptionId: subscriptionId });
                 dataTable.reDraw();
             });
 

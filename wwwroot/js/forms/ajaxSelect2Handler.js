@@ -32,6 +32,13 @@
  * function (which checks for `data.name` or `data.text`) will be used.
  * This is useful for complex custom rendering of search results.
  * Example: `function(repo) { if (repo.loading) return repo.text; var markup = "<div class='select2-result-repository__title'>" + repo.full_name + "</div>"; return markup; }`.
+ * @param {function(object): string} [customSelectFormat] - Optional. A function that takes a data object (representing a single result item)
+ * and returns the HTML string or plain text to be displayed for each
+ * result in the dropdown list. If not provided, the default `formatResult`
+ * function (which checks for `data.name` or `data.text`) will be used.
+ * This is useful for complex custom rendering of search results.
+ * Example: `function(repo) { if (repo.loading) return repo.text; var markup = "<div class='select2-result-repository__title'>" + repo.full_name + "</div>"; return markup; }`.
+ * 
  * @throws {Error} If `selector` or `url` are null, empty, or contain only spaces.
  */
 function select2AjaxSearchHandleListener(
@@ -41,7 +48,8 @@ function select2AjaxSearchHandleListener(
   queryPredicate,
   processResults,
   placeholder,
-  customFormat
+  customFormat,
+  customSelectFormat
 ) {
   // Assuming isEmptyOrSpaces and $ are defined elsewhere or imported
   if (isEmptyOrSpaces(selector)) throw Error("Selector not recognized");
@@ -57,7 +65,7 @@ function select2AjaxSearchHandleListener(
       cache: true,
     },
     templateResult: customFormat ?? formatResult, // Use customFormat if provided, else default
-    templateSelection: formatSelection, // Default selection format
+    templateSelection: customSelectFormat ?? formatSelection, // Default selection format
     placeholder: placeholder,
     minimumInputLength: 0, // Allow search with no input (e.g., to show all on focus)
   });
