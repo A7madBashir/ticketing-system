@@ -81,7 +81,7 @@ public abstract class CrudController<TEntity, T, TResponse, TCreateRequest, TUpd
     /// </summary>
     /// <param name="initialQuery">The initial IQueryable from the repository.</param>
     /// <returns>The IQueryable after applying custom includes/filters.</returns>
-    protected virtual IQueryable<TEntity>? BuildBaseQuery()
+    protected virtual IQueryable<TEntity>? BuildBaseQuery(DataTableRequest req)
     {
         // By default, do nothing and return the initial query.
         // Derived classes will override this to add .Include(), .Where(), etc.
@@ -179,11 +179,16 @@ public abstract class CrudController<TEntity, T, TResponse, TCreateRequest, TUpd
             return BadRequest("Count less than zero");
         }
 
+        if (string.IsNullOrEmpty(req.Search))
+        {
+            req.Search = Request.Query["search[value]"].ToString();
+        }
+
         var res = await _dataTable.PaginatedDataAsync<TResponse>(
             req.Page,
             req.Count,
             req.Draw,
-            BuildBaseQuery(),
+            BuildBaseQuery(req),
             req.Search,
             GetSearchableProperties(),
             GetInitialWhereClause(),
