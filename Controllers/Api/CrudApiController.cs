@@ -200,7 +200,7 @@ public abstract class CrudController<TEntity, T, TResponse, TCreateRequest, TUpd
     [HttpGet("{id}")]
     public virtual async Task<ActionResult<TResponse>> Get(T id)
     {
-        var entity = await _repository.GetByIdAsync(id);
+        var entity = await _repository.GetByIdAsync(id, IncludeNavigation());
         if (entity == null)
         {
             return NotFound();
