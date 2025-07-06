@@ -1,12 +1,13 @@
+using System.Linq;
+using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TicketingSystem.Models.Common;
+using TicketingSystem.Models.DTO.Requests;
 using TicketingSystem.Models.DTO.Requests.Agency;
 using TicketingSystem.Models.DTO.Responses.Agency;
 using TicketingSystem.Models.Entities.Agency;
 using TicketingSystem.Services.Repositories;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Linq.Expressions;
 
 namespace TicketingSystem.Controllers.Api;
 
@@ -37,7 +38,7 @@ public class AgencyController(IAgencyRepository repository, Mapper mapper)
     /// single Get operations and the DataTable endpoint.
     /// </summary>
     /// <returns>An IQueryable<Agency> with necessary includes applied.</returns>
-    protected override IQueryable<Agency>? BuildBaseQuery()
+    protected override IQueryable<Agency>? BuildBaseQuery(DataTableRequest req)
     {
         // Get the base query from the repository (which typically returns an AsNoTracking query)
         var query = _agencyRepository.Query();
@@ -45,6 +46,22 @@ public class AgencyController(IAgencyRepository repository, Mapper mapper)
         // Eager load the 'Subscription' navigation property.
         // This ensures that when Agency data is fetched, its associated Subscription data is also loaded.
         query = query.Include(a => a.Subscription);
+
+        if (req.Filters.Count > 0)
+        {
+            // Filter by subscription plan id
+            string subscriptionId = req
+                .Filters.Where(r => r.Key == "subscriptionId")
+                .FirstOrDefault()
+                .Value;
+            if (
+                !string.IsNullOrEmpty(subscriptionId)
+                && Ulid.TryParse(subscriptionId, out Ulid subId)
+            )
+            {
+                query = query.Where(r => r.SubscriptionId == subId);
+            }
+        }
 
         return query;
     }

@@ -8,15 +8,17 @@ using TicketingSystem.Services.Repositories;
 
 namespace TicketingSystem.Controllers.Api;
 
-public class SubscriptionController
+public class SubscriptionController(ISubscriptionRepository repository, Mapper mapper)
     : CrudController<
         Subscription,
         Ulid,
         SubscriptionResponse,
         CreateSubscriptionRequest,
         UpdateSubscriptionRequest
-    >
+    >(repository, mapper)
 {
-    public SubscriptionController(ISubscriptionRepository repository, Mapper mapper)
-        : base(repository, mapper) { }
+    protected override string[]? GetSearchableProperties()
+    {
+        return new string[] { nameof(Subscription.PlanName), nameof(Subscription.Price) };
+    }
 }
