@@ -440,7 +440,6 @@
             // Handle reset filter button click
             $("[data-kt-agency-table-filter='reset']").on("click", function () {
                 $("[data-kt-agency-table-filter='subscription_id']").val("").trigger("change");
-                dataTable.clearCustomFilters();
                 dataTable.reDraw();
             });
 

@@ -149,7 +149,6 @@
                                 <label class="required fw-bold fs-6 mb-2">Agency</label>
                                 <select name="AgencyId" class="form-select form-select-solid fw-bolder" 
                                         data-kt-select2="true" data-placeholder="Select Agency" required>
-                                    <option></option>
                                     <!-- Dynamically loaded -->
                                 </select>
                             </div>
@@ -207,7 +206,10 @@
                         <div class="row g-9 mb-7">
                             <div class="col-md-12 fv-row">
                                 <label class="fw-bold fs-6 mb-2">Agency</label>
-                                <input type="text" id="editCategoryAgency" class="form-control form-control-solid" disabled />
+                                <select name="AgencyId" class="form-select form-select-solid fw-bolder" 
+                                        data-kt-select2="true" data-placeholder="Select Agency" required>
+                                    <!-- Dynamically loaded -->
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -278,6 +280,7 @@
                         // Attach edit event to text links
                         $("[data-kt-docs-table-filter='edit_row']").on("click", function (e) {
                             const categoryId = $(this).attr("item-id");
+                            handleEditCategorySelectAgency()
                             fetchAndPopulateEditModal(categoryId);
                             $("#kt_modal_edit_category").modal("show");
                         });
@@ -292,11 +295,14 @@
 
                 // Custom search and filters
                 dataTable.customSearchDataTable("[data-kt-table-filter='search']");
-                dataTable.customizeDataTableQueryParams = () => ({
-                    filters: {
+                dataTable.customizeDataTableQueryParams = () => {
+                    let q = {};
+                    q.filters = {
                         agencyId: $("[data-kt-category-table-filter='agency_id']").val()
                     }
-                });
+                    
+                    return q
+                }
             }
 
             // Fetch category data for edit modal
@@ -309,7 +315,9 @@
                     $("#editCategoryId").val(category.id);
                     $("#kt_modal_edit_category_form input[name='Name']").val(category.name);
                     $("#kt_modal_edit_category_form textarea[name='Description']").val(category.description || "");
-                    $("#editCategoryAgency").val(category.agency?.name || "—");
+                    $("#kt_modal_edit_category_form select[name='AgencyId']").select2("trigger", "select", { data: { "text": category?.agency?.name, "id": category?.agency?.id }, name: category.agency.name })
+                    
+                    editCategoryFormHandler.options.apiEndpoint = `/api/Category/${categoryId}`;
                 } catch (error) {
                     console.error("Error loading category:", error);
                     Swal.fire("Error", "Could not load category details.", "error");
@@ -320,25 +328,45 @@
             function initializeSelect2Dropdowns() {
                 select2AjaxSearchHandleListener(
                     "#kt_modal_add_category_form select[name='AgencyId']",
-                    { multiple: false },
+                    { multiple: false , dropdownParent:$("#kt_modal_add_category_form")[0]},
                     "/api/Agency",
-                    (params) => ({ search: params.term }),
-                    (data) => ({
-                        results: data.data.map(a => ({ id: a.id, text: a.name })),
-                        pagination: { more: false }
-                    })
-                );
+                    (params) => {
+                        var query = {
+                            search: params.term,
+                            length: 15,
+                            draw: 1,
+                            page: (params.page + 1) || 1
+                        }
+                        return query;
+                    }, (data, params) => {
+                        return {
+                            results: data.data,
+                            pagination: {
+                                more: ((params.page || 1) * 15) < data.recordsFiltered
+                            }
+                        }
+                    },"Search for an agency");
 
                 select2AjaxSearchHandleListener(
                     "[data-kt-category-table-filter='agency_id']",
                     { multiple: false },
                     "/api/Agency",
-                    (params) => ({ search: params.term }),
-                    (data) => ({
-                        results: data.data.map(a => ({ id: a.id, text: a.name })),
-                        pagination: { more: false }
-                    })
-                );
+                    (params) => {
+                        var query = {
+                            search: params.term,
+                            length: 15,
+                            draw: 1,
+                            page: (params.page + 1) || 1
+                        }
+                        return query;
+                    }, (data, params) => {
+                        return {
+                            results: data.data,
+                            pagination: {
+                                more: ((params.page || 1) * 15) < data.recordsFiltered
+                            }
+                        }
+                    },"Search for an agency");
             }
 
             // Form handlers for Add/Edit
@@ -381,9 +409,32 @@
             $("[data-kt-category-table-filter='filter']").on("click", () => dataTable.reDraw());
             $("[data-kt-category-table-filter='reset']").on("click", () => {
                 $("[data-kt-category-table-filter='agency_id']").val("").trigger("change");
-                dataTable.clearCustomFilters();
+                
                 dataTable.reDraw();
             });
+
+            const handleEditCategorySelectAgency = () => {
+                select2AjaxSearchHandleListener(
+                    "#kt_modal_edit_category_form select[name='AgencyId']",
+                    { multiple: false ,dropdownParent: $("#kt_modal_edit_category_form")[0]},
+                    "/api/Agency",
+                    (params) => {
+                        var query = {
+                            search: params.term,
+                            length: 15,
+                            draw: 1,
+                            page: (params.page + 1) || 1
+                        }
+                        return query;
+                    }, (data, params) => {
+                    return {
+                        results: data.data,
+                        pagination: {
+                            more: ((params.page || 1) * 15) < data.recordsFiltered
+                        }
+                    }
+                },"Search for an agency");
+            }
 
             // Initialize everything
             initializeCategoriesDataTable();

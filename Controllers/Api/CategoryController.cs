@@ -1,5 +1,7 @@
+using Microsoft.EntityFrameworkCore;
 using OneOf;
 using OneOf.Types;
+using TicketingSystem.Models.DTO.Requests;
 using TicketingSystem.Models.DTO.Requests.Category;
 using TicketingSystem.Models.DTO.Responses.Category;
 using TicketingSystem.Models.Entities.Agency;
@@ -20,7 +22,41 @@ public class CategoryController(
         EditCategoryRequest
     >(repository, mapper)
 {
+    private readonly ICategoryRepository _repository = repository;
     private readonly IAgencyRepository _agencyRepository = agencyRepository;
+
+    /// <summary>
+    /// Overrides the base method to build the initial IQueryable for fetching Agency data.
+    /// This is crucial for eager loading related entities like Subscription for both
+    /// single Get operations and the DataTable endpoint.
+    /// </summary>
+    /// <returns>An IQueryable<Agency> with necessary includes applied.</returns>
+    protected override IQueryable<Category>? BuildBaseQuery(DataTableRequest req)
+    {
+        // Get the base query from the repository (which typically returns an AsNoTracking query)
+        var query = _repository.Query();
+
+        // This ensures that when Agency data is fetched, its associated Subscription data is also loaded.
+        query = query.Include(a => a.Agency);
+
+        if (req.Filters.Count > 0)
+        {
+            // Filter by subscription plan id
+            string agencyId = req
+                .Filters.Where(r => r.Key == "agencyId")
+                .FirstOrDefault()
+                .Value;
+            if (
+                !string.IsNullOrEmpty(agencyId)
+                && Ulid.TryParse(agencyId, out Ulid subId)
+            )
+            {
+                query = query.Where(r => r.AgencyId == subId);
+            }
+        }
+
+        return query;
+    }
 
     protected override async Task<OneOf<Success, Error<string>>> BeforeCreateAsync(
         CreateCategoryRequest createDto
