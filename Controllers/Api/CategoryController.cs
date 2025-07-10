@@ -42,11 +42,11 @@ public class CategoryController(
 
     protected override string[] GetSearchableProperties()
     {
-        throw new NotImplementedException();
+       return new[] { nameof(Category.Name), nameof(Category.Description) };
     }
 
     protected override string[] IncludeNavigation()
     {
-        throw new NotImplementedException();
+       return new[] { nameof(Category.Agency) };
     }
 }

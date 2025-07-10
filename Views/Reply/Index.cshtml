@@ -1,0 +1,428 @@
+@{
+    ViewData["Title"] = "Replies Management";
+}
+
+@section Styles {
+    <link rel="stylesheet" type="text/css" href="~/lib/metronic/plugins/custom/datatables/datatables.bundle.css">
+    <style>
+        .card {
+            margin-bottom: 20px;
+        }
+        /* Custom styling for reply content (truncate long text) */
+        .reply-content {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    </style>
+}
+
+<div class="card">
+    <!-- Card Header -->
+    <div class="card-header border-0 pt-6">
+        <div class="card-title">
+            <!-- Search Input -->
+            <div class="d-flex align-items-center position-relative my-1">
+                <span class="svg-icon svg-icon-1 position-absolute ms-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <rect opacity="0.5" x="17.0365" y="15.1223" width="8.15546" height="2" rx="1" transform="rotate(45 17.0365 15.1223)" fill="black"></rect>
+                        <path d="M11 19C6.55556 19 3 15.4444 3 11C3 6.55556 6.55556 3 11 3C15.4444 3 19 6.55556 19 11C19 15.4444 15.4444 19 11 19ZM11 5C7.53333 5 5 7.53333 5 11C5 14.4667 7.53333 17 11 17C14.4667 17 17 14.4667 17 11C17 7.53333 14.4667 5 11 5Z" fill="black"></path>
+                    </svg>
+                </span>
+                <input type="text" data-kt-table-filter="search" class="form-control form-control-solid w-250px ps-15" placeholder="Search Replies" />
+            </div>
+        </div>
+        <!-- Card Toolbar (Filter + Add New) -->
+        <div class="card-toolbar">
+            <div class="d-flex justify-content-end" data-kt-reply-table-toolbar="base">
+                <!-- Filter Dropdown -->
+                <button type="button" class="btn btn-light-primary me-3" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                    <span class="svg-icon svg-icon-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M19.0759 3H4.72777C3.95892 3 3.47768 3.83148 3.86067 4.49814L8.56967 12.6949C9.17923 13.7559 9.5 14.9582 9.5 16.1819V19.5072C9.5 20.2189 10.2223 20.7028 10.8805 20.432L13.8805 19.1977C14.2553 19.0435 14.5 18.6783 14.5 18.273V13.8372C14.5 12.8089 14.8171 11.8056 15.408 10.964L19.8943 4.57465C20.3596 3.912 19.8856 3 19.0759 3Z" fill="black"></path>
+                        </svg>
+                    </span>
+                    Filter
+                </button>
+                <!-- Filter Menu -->
+                <div class="menu menu-sub menu-sub-dropdown w-300px w-md-325px" data-kt-menu="true" id="kt-toolbar-filter">
+                    <div class="px-7 py-5">
+                        <div class="fs-4 text-dark fw-bolder">Filter Options</div>
+                    </div>
+                    <div class="separator border-gray-200"></div>
+                    <div class="px-7 py-5">
+                        <!-- Filter by Ticket -->
+                        <div class="mb-10">
+                            <label class="form-label fs-5 fw-bold mb-3">Ticket:</label>
+                            <select class="form-select form-select-solid fw-bolder" data-kt-select2="true" data-placeholder="Select Ticket" data-allow-clear="true" data-kt-reply-table-filter="ticket_id">
+                                <option></option>
+                                <!-- Dynamically loaded -->
+                            </select>
+                        </div>
+                        <!-- Filter by User -->
+                        <div class="mb-10">
+                            <label class="form-label fs-5 fw-bold mb-3">User:</label>
+                            <select class="form-select form-select-solid fw-bolder" data-kt-select2="true" data-placeholder="Select User" data-allow-clear="true" data-kt-reply-table-filter="user_id">
+                                <option></option>
+                                <!-- Dynamically loaded -->
+                            </select>
+                        </div>
+                        <!-- Filter by Type -->
+                        <div class="mb-10">
+                            <label class="form-label fs-5 fw-bold mb-3">Type:</label>
+                            <select class="form-select form-select-solid fw-bolder" data-kt-reply-table-filter="type">
+                                <option value="">All</option>
+                                <option value="Public">Public</option>
+                                <option value="Internal">Internal</option>
+                                <option value="Chatbot">Chatbot</option>
+                            </select>
+                        </div>
+                        <!-- Actions -->
+                        <div class="d-flex justify-content-end">
+                            <button type="reset" class="btn btn-light btn-active-light-primary me-2" data-kt-menu-dismiss="true" data-kt-reply-table-filter="reset">Reset</button>
+                            <button type="submit" class="btn btn-primary" data-kt-menu-dismiss="true" data-kt-reply-table-filter="filter">Apply</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Add New Reply Button -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_reply">
+                    Add Reply
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Card Body -->
+    <div class="card-body pt-0">
+        <div class="table-responsive">
+            <table id="data-table" class="table table-row-bordered table-stripped align-middle fs-6 gs-7 gy-5" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Ticket</th>
+                        <th>User</th>
+                        <th>Content</th>
+                        <th>Type</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Reply Modal -->
+<div class="modal fade" id="kt_modal_add_reply" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="fw-bolder">Add New Reply</h2>
+                <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
+                    <span class="svg-icon svg-icon-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="black" />
+                            <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="black" />
+                        </svg>
+                    </span>
+                </div>
+            </div>
+            <div class="modal-body mx-5 mx-xl-15 my-7">
+                <form id="kt_modal_add_reply_form" method="post" class="form">
+                    <div class="d-flex flex-column scroll-y me-n7 pe-7">
+                        <!-- Ticket Selection -->
+                        <div class="row g-9 mb-7">
+                            <div class="col-md-12 fv-row">
+                                <label class="required fw-bold fs-6 mb-2">Ticket</label>
+                                <select name="TicketId" class="form-select form-select-solid fw-bolder" data-kt-select2="true" data-placeholder="Select Ticket" required>
+                                    <option></option>
+                                    <!-- Dynamically loaded -->
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Content -->
+                        <div class="row g-9 mb-7">
+                            <div class="col-md-12 fv-row">
+                                <label class="required fw-bold fs-6 mb-2">Content</label>
+                                <textarea name="Content" class="form-control form-control-solid" rows="5" placeholder="Enter reply content..." required></textarea>
+                            </div>
+                        </div>
+                        <!-- Type (Public/Internal/Chatbot) -->
+                        <div class="row g-9 mb-7">
+                            <div class="col-md-12 fv-row">
+                                <label class="required fw-bold fs-6 mb-2">Type</label>
+                                <select name="Type" class="form-select form-select-solid fw-bolder" required>
+                                    <option value="Public">Public (Visible to customer)</option>
+                                    <option value="Internal">Internal (Agent-only)</option>
+                                    <option value="Chatbot">Chatbot (Auto-generated)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center pt-15">
+                        <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">Discard</button>
+                        <button type="submit" id="kt_add_reply_submit_button" class="btn btn-primary">
+                            <span class="indicator-label">Submit</span>
+                            <span class="indicator-progress">Please wait...
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Reply Modal -->
+<div class="modal fade" id="kt_modal_edit_reply" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="fw-bolder">Edit Reply</h2>
+                <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
+                    <span class="svg-icon svg-icon-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="black" />
+                            <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="black" />
+                        </svg>
+                    </span>
+                </div>
+            </div>
+            <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
+                <form id="kt_modal_edit_reply_form" class="form">
+                    <input type="hidden" name="Id" id="editReplyId" />
+                    <div class="d-flex flex-column scroll-y me-n7 pe-7">
+                        <!-- Ticket Selection (Disabled in Edit Mode) -->
+                        <div class="row g-9 mb-7">
+                            <div class="col-md-12 fv-row">
+                                <label class="fw-bold fs-6 mb-2">Ticket</label>
+                                <input type="text" class="form-control form-control-solid" id="editReplyTicket" disabled />
+                            </div>
+                        </div>
+                        <!-- Content -->
+                        <div class="row g-9 mb-7">
+                            <div class="col-md-12 fv-row">
+                                <label class="required fw-bold fs-6 mb-2">Content</label>
+                                <textarea name="Content" class="form-control form-control-solid" rows="5" required></textarea>
+                            </div>
+                        </div>
+                        <!-- Type -->
+                        <div class="row g-9 mb-7">
+                            <div class="col-md-12 fv-row">
+                                <label class="required fw-bold fs-6 mb-2">Type</label>
+                                <select name="Type" class="form-select form-select-solid fw-bolder" required>
+                                    <option value="Public">Public</option>
+                                    <option value="Internal">Internal</option>
+                                    <option value="Chatbot">Chatbot</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center pt-15">
+                        <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" id="kt_edit_reply_submit_button" class="btn btn-primary">
+                            <span class="indicator-label">Save Changes</span>
+                            <span class="indicator-progress">Please wait...
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/metronic/plugins/custom/datatables/datatables.bundle.js"></script>
+    <script src="~/js/dataTable/init.js"></script>
+    <script src="~/js/forms/form-submit-handler.js"></script>
+    <script src="~/js/forms/ajaxSelect2Handler.js"></script>
+    <script>
+        $(document).ready(function () {
+            let dataTable;
+            let allTickets = [];
+            let allUsers = [];
+
+            // Initialize DataTable
+            function initializeRepliesDataTable() {
+                dataTable = new DataTableSSR("/api/Reply", [
+                    { 
+                        data: "ticket", 
+                        name: "Ticket", 
+                        render: (data) => data?.subject || "N/A" 
+                    },
+                    { 
+                        data: "user", 
+                        name: "User", 
+                        render: (data) => data?.name || "N/A" 
+                    },
+                    { 
+                        data: "content", 
+                        name: "Content", 
+                        class: "reply-content" 
+                    },
+                    { 
+                        data: "type", 
+                        name: "Type", 
+                        render: (data) => {
+                            let badgeClass = "badge-light-primary";
+                            if (data === "Internal") badgeClass = "badge-light-warning";
+                            if (data === "Chatbot") badgeClass = "badge-light-info";
+                            return `<span class="badge ${badgeClass}">${data}</span>`;
+                        }
+                    },
+                    { 
+                        data: null, 
+                        class: "text-end",
+                        render: (data) => {
+                            return `
+                                <a href="#" class="btn btn-sm btn-icon btn-light-primary me-2" data-kt-docs-table-filter="edit_row" item-id="${data.id}">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="#" class="btn btn-sm btn-icon btn-light-danger" data-kt-docs-table-filter="delete_row" item-id="${data.id}">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            `;
+                        }
+                    }
+                ]);
+
+                dataTable.initDataTableObj("#data-table", null, null, [{
+                    event: "draw",
+                    action: () => {
+                        // Attach edit/delete events
+                        dataTable.deleteRowsBtnEvents("[data-kt-docs-table-filter='delete_row']", "/api/Reply", 0);
+                        handleEditModalListener();
+                    }
+                }]);
+
+                // Custom search and filters
+                dataTable.customSearchDataTable("[data-kt-table-filter='search']");
+                dataTable.customizeDataTableQueryParams = () => {
+                    return {
+                        filters: {
+                            ticketId: $("[data-kt-reply-table-filter='ticket_id']").val(),
+                            userId: $("[data-kt-reply-table-filter='user_id']").val(),
+                            type: $("[data-kt-reply-table-filter='type']").val()
+                        }
+                    };
+                };
+            }
+
+            // Handle edit modal opening
+            function handleEditModalListener() {
+                $("[data-kt-docs-table-filter='edit_row']").on("click", async function (e) {
+                    const replyId = $(this).attr("item-id");
+                    await fetchAndPopulateEditModal(replyId);
+                    $("#kt_modal_edit_reply").modal("show");
+                });
+            }
+
+            // Fetch reply data for edit modal
+            async function fetchAndPopulateEditModal(replyId) {
+                try {
+                    const response = await fetch(`/api/Reply/${replyId}`);
+                    if (!response.ok) throw new Error("Failed to fetch reply");
+                    const reply = await response.json();
+
+                    $("#editReplyId").val(reply.id);
+                    $("#editReplyTicket").val(reply.ticket?.subject || "N/A");
+                    $("#kt_modal_edit_reply_form textarea[name='Content']").val(reply.content);
+                    $("#kt_modal_edit_reply_form select[name='Type']").val(reply.type).trigger("change");
+                } catch (error) {
+                    console.error("Error loading reply:", error);
+                    Swal.fire("Error", "Could not load reply details.", "error");
+                }
+            }
+
+            // Initialize Select2 dropdowns for Tickets and Users
+            function initializeSelect2Dropdowns() {
+                // Tickets dropdown (Add modal)
+                select2AjaxSearchHandleListener(
+                    "#kt_modal_add_reply_form select[name='TicketId']",
+                    { multiple: false },
+                    "/api/Ticket",
+                    (params) => ({ search: params.term }),
+                    (data) => ({
+                        results: data.data.map(t => ({ id: t.id, text: t.subject })),
+                        pagination: { more: false }
+                    })
+                );
+
+                // Users dropdown (Filter)
+                select2AjaxSearchHandleListener(
+                    "[data-kt-reply-table-filter='user_id']",
+                    { multiple: false },
+                    "/api/User",
+                    (params) => ({ search: params.term }),
+                    (data) => ({
+                        results: data.data.map(u => ({ id: u.id, text: u.name })),
+                        pagination: { more: false }
+                    })
+                );
+
+                // Tickets dropdown (Filter)
+                select2AjaxSearchHandleListener(
+                    "[data-kt-reply-table-filter='ticket_id']",
+                    { multiple: false },
+                    "/api/Ticket",
+                    (params) => ({ search: params.term }),
+                    (data) => ({
+                        results: data.data.map(t => ({ id: t.id, text: t.subject })),
+                        pagination: { more: false }
+                    })
+                );
+            }
+
+            // Form handlers for Add/Edit
+            const addReplyFormHandler = new FormSubmitHandler({
+                formSelector: "#kt_modal_add_reply_form",
+                submitButtonSelector: "#kt_add_reply_submit_button",
+                apiEndpoint: "/api/Reply",
+                method: "POST",
+                onSuccess: () => {
+                    Swal.fire("Success", "Reply added successfully!", "success");
+                    $("#kt_modal_add_reply").modal("hide");
+                    dataTable.reDraw();
+                },
+                onError: (error) => {
+                    Swal.fire("Error", error.message || "Failed to add reply.", "error");
+                }
+            });
+
+            const editReplyFormHandler = new FormSubmitHandler({
+                formSelector: "#kt_modal_edit_reply_form",
+                submitButtonSelector: "#kt_edit_reply_submit_button",
+                apiEndpoint: "/api/Reply", // Will be dynamically set
+                method: "PUT",
+                onSuccess: () => {
+                    Swal.fire("Success", "Reply updated successfully!", "success");
+                    $("#kt_modal_edit_reply").modal("hide");
+                    dataTable.reDraw();
+                },
+                onError: (error) => {
+                    Swal.fire("Error", error.message || "Failed to update reply.", "error");
+                },
+                beforeSubmit: (formData) => {
+                    const replyId = $("#editReplyId").val();
+                    editReplyFormHandler.options.apiEndpoint = `/api/Reply/${replyId}`;
+                    return formData;
+                }
+            });
+
+            // Filter button events
+            $("[data-kt-reply-table-filter='filter']").on("click", () => dataTable.reDraw());
+            $("[data-kt-reply-table-filter='reset']").on("click", () => {
+                $("[data-kt-reply-table-filter='ticket_id'], [data-kt-reply-table-filter='user_id']").val("").trigger("change");
+                $("[data-kt-reply-table-filter='type']").val("");
+                dataTable.clearCustomFilters();
+                dataTable.reDraw();
+            });
+
+            // Initialize everything
+            initializeRepliesDataTable();
+            initializeSelect2Dropdowns();
+        });
+    </script>
+}
