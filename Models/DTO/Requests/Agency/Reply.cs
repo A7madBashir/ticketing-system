@@ -1,8 +1,8 @@
-using System;
+using System.Text.Json.Serialization;
 
 namespace TicketingSystem.Models.DTO.Requests.Replies
 {
-    public class CreateReplyRequest
+    public class CreateReplyRequest : ICreateRequest
     {
         public Ulid TicketId { get; set; }
         public Ulid UserId { get; set; }
@@ -11,11 +11,9 @@ namespace TicketingSystem.Models.DTO.Requests.Replies
         public bool IsChatbotReply { get; set; }
     }
 
-    public class UpdateReplyRequest
+    public class EditReplyRequest : CreateReplyRequest, IEditRequest<Ulid>
     {
-        public required Ulid Id { get; set; }
-        public required string Content { get; set; }
-        public bool IsInternal { get; set; }
-        public bool IsChatbotReply { get; set; }
+       [JsonIgnore]
+       public Ulid Id { get; set; }
     }
 }

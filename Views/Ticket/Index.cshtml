@@ -22,6 +22,19 @@
         .badge-priority-medium { background-color: #E1F0FF; color: #3699FF; }
         .badge-priority-high { background-color: #FFF4DE; color: #FFA800; }
         .badge-priority-critical { background-color: #FFE2E5; color: #F64E60; }
+        /* Loading overlay */
+        .modal-loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
     </style>
 }
 
@@ -90,6 +103,16 @@
                                 <!-- Dynamically loaded -->
                             </select>
                         </div>
+                        <!-- Agency -->
+                        <div class="mb-10">
+                            <label class="form-label fs-5 fw-bold mb-3">Agency</label>
+                            <select class="form-select form-select-solid fw-bolder" data-kt-select2="true" 
+                                    data-placeholder="Select Agency" data-allow-clear="true"
+                                    data-kt-ticket-table-filter="agency_id">
+                                <option></option>
+                                <!-- Dynamically loaded -->
+                            </select>
+                        </div>
                         <!-- Actions -->
                         <div class="d-flex justify-content-end">
                             <button type="reset" class="btn btn-light btn-active-light-primary me-2" 
@@ -120,6 +143,7 @@
                         <th>Status</th>
                         <th>Priority</th>
                         <th>Category</th>
+                        <th>Agency</th>
                         <th>Created By</th>
                         <th>Actions</th>
                     </tr>
@@ -136,7 +160,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 class="fw-bolder">Add New Ticket</h2>
-                <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
+                <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal" aria-label="Close modal">
                     <span class="svg-icon svg-icon-1">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                             <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="black" />
@@ -147,19 +171,23 @@
             </div>
             <div class="modal-body mx-5 mx-xl-15 my-7">
                 <form id="kt_modal_add_ticket_form" method="post" class="form">
+                    <input type="hidden" name="__RequestVerificationToken" value="@Html.AntiForgeryToken()" />
                     <div class="d-flex flex-column scroll-y me-n7 pe-7">
                         <!-- Title -->
                         <div class="row g-9 mb-7">
                             <div class="col-md-12 fv-row">
                                 <label class="required fw-bold fs-6 mb-2">Title</label>
-                                <input type="text" name="Title" class="form-control form-control-solid" placeholder="e.g., Login Issue" required />
+                                <input type="text" name="Title" class="form-control form-control-solid" 
+                                       placeholder="e.g., Login Issue" maxlength="100" required />
                             </div>
                         </div>
                         <!-- Description -->
                         <div class="row g-9 mb-7">
                             <div class="col-md-12 fv-row">
                                 <label class="fw-bold fs-6 mb-2">Description</label>
-                                <textarea name="Description" class="form-control form-control-solid" rows="4" placeholder="Detailed description of the issue"></textarea>
+                                <textarea name="Description" class="form-control form-control-solid" 
+                                          rows="4" maxlength="500" 
+                                          placeholder="Detailed description of the issue"></textarea>
                             </div>
                         </div>
                         <!-- Status & Priority -->
@@ -188,6 +216,17 @@
                                 <label class="required fw-bold fs-6 mb-2">Category</label>
                                 <select name="CategoryId" class="form-select form-select-solid fw-bolder" 
                                         data-kt-select2="true" data-placeholder="Select Category" required>
+                                    <option></option>
+                                    <!-- Dynamically loaded -->
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Agency -->
+                        <div class="row g-9 mb-7">
+                            <div class="col-md-12 fv-row">
+                                <label class="required fw-bold fs-6 mb-2">Agency</label>
+                                <select name="AgencyId" class="form-select form-select-solid fw-bolder" 
+                                        data-kt-select2="true" data-placeholder="Select Agency" required>
                                     <option></option>
                                     <!-- Dynamically loaded -->
                                 </select>
@@ -224,7 +263,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 class="fw-bolder">Edit Ticket</h2>
-                <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal">
+                <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal" aria-label="Close modal">
                     <span class="svg-icon svg-icon-1">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
                             <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="black" />
@@ -235,20 +274,21 @@
             </div>
             <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
                 <form id="kt_modal_edit_ticket_form" class="form">
+                    <input type="hidden" name="__RequestVerificationToken" value="@Html.AntiForgeryToken()" />
                     <input type="hidden" name="Id" id="editTicketId" />
                     <div class="d-flex flex-column scroll-y me-n7 pe-7">
                         <!-- Title -->
                         <div class="row g-9 mb-7">
                             <div class="col-md-12 fv-row">
                                 <label class="required fw-bold fs-6 mb-2">Title</label>
-                                <input type="text" name="Title" class="form-control form-control-solid" required />
+                                <input type="text" name="Title" class="form-control form-control-solid" maxlength="100" required />
                             </div>
                         </div>
                         <!-- Description -->
                         <div class="row g-9 mb-7">
                             <div class="col-md-12 fv-row">
                                 <label class="fw-bold fs-6 mb-2">Description</label>
-                                <textarea name="Description" class="form-control form-control-solid" rows="4"></textarea>
+                                <textarea name="Description" class="form-control form-control-solid" rows="4" maxlength="500"></textarea>
                             </div>
                         </div>
                         <!-- Status & Priority -->
@@ -271,14 +311,21 @@
                                 </select>
                             </div>
                         </div>
-                        <!-- Category (Read-only) -->
+                        <!-- Category -->
                         <div class="row g-9 mb-7">
                             <div class="col-md-12 fv-row">
                                 <label class="fw-bold fs-6 mb-2">Category</label>
                                 <input type="text" id="editTicketCategory" class="form-control form-control-solid" disabled />
                             </div>
                         </div>
-                        <!-- Chatbot Origin (Read-only) -->
+                        <!-- Agency -->
+                        <div class="row g-9 mb-7">
+                            <div class="col-md-12 fv-row">
+                                <label class="fw-bold fs-6 mb-2">Agency</label>
+                                <input type="text" id="editTicketAgency" class="form-control form-control-solid" disabled />
+                            </div>
+                        </div>
+                        <!-- Chatbot Origin -->
                         <div class="row g-9 mb-7">
                             <div class="col-md-12 fv-row">
                                 <label class="form-check form-check-custom form-check-solid">
@@ -311,114 +358,180 @@
     <script>
         $(document).ready(function () {
             let dataTable;
+            let currentUserId = '@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value';
 
             // Initialize DataTable
             function initializeTicketsDataTable() {
                 dataTable = new DataTableSSR("/api/Ticket", [
                     { 
                         data: "title", 
-                        name: "Title",
+                        name: "Title", // Keep PascalCase for server-side sorting/filtering if backend expects it
                         class: "ticket-title",
-                        render: (data) => data.length > 30 ? data.substring(0, 30) + "..." : data
+                        render: (data) => data?.length > 30 ? data.substring(0, 30) + "..." : data || "—"
                     },
                     { 
                         data: "status", 
-                        name: "Status",
+                        name: "Status", // Keep PascalCase
                         render: (data) => {
                             let badgeClass = "badge-status-open";
                             if (data === "InProgress") badgeClass = "badge-status-inprogress";
                             if (data === "Resolved") badgeClass = "badge-status-resolved";
-                            return `<span class="badge ${badgeClass}">${data}</span>`;
+                            return data ? `<span class="badge ${badgeClass}">${data}</span>` : "—";
                         }
                     },
                     { 
                         data: "priority", 
-                        name: "Priority",
+                        name: "Priority", // Keep PascalCase
                         render: (data) => {
                             let badgeClass = "badge-priority-low";
                             if (data === "Medium") badgeClass = "badge-priority-medium";
                             if (data === "High") badgeClass = "badge-priority-high";
                             if (data === "Critical") badgeClass = "badge-priority-critical";
-                            return `<span class="badge ${badgeClass}">${data}</span>`;
+                            return data ? `<span class="badge ${badgeClass}">${data}</span>` : "—";
                         }
                     },
                     { 
                         data: "category", 
-                        name: "Category",
+                        name: "Category", // Keep PascalCase
+                        render: (data) => data?.name || "—"
+                    },
+                    { 
+                        data: "agency", 
+                        name: "Agency", // Keep PascalCase
                         render: (data) => data?.name || "—"
                     },
                     { 
                         data: "createdBy", 
-                        name: "CreatedBy",
-                        render: (data) => data?.name || "—"
+                        name: "CreatedBy", // Keep PascalCase
+                        render: (data) => data?.email || "—"
                     },
                     { 
                         data: null, 
                         class: "text-end",
+                        orderable: false,
+                        searchable: false,
                         render: (data) => `
-                            <a href="#" class="btn btn-sm btn-icon btn-light-primary me-2" 
-                               data-kt-docs-table-filter="edit_row" item-id="${data.id}">
-                                <i class="fas fa-edit"></i>
+                            <a href="#" class="btn btn-sm btn-light-primary me-2 px-4" 
+                               data-kt-action="edit_row" data-id="${data.id}"
+                               data-bs-toggle="modal" data-bs-target="#kt_modal_edit_ticket">
+                                Edit
                             </a>
-                            <a href="#" class="btn btn-sm btn-icon btn-light-danger" 
-                               data-kt-docs-table-filter="delete_row" item-id="${data.id}">
-                                <i class="fas fa-trash"></i>
+                            <a href="#" class="btn btn-sm btn-light-danger px-4" 
+                               data-kt-action="delete_row" data-id="${data.id}">
+                                Delete
                             </a>
                         `
                     }
                 ]);
 
+                // This line is redundant and should be removed if DataTableSSR already initializes #data-table
+                // and handles draw events internally. If it's for attaching general DataTables events,
+                // it can stay, but the action can be empty as delegated events handle row-specific logic.
                 dataTable.initDataTableObj("#data-table", null, null, [{
-                    event: "draw",
+                    event: "draw.dt",
                     action: () => {
-                        // Attach edit/delete events
-                        dataTable.deleteRowsBtnEvents("[data-kt-docs-table-filter='delete_row']", "/api/Ticket", 0);
-                        handleEditModalListener();
+                        // All row-specific events are handled by delegated listeners (e.g., $(document).on)
+                        // No specific re-attachment needed here
                     }
                 }]);
-
+                
                 // Custom search and filters
                 dataTable.customSearchDataTable("[data-kt-table-filter='search']");
                 dataTable.customizeDataTableQueryParams = () => ({
                     filters: {
                         status: $("[data-kt-ticket-table-filter='status']").val(),
                         priority: $("[data-kt-ticket-table-filter='priority']").val(),
-                        categoryId: $("[data-kt-ticket-table-filter='category_id']").val()
+                        categoryId: $("[data-kt-ticket-table-filter='category_id']").val(),
+                        agencyId: $("[data-kt-ticket-table-filter='agency_id']").val()
                     }
                 });
             }
 
-            // Handle edit modal opening
-            function handleEditModalListener() {
-                $("[data-kt-docs-table-filter='edit_row']").on("click", async function (e) {
-                    const ticketId = $(this).attr("item-id");
-                    await fetchAndPopulateEditModal(ticketId);
-                    $("#kt_modal_edit_ticket").modal("show");
+            // --- Event Handling for Delete ---
+            $(document).on('click', '[data-kt-action="delete_row"]', function(e) {
+                e.preventDefault();
+                const ticketId = $(this).data('id'); // Get ID from data-id attribute
+                
+                Swal.fire({
+                    title: "Delete Ticket?",
+                    text: "Are you sure you want to delete this ticket? This action cannot be undone.",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: "Yes, delete it!",
+                    cancelButtonText: "Cancel",
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            url: `/api/Ticket/${ticketId}`,
+                            type: "DELETE",
+                            headers: {
+                                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                            },
+                            success: () => {
+                                dataTable.reDraw(); // Redraw the table after successful deletion
+                                Swal.fire("Deleted!", "Ticket has been deleted successfully.", "success");
+                            },
+                            error: (xhr) => {
+                                console.error("Delete Error:", xhr);
+                                let errorMessage = "Failed to delete ticket.";
+                                if (xhr.responseJSON && xhr.responseJSON.message) {
+                                    errorMessage = xhr.responseJSON.message;
+                                } else if (xhr.statusText) {
+                                    errorMessage = xhr.statusText;
+                                }
+                                Swal.fire("Error", errorMessage, "error");
+                            }
+                        });
+                    }
                 });
-            }
+            });
+
+            // --- Event Handling for Edit ---
+            $(document).on('click', '[data-kt-action="edit_row"]', async function(e) {
+                e.preventDefault();
+                const ticketId = $(this).data('id'); // Get ID from data-id attribute
+                await fetchAndPopulateEditModal(ticketId);
+                // The modal should automatically show due to data-bs-toggle="modal" on the button
+                // If it doesn't, uncomment: $("#kt_modal_edit_ticket").modal("show");
+            });
 
             // Fetch ticket data for edit modal
             async function fetchAndPopulateEditModal(ticketId) {
+                const modal = $("#kt_modal_edit_ticket");
+                modal.find(".modal-content").prepend('<div class="modal-loading-overlay"><div class="spinner-border text-primary"></div></div>');
+                
                 try {
                     const response = await fetch(`/api/Ticket/${ticketId}`);
-                    if (!response.ok) throw new Error("Failed to fetch ticket");
-                    const ticket = await response.json();
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({ message: response.statusText }));
+                        throw new Error(`HTTP error! Status: ${response.status} - ${errorData.message || 'Unknown error'}`);
+                    }
+                    const ticket = await response.json(); // API returns camelCase properties
 
+                    // Populate the form fields. Selectors now match PascalCase HTML name attributes.
+                    // Values come from camelCase API response.
                     $("#editTicketId").val(ticket.id);
                     $("#kt_modal_edit_ticket_form input[name='Title']").val(ticket.title);
                     $("#kt_modal_edit_ticket_form textarea[name='Description']").val(ticket.description || "");
                     $("#kt_modal_edit_ticket_form select[name='Status']").val(ticket.status).trigger("change");
-                    $("#kt_modal_edit_ticket_form select[name='Priority']").val(ticket.priority).trigger("change");
+                    // Ensure your backend consistently returns 'priority' (not null) or handle default
+                    $("#kt_modal_edit_ticket_form select[name='Priority']").val(ticket.priority || "Medium").trigger("change"); 
                     $("#editTicketCategory").val(ticket.category?.name || "—");
-                    $("#editTicketChatbot").prop("checked", ticket.originatedFromChatbot);
+                    $("#editTicketAgency").val(ticket.agency?.name || "—");
+                    $("#editTicketChatbot").prop("checked", ticket.originatedFromChatbot || false);
+
                 } catch (error) {
-                    console.error("Error loading ticket:", error);
-                    Swal.fire("Error", "Could not load ticket details.", "error");
+                    console.error("Error loading ticket for edit:", error);
+                    Swal.fire("Error", error.message || "Could not load ticket details. Please try again.", "error");
+                } finally {
+                    modal.find(".modal-loading-overlay").remove();
                 }
             }
 
-            // Initialize Select2 dropdowns for Categories
+            // Initialize Select2 dropdowns for Add/Filter forms
             function initializeSelect2Dropdowns() {
+                // Note: These selectors expect PascalCase 'name' attributes for Categories/Agencies dropdowns in the ADD form
                 select2AjaxSearchHandleListener(
                     "#kt_modal_add_ticket_form select[name='CategoryId']",
                     { multiple: false },
@@ -431,6 +544,18 @@
                 );
 
                 select2AjaxSearchHandleListener(
+                    "#kt_modal_add_ticket_form select[name='AgencyId']",
+                    { multiple: false },
+                    "/api/Agency",
+                    (params) => ({ search: params.term }),
+                    (data) => ({
+                        results: data.data.map(a => ({ id: a.id, text: a.name })),
+                        pagination: { more: false }
+                    })
+                );
+
+                // Filter Select2s (these already use data attributes, so no name attribute conflict)
+                select2AjaxSearchHandleListener(
                     "[data-kt-ticket-table-filter='category_id']",
                     { multiple: false },
                     "/api/Category",
@@ -440,40 +565,94 @@
                         pagination: { more: false }
                     })
                 );
+
+                select2AjaxSearchHandleListener(
+                    "[data-kt-ticket-table-filter='agency_id']",
+                    { multiple: false },
+                    "/api/Agency",
+                    (params) => ({ search: params.term }),
+                    (data) => ({
+                        results: data.data.map(a => ({ id: a.id, text: a.name })),
+                        pagination: { more: false }
+                    })
+                );
             }
 
-            // Form handlers for Add/Edit
+            // Form handlers (assuming FormSubmitHandler correctly processes PascalCase names from HTML)
             const addTicketFormHandler = new FormSubmitHandler({
                 formSelector: "#kt_modal_add_ticket_form",
                 submitButtonSelector: "#kt_add_ticket_submit_button",
                 apiEndpoint: "/api/Ticket",
                 method: "POST",
+                validate: (formData) => {
+                    // Accessing formData properties as PascalCase, expecting HTML input names to match
+                    if (!formData.Title || formData.Title.length > 100) {
+                        return { isValid: false, message: "Title is required and must be less than 100 characters" };
+                    }
+                    if (formData.Description && formData.Description.length > 500) {
+                        return { isValid: false, message: "Description must be less than 500 characters" };
+                    }
+                    return { isValid: true };
+                },
                 onSuccess: () => {
                     Swal.fire("Success", "Ticket created successfully!", "success");
                     $("#kt_modal_add_ticket").modal("hide");
-                    dataTable.reDraw();
+                    dataTable.reDraw(); // Redraw the table
                 },
                 onError: (error) => {
-                    Swal.fire("Error", error.message || "Failed to create ticket.", "error");
+                    let message = "Failed to create ticket.";
+                    if (error.response?.data?.errors) {
+                        message = Object.values(error.response.data.errors).flat().join("\n"); // flat() for multiple errors per field
+                    } else if (error.message) {
+                        message = error.message;
+                    }
+                    Swal.fire("Error", message, "error");
+                },
+                beforeSubmit: (formData) => {
+                    formData.CreatedById = currentUserId; // Expects HTML name="CreatedById" or FormSubmitHandler processes it.
+                    return formData;
                 }
             });
 
             const editTicketFormHandler = new FormSubmitHandler({
                 formSelector: "#kt_modal_edit_ticket_form",
                 submitButtonSelector: "#kt_edit_ticket_submit_button",
-                apiEndpoint: "/api/Ticket", // Dynamically set
+                apiEndpoint: "/api/Ticket", // Base endpoint, overridden by getFullEndpoint
                 method: "PUT",
+                getFullEndpoint: function(formData) {
+                    const ticketId = $("#editTicketId").val(); // Get the hidden ID
+                    if (!ticketId) {
+                        throw new Error("No ticket ID found for editing. Cannot submit update.");
+                    }
+                    return `/api/Ticket/${ticketId}`;
+                },
+                validate: (formData) => {
+                    // Accessing formData properties as PascalCase, expecting HTML input names to match
+                    if (!formData.Title || formData.Title.length > 100) {
+                        return { isValid: false, message: "Title is required and must be less than 100 characters" };
+                    }
+                    if (formData.Description && formData.Description.length > 500) {
+                        return { isValid: false, message: "Description must be less than 500 characters" };
+                    }
+                    return { isValid: true };
+                },
                 onSuccess: () => {
                     Swal.fire("Success", "Ticket updated successfully!", "success");
                     $("#kt_modal_edit_ticket").modal("hide");
-                    dataTable.reDraw();
+                    dataTable.reDraw(); // Redraw the table
                 },
                 onError: (error) => {
-                    Swal.fire("Error", error.message || "Failed to update ticket.", "error");
+                    let message = "Failed to update ticket.";
+                    if (error.response?.data?.errors) {
+                        message = Object.values(error.response.data.errors).flat().join("\n"); // flat() for multiple errors per field
+                    } else if (error.message) {
+                        message = error.message;
+                    }
+                    Swal.fire("Error", message, "error");
                 },
                 beforeSubmit: (formData) => {
-                    const ticketId = $("#editTicketId").val();
-                    editTicketFormHandler.options.apiEndpoint = `/api/Ticket/${ticketId}`;
+                    // The `id` is typically passed in the URL for PUT, but if your DTO also expects it in the body, include it.
+                    // formData.Id = $("#editTicketId").val(); // Uncomment if your UpdateTicketRequest DTO also expects 'Id' in the body
                     return formData;
                 }
             });
@@ -481,15 +660,17 @@
             // Filter button events
             $("[data-kt-ticket-table-filter='filter']").on("click", () => dataTable.reDraw());
             $("[data-kt-ticket-table-filter='reset']").on("click", () => {
-                $("[data-kt-ticket-table-filter='status'], [data-kt-ticket-table-filter='priority']").val("");
-                $("[data-kt-ticket-table-filter='category_id']").val("").trigger("change");
+                $("[data-kt-ticket-table-filter='status'], [data-kt-ticket-table-filter='priority']").val("").trigger("change"); // Add trigger("change") for selects
+                $("[data-kt-ticket-table-filter='category_id'], [data-kt-ticket-table-filter='agency_id']").val("").trigger("change");
                 dataTable.clearCustomFilters();
                 dataTable.reDraw();
             });
 
-            // Initialize everything
+            // Initialize everything when the document is ready
             initializeTicketsDataTable();
             initializeSelect2Dropdowns();
+            // No need to explicitly call handleEditModalListener() here because event delegation
+            // via $(document).on handles dynamically loaded elements.
         });
     </script>
 }

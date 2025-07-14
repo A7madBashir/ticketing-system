@@ -3,15 +3,23 @@ using TicketingSystem.Models.Common.BaseEntity;
 using TicketingSystem.Models.DTO.Requests;
 using TicketingSystem.Models.DTO.Requests.Agency;
 using TicketingSystem.Models.DTO.Requests.Category;
+using TicketingSystem.Models.DTO.Requests.FAQ;
 using TicketingSystem.Models.DTO.Requests.Subscriptions;
 using TicketingSystem.Models.DTO.Requests.Ticket;
 using TicketingSystem.Models.DTO.Requests.User;
 using TicketingSystem.Models.DTO.Responses.Category;
+using TicketingSystem.Models.DTO.Responses.FAQ;
 using TicketingSystem.Models.DTO.Responses.Ticket;
 using TicketingSystem.Models.DTO.Responses.User;
 using TicketingSystem.Models.Entities.Agency;
-using TicketingSystem.Models.Identity;
 using TicketingSystem.Models.Entities.Tickets;
+using TicketingSystem.Models.FAQs;
+using TicketingSystem.Models.Identity;
+using TicketingSystem.Models.DTO.Responses.Replies;
+using TicketingSystem.Models.DTO.Requests.Replies;
+
+
+
 
 namespace TicketingSystem;
 
@@ -100,6 +108,7 @@ public partial class Mapper
 
     // Subscription
     public partial Models.Entities.Agency.Subscription ToEntity(CreateSubscriptionRequest source);
+
     public partial Models.Entities.Agency.Subscription ToEntity(UpdateSubscriptionRequest source);
 
     public partial Models.DTO.Responses.Subscriptions.SubscriptionResponse ToResponse(
@@ -155,4 +164,18 @@ public partial class Mapper
         Use = nameof(ParseUlid)
     )]
     public partial Category ToEntity(EditCategoryRequest source);
+
+    // FAQ
+    public partial FAQResponseDto ToResponse(FAQ source);
+
+    [MapProperty(nameof(CreateFAQRequest.AgencyId), nameof(FAQ.AgencyId), Use = nameof(ParseUlid))]
+    public partial FAQ ToEntity(CreateFAQRequest source);
+
+    [MapProperty(nameof(EditFAQRequest.AgencyId), nameof(FAQ.AgencyId), Use = nameof(ParseUlid))]
+    public partial FAQ ToEntity(EditFAQRequest source);
+
+    //Reply
+    public partial ReplyResponse ToResponse(Reply source);
+    public partial Reply ToEntity(CreateReplyRequest source);
+    public partial void UpdateReplyEntity(EditReplyRequest source, Reply target);
 }

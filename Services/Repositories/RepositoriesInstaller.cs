@@ -10,5 +10,7 @@ public static class RepositoriesInstaller
         services.AddTransient<IAgencyRepository, AgencyRepository>();
         services.AddTransient<ITicketRepository, TicketRepository>();
         services.AddTransient<ICategoryRepository, CategoryRepository>();
+        services.AddTransient<IFAQRepository, FAQRepository>();
+        services.AddTransient<IReplyRepository, ReplyRepository>();
     }
 }

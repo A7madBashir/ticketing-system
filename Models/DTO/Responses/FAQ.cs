@@ -2,7 +2,7 @@ using System;
 
 namespace TicketingSystem.Models.DTO.Responses.FAQ
 {
-    public class FAQResponseDto
+    public class FAQResponseDto : BaseResponse
     {
         public Ulid Id { get; set; }
         public Ulid AgencyId { get; set; }

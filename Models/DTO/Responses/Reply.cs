@@ -2,8 +2,9 @@ using System;
 
 namespace TicketingSystem.Models.DTO.Responses.Replies
 {
-    public class ReplyResponse
+    public class ReplyResponse : BaseResponse
     {
+        public ReplyResponse() { }
         public Ulid Id { get; set; }
         public Ulid TicketId { get; set; }
         public Ulid UserId { get; set; }

@@ -10,6 +10,7 @@ namespace TicketingSystem.Models.Entities.Agency;
 
 public class Reply : BaseEntity
 {
+    public Reply() { }
     public Ulid TicketId { get; set; }
     public Ulid UserId { get; set; }
     public required string Content { get; set; }

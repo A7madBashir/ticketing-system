@@ -1,0 +1,109 @@
+using Microsoft.EntityFrameworkCore;
+using OneOf;
+using OneOf.Types;
+using TicketingSystem.Models.DTO.Requests;
+using TicketingSystem.Models.DTO.Requests.Replies;
+using TicketingSystem.Models.DTO.Responses.Replies;
+using TicketingSystem.Models.Entities.Agency; // Correct namespace for Reply entity
+using TicketingSystem.Models.Entities.Tickets; // For Ticket entity
+using TicketingSystem.Services.Repositories;
+using System.Linq; // Ensure System.Linq is present for Where, FirstOrDefault, etc.
+using System.Threading.Tasks; // For async/await
+
+namespace TicketingSystem.Controllers.Api;
+
+// Use C# 12 primary constructor for repository and mapper directly
+public class ReplyController(
+    IReplyRepository repository,
+    ITicketRepository ticketRepository, // Renamed for consistency with field
+    Mapper mapper
+) : CrudController<
+    Reply,
+    Ulid,
+    ReplyResponse, // Corrected to ReplyResponse (not ReplyResponseDto)
+    CreateReplyRequest,
+    EditReplyRequest
+>(repository, mapper)
+{
+    // These fields are now redundant with C# 12 primary constructors,
+    // as 'repository' and 'ticketRepository' are directly accessible within the class scope.
+    // Keeping them for clarity if you prefer, but they are not strictly necessary.
+    private readonly IReplyRepository _repository = repository;
+    private readonly ITicketRepository _ticketRepository = ticketRepository; // Renamed to match constructor param
+
+    protected override IQueryable<Reply>? BuildBaseQuery(DataTableRequest req)
+    {
+        // Get the base query from the repository (which typically returns an AsNoTracking query)
+        var query = _repository.Query();
+
+        // Always include Ticket and User navigation properties for replies
+        // This ensures related data is loaded for display and mapping
+        query = query.Include(r => r.Ticket)
+                     .Include(r => r.User); // <--- Added include for User
+
+        if (req.Filters.Count > 0)
+        {
+            // Safely extract the TicketId filter.
+            // Using OfType<string>() ensures we only try to parse string values if Value is object.
+            // A safer approach might be to ensure Filters are KeyValuePair<string, string> or use a custom filter DTO.
+            var ticketIdFilter = req.Filters.FirstOrDefault(r => r.Key == "TicketId");
+
+            if (ticketIdFilter.Key == "TicketId" && !string.IsNullOrEmpty(ticketIdFilter.Value))
+            {
+                if (Ulid.TryParse(ticketIdFilter.Value, out Ulid parsedTicketUlid)) // Renamed for clarity
+                {
+                    query = query.Where(r => r.TicketId == parsedTicketUlid);
+                }
+                // Optional: You might want to log an error or return null if parsing fails for a provided filter
+            }
+        }
+
+        return query;
+    }
+
+    protected override async Task<OneOf<Success, Error<string>>> BeforeCreateAsync(
+        CreateReplyRequest createDto
+    )
+    {
+        // createDto.TicketId is already a Ulid, so no need for Ulid.TryParse
+        // The check for valid Ulid is implicitly done by the Ulid type itself on the DTO.
+
+        // Verify if the Ticket exists
+        if (!await _ticketRepository.ExistAsync(createDto.TicketId)) // Corrected parameter name
+        {
+            return new Error<string>("Invalid Ticket ID provided: Ticket does not exist.");
+        }
+
+        // Optional: If UserId is required in the entity and comes from DTO,
+        // you might want to validate if the user exists too.
+        // if (!await _userRepository.ExistAsync(createDto.UserId)) { ... }
+
+        return new Success();
+    }
+
+    protected override string[] GetSearchableProperties()
+    {
+        // Reply.Content is a good searchable property.
+        // Reply.IsInternal (boolean) is usually not useful for generic text search.
+        // Consider including searchable properties from related entities if included (e.g., User.UserName).
+        return new[]
+        {
+            nameof(Reply.Content),
+            // nameof(Reply.User.UserName) // Example if you want to search by user name (requires User to be included)
+        };
+    }
+
+    protected override string[] IncludeNavigation()
+    {
+        // This method is typically used by the base CrudController to automatically
+        // include navigation properties. If you've already handled inclusions in
+        // BuildBaseQuery, and your CrudController's Get methods call BuildBaseQuery,
+        // then this might be redundant or you might list additional navigation properties here.
+
+        // It should contain names of navigation properties (e.g., nameof(Reply.Ticket)), not foreign keys (TicketId).
+        // If your base CrudController uses this, you'd put:
+        return new[] { nameof(Reply.Ticket), nameof(Reply.User) };
+        // If BuildBaseQuery handles all necessary includes, this method might return an empty array or null,
+        // depending on how your CrudController interprets it.
+    }
+}

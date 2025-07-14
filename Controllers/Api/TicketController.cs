@@ -74,6 +74,6 @@ public class TicketController(
 
     protected override string[] IncludeNavigation()
     {
-        return [nameof(Ticket.Category), nameof(Ticket.Agency)];
+        return [nameof(Ticket.Category), nameof(Ticket.Agency), nameof(Ticket.CreatedBy)];
     }
 }
