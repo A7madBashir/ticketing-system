@@ -279,7 +279,7 @@ class DataTableSSR {
     if (isEmptyOrSpaces(link)) throw Error("Link is not provided");
 
     return `
-      <a href="${link}" title="Edit" data-kt-docs-table-filter='edit_row' class="menu-link cursor-pointer px-3" data-bs-toggle="tooltip"
+      <a href="${link}" title="Edit" data-kt-docs-table-filter='edit_row' class="btn btn-sm btn-light-primary cursor-pointer px-3" data-bs-toggle="tooltip"
         ${attributes && [...attributes].join(" ")}
       >
       ${isEmptyOrSpaces(element) ? "Edit" : element}
@@ -292,7 +292,7 @@ class DataTableSSR {
 
     return `
       <a title="Delete" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-boundary="window"
-      id="${id}" class="menu-link cursor-pointer text-danger px-3" 
+      id="${id}" class="btn btn-sm btn-light-danger cursor-pointer px-3" 
         data-kt-docs-table-filter="delete_row" 
         ${attributes && [...attributes].join(" ")}
       >
@@ -305,7 +305,7 @@ class DataTableSSR {
     if (isEmptyOrSpaces(link)) throw Error("Link is not provided");
 
     return `
-      <a href="${link}" title="Details" class="menu-link cursor-pointer px-3" data-bs-toggle="tooltip"
+      <a href="${link}" title="Details" class="btn btn-sm btn-light-info cursor-pointer px-3" data-bs-toggle="tooltip"
         ${attributes && [...attributes].join(" ")}
       >
       ${isEmptyOrSpaces(element) ? "Details" : element}
@@ -317,7 +317,7 @@ class DataTableSSR {
     if (isEmptyOrSpaces(link)) throw Error("Link is not provided");
 
     return `
-      <a href="${link}" title="Details" class="menu-link cursor-pointer px-3" data-bs-toggle="tooltip"
+      <a href="${link}" title="Details" class="btn btn-sm btn-light-secondary cursor-pointer px-3" data-bs-toggle="tooltip"
         ${attributes && [...attributes].join(" ")}
       >
       ${isEmptyOrSpaces(element) ? "Users" : element}
