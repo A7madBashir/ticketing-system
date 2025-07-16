@@ -104,6 +104,17 @@ public abstract class CrudController<TEntity, T, TResponse, TCreateRequest, TUpd
     }
 
     /// <summary>
+    /// Hook to execute custom logic BEFORE a create entity and after convert dto to entity using mapper operation.
+    /// Can modify the create DTO or return an error to prevent creation.
+    /// </summary>
+    /// <param name="entity">The Entity model after mapped from dto client model.</param>
+    /// <returns>Success if creation should proceed, Error with message if it should be prevented.</returns>
+    protected virtual Task<OneOf<Success, Error<string>>> BeforeCreateEntityAsync(TEntity entity)
+    {
+        return Task.FromResult<OneOf<Success, Error<string>>>(new Success()); // Default: allow creation
+    }
+
+    /// <summary>
     /// Hook to execute custom logic AFTER a create operation has successfully saved to DB.
     /// </summary>
     /// <param name="createdEntity">The entity that was just created and saved.</param>
@@ -127,6 +138,17 @@ public abstract class CrudController<TEntity, T, TResponse, TCreateRequest, TUpd
     )
     {
         return Task.FromResult<OneOf<Success, Error<string>>>(new Success()); // Default: allow update
+    }
+
+    /// <summary>
+    /// Hook to execute custom logic BEFORE a create entity and after convert dto to entity using mapper operation.
+    /// Can modify the create DTO or return an error to prevent creation.
+    /// </summary>
+    /// <param name="entity">The Entity model after mapped from dto client model.</param>
+    /// <returns>Success if creation should proceed, Error with message if it should be prevented.</returns>
+    protected virtual Task<OneOf<Success, Error<string>>> BeforeUpdateEntityAsync(TEntity entity)
+    {
+        return Task.FromResult<OneOf<Success, Error<string>>>(new Success()); // Default: allow creation
     }
 
     /// <summary>
@@ -231,6 +253,13 @@ public abstract class CrudController<TEntity, T, TResponse, TCreateRequest, TUpd
         }
 
         var entity = _mapper.ToEntity<TEntity, T>(createDto); // Map DTO to entity
+        // Execute BeforeCreate hook
+        var beforeCreateEntity = await BeforeCreateEntityAsync(entity);
+        if (beforeCreateEntity.IsT1)
+        {
+            return BadRequest(beforeCreateEntity.Value); // Return error from hook
+        }
+
         await _repository.AddAsync(entity);
 
         // Execute AfterCreate hook
@@ -292,11 +321,19 @@ public abstract class CrudController<TEntity, T, TResponse, TCreateRequest, TUpd
         }
 
         // Map DTO to existing entity (important to update the existing object)
-        var item = _mapper.ToEntity<TEntity, T>(updateDto);
-        await _repository.UpdateAsync(item);
+        var entity = _mapper.ToEntity<TEntity, T>(updateDto);
+
+        // Execute BeforeCreate hook
+        var beforeUpdateEntity = await BeforeUpdateEntityAsync(entity);
+        if (beforeUpdateEntity.IsT1)
+        {
+            return BadRequest(beforeUpdateEntity.Value); // Return error from hook
+        }
+
+        await _repository.UpdateAsync(entity);
 
         // Execute AfterUpdate hook
-        await AfterUpdateAsync(item);
+        await AfterUpdateAsync(entity);
 
         return Ok(); // 200
     }
