@@ -9,6 +9,7 @@ namespace TicketingSystem.Models.Integrations;
 
 public class Integration : BaseEntity
 {
+    public Integration() { }
     public required string Name { get; set; }
     public string? ApiKey { get; set; }
     public Ulid AgencyId { get; set; }

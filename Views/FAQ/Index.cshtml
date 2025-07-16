@@ -193,6 +193,7 @@
             <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
                 <form id="kt_modal_edit_faq_form" class="form">
                     <input type="hidden" name="Id" id="editFaqId" />
+                    <input type="hidden" name="AgencyId" id="editTicketAgencyId" />
                     <div class="d-flex flex-column scroll-y me-n7 pe-7">
                         <!-- Question -->
                         <div class="row g-9 mb-7">
@@ -336,7 +337,10 @@
                     $("#editFaqId").val(faq.id);
                     $("#kt_modal_edit_faq_form input[name='Question']").val(faq.question);
                     $("#kt_modal_edit_faq_form textarea[name='Answer']").val(faq.answer || "");
+                    $("#editTicketAgencyId").val(faq.agencyId);
                     $("#editFaqAgency").val(faq.agencyName || "—");
+
+                    editFaqFormHandler.options.apiEndpoint = "/api/FAQ/" + faq.id;
                 } catch (error) {
                     console.error("Error loading FAQ:", error);
                     Swal.fire("Error", "Could not load FAQ details.", "error");

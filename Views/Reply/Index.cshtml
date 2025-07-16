@@ -250,12 +250,12 @@
                     { 
                         data: "ticket", 
                         name: "Ticket", 
-                        render: (data) => data?.subject || "N/A" 
+                        render: (data) => data?.title || "N/A" 
                     },
                     { 
                         data: "user", 
                         name: "User", 
-                        render: (data) => data?.name || "N/A" 
+                        render: (data) => data?.email || "N/A" 
                     },
                     { 
                         data: "content", 
@@ -327,7 +327,7 @@
                     const reply = await response.json();
 
                     $("#editReplyId").val(reply.id);
-                    $("#editReplyTicket").val(reply.ticket?.subject || "N/A");
+                    $("#editReplyTicket").val(reply.ticket?.title || "N/A");
                     $("#kt_modal_edit_reply_form textarea[name='Content']").val(reply.content);
                     $("#kt_modal_edit_reply_form select[name='Type']").val(reply.type).trigger("change");
                 } catch (error) {
@@ -345,7 +345,7 @@
                     "/api/Ticket",
                     (params) => ({ search: params.term }),
                     (data) => ({
-                        results: data.data.map(t => ({ id: t.id, text: t.subject })),
+                        results: data.data.map(t => ({ id: t.id, text: t.title })),
                         pagination: { more: false }
                     })
                 );

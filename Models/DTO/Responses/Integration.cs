@@ -2,7 +2,7 @@ using System;
 
 namespace TicketingSystem.Models.DTO.Responses.Integrations
 {
-    public class IntegrationResponse
+    public class IntegrationResponse : BaseResponse
     {
         public Ulid Id { get; set; }
         public string Name { get; set; }

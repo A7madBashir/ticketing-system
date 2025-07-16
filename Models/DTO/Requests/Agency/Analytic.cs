@@ -2,20 +2,20 @@ using System;
 
 namespace TicketingSystem.Models.DTO.Requests.Agency
 {
-    public class CreateAnalyticRequest
+    public class CreateAnalyticRequest : ICreateRequest
     {
-        public Ulid AgentId { get; set; }
-        public Ulid AgencyId { get; set; }
+        public string AgentId { get; set; }
+        public string AgencyId { get; set; }
         public int TicketsResolved { get; set; }
         public TimeSpan AverageResponseTime { get; set; }
         public float CustomerSatisfactionScore { get; set; }
     }
 
-    public class UpdateAnalyticRequest
+    public class UpdateAnalyticRequest : IEditRequest<Ulid>
     {
         public Ulid Id { get; set; }
-        public Ulid AgentId { get; set; }
-        public Ulid AgencyId { get; set; }
+        public string AgentId { get; set; }
+        public string AgencyId { get; set; }
         public int TicketsResolved { get; set; }
         public TimeSpan AverageResponseTime { get; set; }
         public float CustomerSatisfactionScore { get; set; }

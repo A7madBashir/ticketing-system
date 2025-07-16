@@ -2,20 +2,20 @@ using System;
 
 namespace TicketingSystem.Models.DTO.Requests.Integrations
 {
-    public class CreateIntegrationRequest
+    public class CreateIntegrationRequest : ICreateRequest
     {
         public required string Name { get; set; }
         public string? ApiKey { get; set; }
-        public Ulid AgencyId { get; set; }
+        public string AgencyId { get; set; }
         public bool Enabled { get; set; }
     }
 
-    public class UpdateIntegrationRequest
+    public class UpdateIntegrationRequest : IEditRequest<Ulid>
     {
         public required Ulid Id { get; set; }
         public required string Name { get; set; }
         public string? ApiKey { get; set; }
-        public Ulid AgencyId { get; set; }
+        public string AgencyId { get; set; }
         public bool Enabled { get; set; }
     }
 }

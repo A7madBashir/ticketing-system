@@ -17,8 +17,13 @@ using TicketingSystem.Models.FAQs;
 using TicketingSystem.Models.Identity;
 using TicketingSystem.Models.DTO.Responses.Replies;
 using TicketingSystem.Models.DTO.Requests.Replies;
-
-
+using TicketingSystem.Models.DTO.Responses.Agency;
+using TicketingSystem.Models.DTO.Requests.Integrations;
+using TicketingSystem.Models.DTO.Responses.Integrations;
+using TicketingSystem.Models.Entities.Agency; // Analytic entity is here, as per your provided code
+using TicketingSystem.Models.DTO.Requests.Agency; // CreateAnalyticRequest and UpdateAnalyticRequest are here
+using TicketingSystem.Models.DTO.Responses.Agency; // Assuming AnalyticResponse is here, based on your controller's usage
+using TicketingSystem.Models.Integrations;
 
 
 namespace TicketingSystem;
@@ -112,7 +117,7 @@ public partial class Mapper
     public partial Models.Entities.Agency.Subscription ToEntity(UpdateSubscriptionRequest source);
 
     public partial Models.DTO.Responses.Subscriptions.SubscriptionResponse ToResponse(
-        Subscription source
+        Models.Entities.Agency.Subscription source
     );
 
     // Ticket
@@ -131,10 +136,24 @@ public partial class Mapper
     public partial Ticket ToEntity(CreateTicketRequest source);
 
     [MapProperty(
-        nameof(CreateTicketRequest.AgencyId),
+        nameof(EditTicketRequest.AgencyId),
         nameof(Ticket.AgencyId),
         Use = nameof(ParseUlid)
     )]
+    [MapProperty(
+        nameof(EditTicketRequest.CategoryId),
+        nameof(Ticket.CategoryId),
+        Use = nameof(ParseUlid)
+    )]
+    [MapperIgnoreTarget(nameof(Ticket.CreatedById))]
+    [MapperIgnoreTarget(nameof(Ticket.CreateTime))]
+    [MapperIgnoreTarget(nameof(Ticket.ModifiedTime))]
+    [MapperIgnoreTarget(nameof(Ticket.DeleteTime))]
+    [MapperIgnoreTarget(nameof(Ticket.Category))]
+    [MapperIgnoreTarget(nameof(Ticket.Agency))]
+    [MapperIgnoreTarget(nameof(Ticket.CreatedBy))]
+    public partial void UpdateTicketEntity(EditTicketRequest source, Ticket target);
+
     [MapProperty(
         nameof(EditTicketRequest.CategoryId),
         nameof(Ticket.CategoryId),
@@ -178,4 +197,35 @@ public partial class Mapper
     public partial ReplyResponse ToResponse(Reply source);
     public partial Reply ToEntity(CreateReplyRequest source);
     public partial void UpdateReplyEntity(EditReplyRequest source, Reply target);
+
+    //Analytic (Corrected spelling from Analtyic to Analytic)
+    public partial AnalyticResponse ToResponse(Analytic source);
+
+    [MapProperty(nameof(CreateAnalyticRequest.AgencyId), nameof(Analytic.AgencyId), Use = nameof(ParseUlid))]
+    public partial Analytic ToEntity(CreateAnalyticRequest source);
+
+    [MapProperty(nameof(UpdateAnalyticRequest.AgencyId), nameof(Analytic.AgencyId), Use = nameof(ParseUlid))]
+    public partial Analytic ToEntity(UpdateAnalyticRequest source); // This maps to a new entity, not update existing
+
+    // NEW: Add specific update mapping for Analytic
+    [MapProperty(nameof(UpdateAnalyticRequest.AgencyId), nameof(Analytic.AgencyId), Use = nameof(ParseUlid))]
+    [MapperIgnoreTarget(nameof(Analytic.Id))] // Usually ID is not updated from DTO
+    [MapperIgnoreTarget(nameof(Analytic.CreateTime))]
+    [MapperIgnoreTarget(nameof(Analytic.ModifiedTime))]
+    [MapperIgnoreTarget(nameof(Analytic.DeleteTime))]
+    [MapperIgnoreTarget(nameof(Analytic.Agency))] // Ignore navigation property
+    [MapperIgnoreTarget(nameof(Analytic.Agent))] // Ignore navigation property
+    [MapperIgnoreTarget(nameof(Analytic.AgentId))] // If AgentId is not meant to be updated from the DTO
+    public
+ partial void UpdateAnalyticEntity(UpdateAnalyticRequest source, Analytic target);
+
+ 
+    //Integration
+    public partial IntegrationResponse ToResponse(Integration source);
+
+    [MapProperty(nameof(CreateIntegrationRequest.AgencyId), nameof(Integration.AgencyId), Use = nameof(ParseUlid))]
+    public partial Integration ToEntity(CreateIntegrationRequest source);
+
+    [MapProperty(nameof(UpdateIntegrationRequest.AgencyId), nameof(Integration.AgencyId), Use = nameof(ParseUlid))]
+    public partial Integration ToEntity(UpdateIntegrationRequest source);
 }

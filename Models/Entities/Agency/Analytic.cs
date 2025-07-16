@@ -18,4 +18,6 @@ public class Analytic : BaseEntity
     // `interval` in PostgreSQL can be mapped to TimeSpan in C#
     public TimeSpan AverageResponseTime { get; set; }
     public float CustomerSatisfactionScore { get; set; } // float is fine for float/real
+
+    public Analytic() { }
 }

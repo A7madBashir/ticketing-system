@@ -9,13 +9,18 @@ using TicketingSystem.Models.Entities.Tickets; // For Ticket entity
 using TicketingSystem.Services.Repositories;
 using System.Linq; // Ensure System.Linq is present for Where, FirstOrDefault, etc.
 using System.Threading.Tasks; // For async/await
+using TicketingSystem.Services;
+using TicketingSystem.Models.Identity;
+using TicketingSystem.Services.Repositories;
+
 
 namespace TicketingSystem.Controllers.Api;
 
 // Use C# 12 primary constructor for repository and mapper directly
 public class ReplyController(
     IReplyRepository repository,
-    ITicketRepository ticketRepository, // Renamed for consistency with field
+    ITicketRepository ticketRepository,
+    IIdentityService identityService, // Renamed for consistency with field
     Mapper mapper
 ) : CrudController<
     Reply,
@@ -30,6 +35,7 @@ public class ReplyController(
     // Keeping them for clarity if you prefer, but they are not strictly necessary.
     private readonly IReplyRepository _repository = repository;
     private readonly ITicketRepository _ticketRepository = ticketRepository; // Renamed to match constructor param
+    private readonly IIdentityService _identityService = identityService;
 
     protected override IQueryable<Reply>? BuildBaseQuery(DataTableRequest req)
     {
@@ -77,7 +83,7 @@ public class ReplyController(
         // Optional: If UserId is required in the entity and comes from DTO,
         // you might want to validate if the user exists too.
         // if (!await _userRepository.ExistAsync(createDto.UserId)) { ... }
-
+        createDto.UserId = (await _identityService.GetUser(User))!.Id;
         return new Success();
     }
 

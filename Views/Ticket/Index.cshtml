@@ -274,8 +274,11 @@
             </div>
             <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
                 <form id="kt_modal_edit_ticket_form" class="form">
-                    <input type="hidden" name="__RequestVerificationToken" value="@Html.AntiForgeryToken()" />
+                    <input type="hidden" name="__RequestVerificationToken" value="@Html.AntiForgeryToken()
                     <input type="hidden" name="Id" id="editTicketId" />
+                    <input type="hidden" name="CategoryId" id="editTicketCategoryId" />
+                    <input type="hidden" name="AgencyId" id="editTicketAgencyId" />
+                    <input type="hidden" id="editTicketCreatedById" name="CreatedById" />
                     <div class="d-flex flex-column scroll-y me-n7 pe-7">
                         <!-- Title -->
                         <div class="row g-9 mb-7">
@@ -519,7 +522,12 @@
                     $("#kt_modal_edit_ticket_form select[name='Priority']").val(ticket.priority || "Medium").trigger("change"); 
                     $("#editTicketCategory").val(ticket.category?.name || "—");
                     $("#editTicketAgency").val(ticket.agency?.name || "—");
+                    $("#editTicketCategoryId").val(ticket.category?.id);
+                    $("#editTicketAgencyId").val(ticket.agency?.id);
+                    $("#editTicketCreatedById").val(ticket.createdBy?.id);
                     $("#editTicketChatbot").prop("checked", ticket.originatedFromChatbot || false);
+
+                    editTicketFormHandler.options.apiEndpoint = "/api/Ticket/" + ticket.id;
 
                 } catch (error) {
                     console.error("Error loading ticket for edit:", error);
