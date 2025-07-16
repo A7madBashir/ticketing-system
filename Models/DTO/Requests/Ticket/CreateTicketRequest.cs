@@ -13,5 +13,5 @@ public class CreateTicketRequest : ICreateRequest
     public required string AgencyId { get; set; }
 
     [JsonIgnore]
-    public Ulid CreatedById { get; set; }
+    public string? CreatedById { get; set; }
 }

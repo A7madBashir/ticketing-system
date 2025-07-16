@@ -6,8 +6,8 @@ using OneOf;
 using OneOf.Types;
 using TicketingSystem.Models.DTO.Requests.Ticket;
 using TicketingSystem.Models.DTO.Responses.Ticket;
-using TicketingSystem.Models.Identity;
 using TicketingSystem.Models.Entities.Tickets;
+using TicketingSystem.Models.Identity;
 using TicketingSystem.Services;
 using TicketingSystem.Services.Repositories;
 
@@ -62,7 +62,7 @@ public class TicketController(
             return new Error<string>("Category not exist");
         }
 
-        createDto.CreatedById = (await _identityService.GetUser(User))!.Id;
+        createDto.CreatedById = (await _identityService.GetUser(User))!.Id.ToString();
 
         return new Success();
     }
@@ -75,5 +75,18 @@ public class TicketController(
     protected override string[] IncludeNavigation()
     {
         return [nameof(Ticket.Category), nameof(Ticket.Agency), nameof(Ticket.CreatedBy)];
+    }
+
+    protected override async Task<OneOf<Success, Error<string>>> BeforeUpdateAsync(
+        Ulid id,
+        EditTicketRequest updateDto,
+        Ticket existingEntity
+    )
+    {
+        // Assign create by id user to dto model
+        // Anther solution by adjusting entity model directly before update entity by using mapper of source and target as ref
+        updateDto.CreatedById = existingEntity.CreatedById.ToString();
+
+        return new Success();
     }
 }

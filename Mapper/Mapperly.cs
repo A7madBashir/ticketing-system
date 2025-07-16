@@ -135,6 +135,8 @@ public partial class Mapper
     )]
     public partial Ticket ToEntity(CreateTicketRequest source);
 
+    [MapperIgnoreSource(nameof(CreateTicketRequest.CreatedById))]
+    [MapperIgnoreTarget(nameof(Ticket.CreatedById))]
     [MapProperty(
         nameof(EditTicketRequest.AgencyId),
         nameof(Ticket.AgencyId),

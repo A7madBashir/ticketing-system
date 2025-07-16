@@ -13,4 +13,5 @@ public class TicketResponse : BaseResponse
     public CategoryResponseDto? Category { get; set; }
     public AgencyResponse? Agency { get; set; }
     public UserResponse? CreatedBy { get; set; }
+    public bool OriginatedFromChatbot { get; set; }
 }

@@ -72,48 +72,50 @@
                     </div>
                     <div class="separator border-gray-200"></div>
                     <div class="px-7 py-5">
-                        <!-- Status -->
-                        <div class="mb-10">
-                            <label class="form-label fs-5 fw-bold mb-3">Status</label>
-                            <select class="form-select form-select-solid" data-kt-ticket-table-filter="status">
-                                <option value="">All</option>
-                                <option value="Open">Open</option>
-                                <option value="InProgress">In Progress</option>
-                                <option value="Resolved">Resolved</option>
-                            </select>
+                        <div class="h-300px scroll-y">
+                            <!-- Status -->
+                            <div class="mb-10">
+                                <label class="form-label fs-5 fw-bold mb-3">Status</label>
+                                <select class="form-select form-select-solid" data-kt-ticket-table-filter="status">
+                                    <option value="">All</option>
+                                    <option value="Open">Open</option>
+                                    <option value="InProgress">In Progress</option>
+                                    <option value="Resolved">Resolved</option>
+                                </select>
+                            </div>
+                            <!-- Priority -->
+                            <div class="mb-10">
+                                <label class="form-label fs-5 fw-bold mb-3">Priority</label>
+                                <select class="form-select form-select-solid" data-kt-ticket-table-filter="priority">
+                                    <option value="">All</option>
+                                    <option value="Low">Low</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="High">High</option>
+                                    <option value="Critical">Critical</option>
+                                </select>
+                            </div>
+                            <!-- Category -->
+                            <div class="mb-10">
+                                <label class="form-label fs-5 fw-bold mb-3">Category</label>
+                                <select class="form-select form-select-solid fw-bolder" data-kt-select2="true"
+                                        data-placeholder="Select Category" data-allow-clear="true"
+                                        data-kt-ticket-table-filter="category_id">
+                                    <option></option>
+                                    <!-- Dynamically loaded -->
+                                </select>
+                            </div>
+                            <!-- Agency -->
+                            <div class="mb-10">
+                                <label class="form-label fs-5 fw-bold mb-3">Agency</label>
+                                <select class="form-select form-select-solid fw-bolder" data-kt-select2="true"
+                                        data-placeholder="Select Agency" data-allow-clear="true"
+                                        data-kt-ticket-table-filter="agency_id">
+                                    <option></option>
+                                    <!-- Dynamically loaded -->
+                                </select>
+                            </div>
+                            <!-- Actions -->
                         </div>
-                        <!-- Priority -->
-                        <div class="mb-10">
-                            <label class="form-label fs-5 fw-bold mb-3">Priority</label>
-                            <select class="form-select form-select-solid" data-kt-ticket-table-filter="priority">
-                                <option value="">All</option>
-                                <option value="Low">Low</option>
-                                <option value="Medium">Medium</option>
-                                <option value="High">High</option>
-                                <option value="Critical">Critical</option>
-                            </select>
-                        </div>
-                        <!-- Category -->
-                        <div class="mb-10">
-                            <label class="form-label fs-5 fw-bold mb-3">Category</label>
-                            <select class="form-select form-select-solid fw-bolder" data-kt-select2="true" 
-                                    data-placeholder="Select Category" data-allow-clear="true"
-                                    data-kt-ticket-table-filter="category_id">
-                                <option></option>
-                                <!-- Dynamically loaded -->
-                            </select>
-                        </div>
-                        <!-- Agency -->
-                        <div class="mb-10">
-                            <label class="form-label fs-5 fw-bold mb-3">Agency</label>
-                            <select class="form-select form-select-solid fw-bolder" data-kt-select2="true" 
-                                    data-placeholder="Select Agency" data-allow-clear="true"
-                                    data-kt-ticket-table-filter="agency_id">
-                                <option></option>
-                                <!-- Dynamically loaded -->
-                            </select>
-                        </div>
-                        <!-- Actions -->
                         <div class="d-flex justify-content-end">
                             <button type="reset" class="btn btn-light btn-active-light-primary me-2" 
                                     data-kt-menu-dismiss="true" data-kt-ticket-table-filter="reset">
@@ -274,11 +276,8 @@
             </div>
             <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
                 <form id="kt_modal_edit_ticket_form" class="form">
-                    <input type="hidden" name="__RequestVerificationToken" value="@Html.AntiForgeryToken()
                     <input type="hidden" name="Id" id="editTicketId" />
-                    <input type="hidden" name="CategoryId" id="editTicketCategoryId" />
                     <input type="hidden" name="AgencyId" id="editTicketAgencyId" />
-                    <input type="hidden" id="editTicketCreatedById" name="CreatedById" />
                     <div class="d-flex flex-column scroll-y me-n7 pe-7">
                         <!-- Title -->
                         <div class="row g-9 mb-7">
@@ -318,7 +317,12 @@
                         <div class="row g-9 mb-7">
                             <div class="col-md-12 fv-row">
                                 <label class="fw-bold fs-6 mb-2">Category</label>
-                                <input type="text" id="editTicketCategory" class="form-control form-control-solid" disabled />
+                                @* <input type="text" id="editTicketCategory" class="form-control form-control-solid" disabled /> *@
+                                <select name="CategoryId" class="form-select form-select-solid fw-bolder" 
+                                        data-kt-select2="true" data-placeholder="Select Category" required>
+                                    <option></option>
+                                    <!-- Dynamically loaded -->
+                                </select>
                             </div>
                         </div>
                         <!-- Agency -->
@@ -413,17 +417,12 @@
                         class: "text-end",
                         orderable: false,
                         searchable: false,
-                        render: (data) => `
-                            <a href="#" class="btn btn-sm btn-light-primary me-2 px-4" 
-                               data-kt-action="edit_row" data-id="${data.id}"
-                               data-bs-toggle="modal" data-bs-target="#kt_modal_edit_ticket">
-                                Edit
-                            </a>
-                            <a href="#" class="btn btn-sm btn-light-danger px-4" 
-                               data-kt-action="delete_row" data-id="${data.id}">
-                                Delete
-                            </a>
-                        `
+                        render: (data) => {
+                            let res = dataTable.generateEditLinkDataTableRow(`#`, null, [`item-id='${data.id}'`])
+                                + "  " + dataTable.generateDeleteLinkDataTableRow(data.id);
+
+                            return res
+                        }
                     }
                 ]);
 
@@ -433,6 +432,9 @@
                 dataTable.initDataTableObj("#data-table", null, null, [{
                     event: "draw.dt",
                     action: () => {
+                        dataTable.deleteRowsBtnEvents("[data-kt-docs-table-filter='delete_row']", null, 1)
+                        dataTable.initialTooltip()
+                        handleAppendModelForEditBtn()
                         // All row-specific events are handled by delegated listeners (e.g., $(document).on)
                         // No specific re-attachment needed here
                     }
@@ -449,55 +451,15 @@
                     }
                 });
             }
-
-            // --- Event Handling for Delete ---
-            $(document).on('click', '[data-kt-action="delete_row"]', function(e) {
-                e.preventDefault();
-                const ticketId = $(this).data('id'); // Get ID from data-id attribute
-                
-                Swal.fire({
-                    title: "Delete Ticket?",
-                    text: "Are you sure you want to delete this ticket? This action cannot be undone.",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonText: "Yes, delete it!",
-                    cancelButtonText: "Cancel",
-                    reverseButtons: true
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        $.ajax({
-                            url: `/api/Ticket/${ticketId}`,
-                            type: "DELETE",
-                            headers: {
-                                'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-                            },
-                            success: () => {
-                                dataTable.reDraw(); // Redraw the table after successful deletion
-                                Swal.fire("Deleted!", "Ticket has been deleted successfully.", "success");
-                            },
-                            error: (xhr) => {
-                                console.error("Delete Error:", xhr);
-                                let errorMessage = "Failed to delete ticket.";
-                                if (xhr.responseJSON && xhr.responseJSON.message) {
-                                    errorMessage = xhr.responseJSON.message;
-                                } else if (xhr.statusText) {
-                                    errorMessage = xhr.statusText;
-                                }
-                                Swal.fire("Error", errorMessage, "error");
-                            }
-                        });
-                    }
-                });
-            });
-
             // --- Event Handling for Edit ---
-            $(document).on('click', '[data-kt-action="edit_row"]', async function(e) {
-                e.preventDefault();
-                const ticketId = $(this).data('id'); // Get ID from data-id attribute
-                await fetchAndPopulateEditModal(ticketId);
-                // The modal should automatically show due to data-bs-toggle="modal" on the button
-                // If it doesn't, uncomment: $("#kt_modal_edit_ticket").modal("show");
-            });
+            
+            function handleAppendModelForEditBtn(){
+                $("#data-table tr [data-kt-docs-table-filter='edit_row']").on("click", async (e) => {
+                    const ticketId = e.currentTarget.getAttribute("item-id")
+                    $("#kt_modal_edit_ticket").modal("show")
+                    await fetchAndPopulateEditModal(ticketId);
+                });
+            }
 
             // Fetch ticket data for edit modal
             async function fetchAndPopulateEditModal(ticketId) {
@@ -520,11 +482,13 @@
                     $("#kt_modal_edit_ticket_form select[name='Status']").val(ticket.status).trigger("change");
                     // Ensure your backend consistently returns 'priority' (not null) or handle default
                     $("#kt_modal_edit_ticket_form select[name='Priority']").val(ticket.priority || "Medium").trigger("change"); 
-                    $("#editTicketCategory").val(ticket.category?.name || "—");
-                    $("#editTicketAgency").val(ticket.agency?.name || "—");
-                    $("#editTicketCategoryId").val(ticket.category?.id);
+                    
+                    // Category select element append option to select
+                    $("#kt_modal_edit_ticket_form [name='CategoryId']").select2("trigger", "select", { data: { "text": ticket.category?.name, "id": ticket.category?.id }, name: ticket.category?.name })
+                    
+                    // Static Agency data model
                     $("#editTicketAgencyId").val(ticket.agency?.id);
-                    $("#editTicketCreatedById").val(ticket.createdBy?.id);
+                    $("#editTicketAgency").val(ticket.agency?.name || "—");
                     $("#editTicketChatbot").prop("checked", ticket.originatedFromChatbot || false);
 
                     editTicketFormHandler.options.apiEndpoint = "/api/Ticket/" + ticket.id;
@@ -558,6 +522,17 @@
                     (params) => ({ search: params.term }),
                     (data) => ({
                         results: data.data.map(a => ({ id: a.id, text: a.name })),
+                        pagination: { more: false }
+                    })
+                );
+
+                select2AjaxSearchHandleListener(
+                    "#kt_modal_edit_ticket_form select[name='CategoryId']",
+                    { multiple: false,dropdownParent: $("#kt_modal_edit_ticket_form")[0] },
+                    "/api/Category",
+                    (params) => ({ search: params.term }),
+                    (data) => ({
+                        results: data.data.map(c => ({ id: c.id, text: c.name })),
                         pagination: { more: false }
                     })
                 );
