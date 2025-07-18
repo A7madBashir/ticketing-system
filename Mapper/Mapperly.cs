@@ -2,29 +2,28 @@ using Riok.Mapperly.Abstractions;
 using TicketingSystem.Models.Common.BaseEntity;
 using TicketingSystem.Models.DTO.Requests;
 using TicketingSystem.Models.DTO.Requests.Agency;
+using TicketingSystem.Models.DTO.Requests.Agency; // CreateAnalyticRequest and UpdateAnalyticRequest are here
 using TicketingSystem.Models.DTO.Requests.Category;
 using TicketingSystem.Models.DTO.Requests.FAQ;
+using TicketingSystem.Models.DTO.Requests.Integrations;
+using TicketingSystem.Models.DTO.Requests.Replies;
 using TicketingSystem.Models.DTO.Requests.Subscriptions;
 using TicketingSystem.Models.DTO.Requests.Ticket;
 using TicketingSystem.Models.DTO.Requests.User;
+using TicketingSystem.Models.DTO.Responses.Agency;
+using TicketingSystem.Models.DTO.Responses.Agency; // Assuming AnalyticResponse is here, based on your controller's usage
 using TicketingSystem.Models.DTO.Responses.Category;
 using TicketingSystem.Models.DTO.Responses.FAQ;
+using TicketingSystem.Models.DTO.Responses.Integrations;
+using TicketingSystem.Models.DTO.Responses.Replies;
 using TicketingSystem.Models.DTO.Responses.Ticket;
 using TicketingSystem.Models.DTO.Responses.User;
 using TicketingSystem.Models.Entities.Agency;
+using TicketingSystem.Models.Entities.Agency; // Analytic entity is here, as per your provided code
 using TicketingSystem.Models.Entities.Tickets;
 using TicketingSystem.Models.FAQs;
 using TicketingSystem.Models.Identity;
-using TicketingSystem.Models.DTO.Responses.Replies;
-using TicketingSystem.Models.DTO.Requests.Replies;
-using TicketingSystem.Models.DTO.Responses.Agency;
-using TicketingSystem.Models.DTO.Requests.Integrations;
-using TicketingSystem.Models.DTO.Responses.Integrations;
-using TicketingSystem.Models.Entities.Agency; // Analytic entity is here, as per your provided code
-using TicketingSystem.Models.DTO.Requests.Agency; // CreateAnalyticRequest and UpdateAnalyticRequest are here
-using TicketingSystem.Models.DTO.Responses.Agency; // Assuming AnalyticResponse is here, based on your controller's usage
 using TicketingSystem.Models.Integrations;
-
 
 namespace TicketingSystem;
 
@@ -196,21 +195,54 @@ public partial class Mapper
     public partial FAQ ToEntity(EditFAQRequest source);
 
     //Reply
-    public partial ReplyResponse ToResponse(Reply source);
+    public ReplyResponse ToResponse(Reply source)
+    {
+        var dto = ToBaseResponse(source);
+        if (source.IsInternal)
+        {
+            dto.Type = "Internal";
+        }
+        else if (source.IsChatbotReply)
+        {
+            dto.Type = "Chatbot";
+        }
+        else
+        {
+            dto.Type = "Public";
+        }
+
+        return dto;
+    }
+
+    public partial ReplyResponse ToBaseResponse(Reply source);
+
     public partial Reply ToEntity(CreateReplyRequest source);
+    public partial Reply ToEntity(EditReplyRequest source);
     public partial void UpdateReplyEntity(EditReplyRequest source, Reply target);
 
     //Analytic (Corrected spelling from Analtyic to Analytic)
     public partial AnalyticResponse ToResponse(Analytic source);
 
-    [MapProperty(nameof(CreateAnalyticRequest.AgencyId), nameof(Analytic.AgencyId), Use = nameof(ParseUlid))]
+    [MapProperty(
+        nameof(CreateAnalyticRequest.AgencyId),
+        nameof(Analytic.AgencyId),
+        Use = nameof(ParseUlid)
+    )]
     public partial Analytic ToEntity(CreateAnalyticRequest source);
 
-    [MapProperty(nameof(UpdateAnalyticRequest.AgencyId), nameof(Analytic.AgencyId), Use = nameof(ParseUlid))]
+    [MapProperty(
+        nameof(UpdateAnalyticRequest.AgencyId),
+        nameof(Analytic.AgencyId),
+        Use = nameof(ParseUlid)
+    )]
     public partial Analytic ToEntity(UpdateAnalyticRequest source); // This maps to a new entity, not update existing
 
     // NEW: Add specific update mapping for Analytic
-    [MapProperty(nameof(UpdateAnalyticRequest.AgencyId), nameof(Analytic.AgencyId), Use = nameof(ParseUlid))]
+    [MapProperty(
+        nameof(UpdateAnalyticRequest.AgencyId),
+        nameof(Analytic.AgencyId),
+        Use = nameof(ParseUlid)
+    )]
     [MapperIgnoreTarget(nameof(Analytic.Id))] // Usually ID is not updated from DTO
     [MapperIgnoreTarget(nameof(Analytic.CreateTime))]
     [MapperIgnoreTarget(nameof(Analytic.ModifiedTime))]
@@ -218,16 +250,22 @@ public partial class Mapper
     [MapperIgnoreTarget(nameof(Analytic.Agency))] // Ignore navigation property
     [MapperIgnoreTarget(nameof(Analytic.Agent))] // Ignore navigation property
     [MapperIgnoreTarget(nameof(Analytic.AgentId))] // If AgentId is not meant to be updated from the DTO
-    public
- partial void UpdateAnalyticEntity(UpdateAnalyticRequest source, Analytic target);
+    public partial void UpdateAnalyticEntity(UpdateAnalyticRequest source, Analytic target);
 
- 
     //Integration
     public partial IntegrationResponse ToResponse(Integration source);
 
-    [MapProperty(nameof(CreateIntegrationRequest.AgencyId), nameof(Integration.AgencyId), Use = nameof(ParseUlid))]
+    [MapProperty(
+        nameof(CreateIntegrationRequest.AgencyId),
+        nameof(Integration.AgencyId),
+        Use = nameof(ParseUlid)
+    )]
     public partial Integration ToEntity(CreateIntegrationRequest source);
 
-    [MapProperty(nameof(UpdateIntegrationRequest.AgencyId), nameof(Integration.AgencyId), Use = nameof(ParseUlid))]
+    [MapProperty(
+        nameof(UpdateIntegrationRequest.AgencyId),
+        nameof(Integration.AgencyId),
+        Use = nameof(ParseUlid)
+    )]
     public partial Integration ToEntity(UpdateIntegrationRequest source);
 }
