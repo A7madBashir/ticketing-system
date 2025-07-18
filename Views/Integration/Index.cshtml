@@ -448,7 +448,7 @@
                     }
                     return { isValid: true };
                 },
-                beforeSubmit: (formData) => {
+                beforeSubmitData: (formData) => {
                     formData.Enabled = $("#enabledSwitch").is(":checked");
                     return formData;
                 },
@@ -485,7 +485,7 @@
                     }
                     return { isValid: true };
                 },
-                beforeSubmit: (formData) => {
+                beforeSubmitData: (formData) => {
                     formData.Enabled = $("#editEnabledSwitch").is(":checked");
                     return formData;
                 },

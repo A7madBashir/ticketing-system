@@ -252,7 +252,7 @@
                         targets: -1,
                         render: function (data, full, row) {
                             return dataTable.generateEditLinkDataTableRow("#", null, [`item-id='${row.id}'`]) +
-                                   " | " +
+                                   " " +
                                    dataTable.generateDeleteLinkDataTableRow(row.id);
                         }
                     }
@@ -356,7 +356,7 @@
                 onError: (error) => {
                     Swal.fire("Error", error.message || "Failed to update FAQ.", "error");
                 },
-                beforeSubmit: (formData) => {
+                beforeSubmitData: (formData) => {
                     const faqId = $("#editFAQId").val();
                     editFaqFormHandler.options.apiEndpoint = `/api/FAQ/${faqId}`;
                     return formData;

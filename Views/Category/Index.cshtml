@@ -362,7 +362,7 @@
                 onError: (error) => {
                     Swal.fire("Error", error.message || "Failed to update category.", "error");
                 },
-                beforeSubmit: (formData) => {
+                beforeSubmitData: (formData) => {
                     const categoryId = $("#editCategoryId").val();
                     editCategoryFormHandler.options.apiEndpoint = `/api/Category/${categoryId}`;
                     return formData;

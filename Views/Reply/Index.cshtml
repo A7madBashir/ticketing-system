@@ -150,7 +150,7 @@
                         <div class="row g-9 mb-7">
                             <div class="col-md-12 fv-row">
                                 <label class="required fw-bold fs-6 mb-2">Type</label>
-                                <select name="Type" class="form-select form-select-solid fw-bolder" required>
+                                <select name="type" class="form-select form-select-solid fw-bolder" required>
                                     <option value="Public">Public (Visible to customer)</option>
                                     <option value="Internal">Internal (Agent-only)</option>
                                     <option value="Chatbot">Chatbot (Auto-generated)</option>
@@ -191,6 +191,8 @@
             <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
                 <form id="kt_modal_edit_reply_form" class="form">
                     <input type="hidden" name="Id" id="editReplyId" />
+                    <input type="hidden" name="ticketId" id="ticketId" />
+                    <input type="hidden" name="userId" />
                     <div class="d-flex flex-column scroll-y me-n7 pe-7">
                         <!-- Ticket Selection (Disabled in Edit Mode) -->
                         <div class="row g-9 mb-7">
@@ -210,7 +212,7 @@
                         <div class="row g-9 mb-7">
                             <div class="col-md-12 fv-row">
                                 <label class="required fw-bold fs-6 mb-2">Type</label>
-                                <select name="Type" class="form-select form-select-solid fw-bolder" required>
+                                <select name="type" class="form-select form-select-solid fw-bolder" required>
                                     <option value="Public">Public</option>
                                     <option value="Internal">Internal</option>
                                     <option value="Chatbot">Chatbot</option>
@@ -247,22 +249,22 @@
                 dataTable = new DataTableSSR("/api/Reply", [
                     {
                         data: "ticket",
-                        name: "Ticket",
+                        name: "ticket",
                         render: (data) => data?.title || "N/A"
                     },
                     {
                         data: "user",
-                        name: "User",
+                        name: "user",
                         render: (data) => data?.email || "N/A"
                     },
                     {
                         data: "content",
-                        name: "Content",
+                        name: "content",
                         class: "reply-content"
                     },
                     {
                         data: "type",
-                        name: "Type",
+                        name: "type",
                         render: (data) => {
                             let badgeClass = "badge-light-primary";
                             if (data === "Internal") badgeClass = "badge-light-warning";
@@ -275,7 +277,7 @@
                         class: "text-end",
                         render: function (data, type, row) {
                             return dataTable.generateEditLinkDataTableRow("#", null, [`item-id='${row.id}'`]) +
-                                   " | " +
+                                   " " +
                                    dataTable.generateDeleteLinkDataTableRow(row.id);
                         }
                     }
@@ -316,6 +318,9 @@
                     const reply = await response.json();
 
                     $("#editReplyId").val(reply.id);
+                    $("#kt_modal_edit_reply_form [name='ticketId']").val(reply.ticketId);
+                    $("#kt_modal_edit_reply_form [name='userId']").val(reply.user.id);
+
                     $("#editReplyTicket").val(reply.ticket?.title || "N/A");
                     $("#kt_modal_edit_reply_form textarea[name='Content']").val(reply.content);
                     $("#kt_modal_edit_reply_form select[name='Type']").val(reply.type).trigger("change");
@@ -375,9 +380,18 @@
                 onError: (error) => {
                     Swal.fire("Error", error.message || "Failed to add reply.", "error");
                 },
-                beforeSubmit: (formData) => {
-                    formData.UserId = currentUserId;
-                    return formData;
+                beforeSubmitData: (data) => {
+                    data.userId = currentUserId;
+                    if(data.type == "Internal") {
+                        data.isInternal = true
+                    } else if(data.type == "Chatbot"){
+                        data.isChatbotReply = true;
+                    } else {
+                        data.isChatbotReply = false;
+                        data.isInternal = false
+                    }
+
+                    return data;
                 }
             });
 
@@ -394,10 +408,21 @@
                 onError: (error) => {
                     Swal.fire("Error", error.message || "Failed to update reply.", "error");
                 },
-                beforeSubmit: (formData) => {
-                    const replyId = $("#editReplyId").val();
-                    editReplyFormHandler.options.apiEndpoint = `/api/Reply/${replyId}`;
-                    return formData;
+                beforeSubmitData: (data) => {
+                    data.userId = currentUserId;
+                    if(data.type == "Internal") {
+                        data.isInternal = true
+                        data.isChatbotReply = false;
+                    } else if(data.type == "Chatbot"){
+                        data.isChatbotReply = true;
+                        data.isInternal = false
+                    } else {
+                        data.isChatbotReply = false;
+                        data.isInternal = false
+                    }
+                    const {type, ...res} = data; 
+                    console.log(res)
+                    return res; // all data except type property
                 }
             });
 

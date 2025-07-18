@@ -14,7 +14,7 @@ class FormSubmitHandler {
       onError: (errorData) => {
         console.error("Form submission error:", errorData);
       },
-      beforeSubmit: null, // ✅ This handles data transformation like converting checkbox
+      beforeSubmitData: null,
       formDataType: "json",
     };
 
@@ -77,22 +77,18 @@ class FormSubmitHandler {
     let body;
     let headers = {};
 
-    // Step 1: Convert form data to plain JS object
     const formData = new FormData(this.form);
     let data = {};
     formData.forEach((value, key) => {
       data[key] = value;
     });
 
-    // ✅ Step 2: Call beforeSubmit to transform values (like checkboxes)
-    if (typeof this.options.beforeSubmit === "function") {
-      const modified = this.options.beforeSubmit(data);
+    if (typeof this.options.beforeSubmitData === "function") {
+      const modified = this.options.beforeSubmitData(data);
       if (modified && typeof modified === "object") {
         data = modified;
       }
     }
-
-    console.log("✅ Final form data to submit:", data); // Optional debug
 
     // Step 3: Build request body
     if (this.options.formDataType === "json") {
