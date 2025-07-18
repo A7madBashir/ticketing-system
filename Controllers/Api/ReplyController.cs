@@ -71,19 +71,18 @@ public class ReplyController(
         CreateReplyRequest createDto
     )
     {
-        // createDto.TicketId is already a Ulid, so no need for Ulid.TryParse
-        // The check for valid Ulid is implicitly done by the Ulid type itself on the DTO.
-
-        // Verify if the Ticket exists
-        if (!await _ticketRepository.ExistAsync(createDto.TicketId)) // Corrected parameter name
+        bool validTicketId = Ulid.TryParse(createDto.TicketId, out Ulid TicketUlid);
+        if (!validTicketId)
         {
-            return new Error<string>("Invalid Ticket ID provided: Ticket does not exist.");
+            return new Error<string>("Invalid Ticket ulid");
         }
 
-        // Optional: If UserId is required in the entity and comes from DTO,
-        // you might want to validate if the user exists too.
-        // if (!await _userRepository.ExistAsync(createDto.UserId)) { ... }
-        createDto.UserId = (await _identityService.GetUser(User))!.Id;
+        if (!await _ticketRepository.ExistAsync(TicketUlid))
+        {
+            return new Error<string>("TicketId not exist");
+        }
+
+        createDto.UserId = (await _identityService.GetUser(User))!.Id.ToString();
         return new Success();
     }
 

@@ -1,4 +1,4 @@
-using System;
+using TicketingSystem.Models.DTO.Responses.Agency;
 
 namespace TicketingSystem.Models.DTO.Responses.Integrations
 {
@@ -10,5 +10,6 @@ namespace TicketingSystem.Models.DTO.Responses.Integrations
         public Ulid AgencyId { get; set; }
         public bool Enabled { get; set; }
         public DateTime CreateTime { get; set; }
+        public AgencyResponse? Agency { get; set; }
     }
 }

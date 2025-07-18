@@ -241,30 +241,28 @@
     <script>
         $(document).ready(function () {
             let dataTable;
-            let allTickets = [];
-            let allUsers = [];
+            let currentUserId = '@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value';
 
-            // Initialize DataTable
             function initializeRepliesDataTable() {
                 dataTable = new DataTableSSR("/api/Reply", [
-                    { 
-                        data: "ticket", 
-                        name: "Ticket", 
-                        render: (data) => data?.title || "N/A" 
+                    {
+                        data: "ticket",
+                        name: "Ticket",
+                        render: (data) => data?.title || "N/A"
                     },
-                    { 
-                        data: "user", 
-                        name: "User", 
-                        render: (data) => data?.email || "N/A" 
+                    {
+                        data: "user",
+                        name: "User",
+                        render: (data) => data?.email || "N/A"
                     },
-                    { 
-                        data: "content", 
-                        name: "Content", 
-                        class: "reply-content" 
+                    {
+                        data: "content",
+                        name: "Content",
+                        class: "reply-content"
                     },
-                    { 
-                        data: "type", 
-                        name: "Type", 
+                    {
+                        data: "type",
+                        name: "Type",
                         render: (data) => {
                             let badgeClass = "badge-light-primary";
                             if (data === "Internal") badgeClass = "badge-light-warning";
@@ -272,18 +270,13 @@
                             return `<span class="badge ${badgeClass}">${data}</span>`;
                         }
                     },
-                    { 
-                        data: null, 
+                    {
+                        data: null,
                         class: "text-end",
-                        render: (data) => {
-                            return `
-                                <a href="#" class="btn btn-sm btn-icon btn-light-primary me-2" data-kt-docs-table-filter="edit_row" item-id="${data.id}">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <a href="#" class="btn btn-sm btn-icon btn-light-danger" data-kt-docs-table-filter="delete_row" item-id="${data.id}">
-                                    <i class="fas fa-trash"></i>
-                                </a>
-                            `;
+                        render: function (data, type, row) {
+                            return dataTable.generateEditLinkDataTableRow("#", null, [`item-id='${row.id}'`]) +
+                                   " | " +
+                                   dataTable.generateDeleteLinkDataTableRow(row.id);
                         }
                     }
                 ]);
@@ -291,13 +284,11 @@
                 dataTable.initDataTableObj("#data-table", null, null, [{
                     event: "draw",
                     action: () => {
-                        // Attach edit/delete events
                         dataTable.deleteRowsBtnEvents("[data-kt-docs-table-filter='delete_row']", "/api/Reply", 0);
                         handleEditModalListener();
                     }
                 }]);
 
-                // Custom search and filters
                 dataTable.customSearchDataTable("[data-kt-table-filter='search']");
                 dataTable.customizeDataTableQueryParams = () => {
                     return {
@@ -310,7 +301,6 @@
                 };
             }
 
-            // Handle edit modal opening
             function handleEditModalListener() {
                 $("[data-kt-docs-table-filter='edit_row']").on("click", async function (e) {
                     const replyId = $(this).attr("item-id");
@@ -319,7 +309,6 @@
                 });
             }
 
-            // Fetch reply data for edit modal
             async function fetchAndPopulateEditModal(replyId) {
                 try {
                     const response = await fetch(`/api/Reply/${replyId}`);
@@ -330,15 +319,15 @@
                     $("#editReplyTicket").val(reply.ticket?.title || "N/A");
                     $("#kt_modal_edit_reply_form textarea[name='Content']").val(reply.content);
                     $("#kt_modal_edit_reply_form select[name='Type']").val(reply.type).trigger("change");
+
+                    editReplyFormHandler.options.apiEndpoint = `/api/Reply/${replyId}`;
                 } catch (error) {
                     console.error("Error loading reply:", error);
                     Swal.fire("Error", "Could not load reply details.", "error");
                 }
             }
 
-            // Initialize Select2 dropdowns for Tickets and Users
             function initializeSelect2Dropdowns() {
-                // Tickets dropdown (Add modal)
                 select2AjaxSearchHandleListener(
                     "#kt_modal_add_reply_form select[name='TicketId']",
                     { multiple: false },
@@ -350,7 +339,6 @@
                     })
                 );
 
-                // Users dropdown (Filter)
                 select2AjaxSearchHandleListener(
                     "[data-kt-reply-table-filter='user_id']",
                     { multiple: false },
@@ -362,7 +350,6 @@
                     })
                 );
 
-                // Tickets dropdown (Filter)
                 select2AjaxSearchHandleListener(
                     "[data-kt-reply-table-filter='ticket_id']",
                     { multiple: false },
@@ -375,7 +362,6 @@
                 );
             }
 
-            // Form handlers for Add/Edit
             const addReplyFormHandler = new FormSubmitHandler({
                 formSelector: "#kt_modal_add_reply_form",
                 submitButtonSelector: "#kt_add_reply_submit_button",
@@ -388,13 +374,17 @@
                 },
                 onError: (error) => {
                     Swal.fire("Error", error.message || "Failed to add reply.", "error");
+                },
+                beforeSubmit: (formData) => {
+                    formData.UserId = currentUserId;
+                    return formData;
                 }
             });
 
             const editReplyFormHandler = new FormSubmitHandler({
                 formSelector: "#kt_modal_edit_reply_form",
                 submitButtonSelector: "#kt_edit_reply_submit_button",
-                apiEndpoint: "/api/Reply", // Will be dynamically set
+                apiEndpoint: "/api/Reply",
                 method: "PUT",
                 onSuccess: () => {
                     Swal.fire("Success", "Reply updated successfully!", "success");
@@ -411,7 +401,6 @@
                 }
             });
 
-            // Filter button events
             $("[data-kt-reply-table-filter='filter']").on("click", () => dataTable.reDraw());
             $("[data-kt-reply-table-filter='reset']").on("click", () => {
                 $("[data-kt-reply-table-filter='ticket_id'], [data-kt-reply-table-filter='user_id']").val("").trigger("change");
@@ -420,7 +409,6 @@
                 dataTable.reDraw();
             });
 
-            // Initialize everything
             initializeRepliesDataTable();
             initializeSelect2Dropdowns();
         });

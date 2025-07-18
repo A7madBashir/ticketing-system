@@ -298,282 +298,165 @@
     <script>
         $(document).ready(function () {
             let dataTable;
-            let allSubscriptions = []; // To store subscription data for dropdowns
+            let allSubscriptions = [];
 
-            // Function to fetch all subscriptions for dropdowns
-            async function fetchSubscriptionsForDropdown() {
+            async function fetchSubscriptions() {
                 try {
                     const response = await fetch('/api/Subscription');
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const subscriptions = await response.json();
-                    allSubscriptions = subscriptions.data || [];
+                    if (!response.ok) throw new Error(`Status: ${response.status}`);
+                    const subs = await response.json();
+                    allSubscriptions = subs.data || [];
                     populateSubscriptionDropdowns();
                 } catch (error) {
-                    console.error("Failed to fetch subscriptions for dropdown:", error);
-                    Swal.fire({
-                        text: "Failed to load subscription plans. Please refresh the page.",
-                        icon: "error",
-                        buttonsStyling: false,
-                        confirmButtonText: "Ok, got it!",
-                        customClass: {
-                            confirmButton: "btn btn-primary"
-                        }
-                    });
+                    console.error("Subscription fetch failed:", error);
+                    Swal.fire("Error", "Failed to load subscription plans.", "error");
                 }
             }
 
-            // Function to populate the subscription dropdowns
             function populateSubscriptionDropdowns() {
                 const addSelect = $('#addAgencySubscriptionSelect');
                 const editSelect = $('#editAgencySubscriptionSelect');
-                // const filterSelect = $("[data-kt-agency-table-filter='subscription_id']");
-
-                // Clear existing options, keep the placeholder
                 addSelect.find('option:not(:first)').remove();
                 editSelect.find('option:not(:first)').remove();
-                // filterSelect.find('option:not(:first)').remove();
-
-                select2AjaxSearchHandleListener("[data-kt-agency-table-filter='subscription_id']", { multiple: false }, "/api/Subscription",
-                    (params) => {
-                        var query = {
-                            search: params.term,
-                            length: 15,
-                            draw: 1,
-                            page: (params.page + 1) || 1
-                        }
-                        return query;
-                    }, (data, params) => {
-                        return {
-                            results: data.data,
-                            pagination: {
-                                more: ((params.page || 1) * 15) < data.recordsFiltered
-                            }
-                        }
-                    }, "search for a subscription", (data) => {
-                        return data.planName || data.id
-                    }, (data) => {
-                        return data.planName || data.text || data.id
-                    });
 
                 allSubscriptions.forEach(sub => {
                     const option = `<option value="${sub.id}">${sub.planName} ($${parseFloat(sub.price).toFixed(2)})</option>`;
                     addSelect.append(option);
                     editSelect.append(option);
-                    // filterSelect.append(option);
                 });
 
-                // Re-initialize Select2 if it's already bound
-                if (addSelect.data('select2')) {
-                    addSelect.trigger('change');
-                }
-                if (editSelect.data('select2')) {
-                    editSelect.trigger('change');
-                }
-                //if (filterSelect.data('select2')) {
-                // filterSelect.trigger('change');
-                //}
+                if (addSelect.data('select2')) addSelect.trigger('change');
+                if (editSelect.data('select2')) editSelect.trigger('change');
             }
 
-            function initializeAgenciesDataTable() {
+            function initializeAgencyDataTable() {
                 dataTable = new DataTableSSR("/api/Agency", [
-                    { data: "name", "name": "Name", class: "" },
-                    { data: "domain", "name": "Domain", class: "" },
+                    { data: "name", name: "Name" },
+                    { data: "domain", name: "Domain" },
                     {
                         data: "subscription",
-                        "name": "Subscription",
-                        class: "",
-                        render: function (data) {
-                            return data?.planName || 'N/A';
-                        }
+                        name: "Subscription",
+                        render: (data) => data?.planName || "—"
                     },
-                    { "data": null, class: "text-end" }
-                ], [
                     {
-                        targets: -1,
-                        render: function (data, full, row) {
-                            let res = dataTable.generateEditLinkDataTableRow(`#`, null, [`item-id='${data.id}'`])
-                                + " | " + dataTable.generateDeleteLinkDataTableRow(data.id);
-
-                            return res;
+                        data: null,
+                        class: "text-end",
+                        orderable: false,
+                        searchable: false,
+                        render: (data) => {
+                            return dataTable.generateEditLinkDataTableRow("#", null, [`item-id='${data.id}'`]) +
+                                " " + dataTable.generateDeleteLinkDataTableRow(data.id);
                         }
                     }
                 ]);
 
                 dataTable.initDataTableObj("#data-table", null, null, [{
-                    event: "draw",
+                    event: "draw.dt",
                     action: () => {
-                        dataTable.deleteRowsBtnEvents("[data-kt-docs-table-filter='delete_row']", null, 0);
+                        dataTable.deleteRowsBtnEvents("[data-kt-docs-table-filter='delete_row']", null, 1);
                         dataTable.initialTooltip();
-                        handleEditModalListener();
+                        attachEditRowHandler();
                     }
                 }]);
 
-                function handleEditModalListener() {
-                    $("#data-table tr [data-kt-docs-table-filter='edit_row']").on("click", async (e) => {
-                        let id = e.currentTarget.getAttribute("item-id");
-                        $("#kt_modal_edit_agency").modal("show");
-                        await fetchAndAppendAgencyModal(id);
-                    });
-                }
-
                 dataTable.customSearchDataTable("[data-kt-table-filter='search']");
-                dataTable.customizeDataTableQueryParams = () => {
-                    let q = {};
-                    q.filters = {
-                        subscriptionId : $('[data-kt-agency-table-filter="subscription_id"]').val()
+                dataTable.customizeDataTableQueryParams = () => ({
+                    filters: {
+                        subscriptionId: $("[data-kt-agency-table-filter='subscription_id']").val()
                     }
-                    return q
-                };
+                });
             }
 
-            // Initialize the DataTable
-            initializeAgenciesDataTable();
+            function attachEditRowHandler() {
+                $("#data-table tr [data-kt-docs-table-filter='edit_row']").on("click", async (e) => {
+                    const agencyId = e.currentTarget.getAttribute("item-id");
+                    $("#kt_modal_edit_agency").modal("show");
+                    await fetchAndPopulateAgencyEditModal(agencyId);
+                });
+            }
 
-            // Handle filter button click
-            $("[data-kt-agency-table-filter='filter']").on("click", function () {
-                const subscriptionId = $("[data-kt-agency-table-filter='subscription_id']").val();
-                dataTable.reDraw();
-            });
+            async function fetchAndPopulateAgencyEditModal(id) {
+                const modal = $("#kt_modal_edit_agency");
+                modal.find(".modal-content").prepend('<div class="modal-loading-overlay"><div class="spinner-border text-primary"></div></div>');
 
-            // Handle reset filter button click
-            $("[data-kt-agency-table-filter='reset']").on("click", function () {
-                $("[data-kt-agency-table-filter='subscription_id']").val("").trigger("change");
-                dataTable.reDraw();
-            });
+                try {
+                    const response = await fetch(`/api/Agency/${id}`);
+                    if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+                    const agency = await response.json();
 
-            // Instantiate the FormSubmitHandler for the Add Agency modal
+                    $("#kt_modal_edit_agency_form input[name='Name']").val(agency.name);
+                    $("#kt_modal_edit_agency_form input[name='Domain']").val(agency.domain);
+                    $("#editAgencyId").val(agency.id);
+                    $("#editAgencySubscriptionSelect").val(agency.subscriptionId).trigger("change");
+
+                    editAgencyFormHandler.options.apiEndpoint = `/api/Agency/${id}`;
+                } catch (err) {
+                    Swal.fire("Error", err.message || "Failed to load agency.", "error");
+                } finally {
+                    modal.find(".modal-loading-overlay").remove();
+                }
+            }
+
             const addAgencyFormHandler = new FormSubmitHandler({
                 formSelector: '#kt_modal_add_agency_form',
                 submitButtonSelector: '#kt_add_agency_submit_button',
                 apiEndpoint: '/api/Agency',
                 method: 'POST',
                 clearFormOnSuccess: true,
-                onSuccess: (data) => {
-                    Swal.fire({
-                        text: "Agency created successfully!",
-                        icon: "success",
-                        buttonsStyling: false,
-                        confirmButtonText: "Ok, got it!",
-                        customClass: {
-                            confirmButton: "btn btn-primary"
-                        }
-                    }).then(() => {
-                        const modalElement = document.getElementById('kt_modal_add_agency');
-                        const modal = bootstrap.Modal.getInstance(modalElement);
-                        if (modal) {
-                            modal.hide();
-                        }
-                        dataTable.reDraw();
-                    });
+                onSuccess: () => {
+                    Swal.fire("Success", "Agency created!", "success");
+                    bootstrap.Modal.getInstance(document.getElementById('kt_modal_add_agency')).hide();
+                    dataTable.reDraw();
                 },
-                onError: (errorData) => {
-                    const errorMessage = errorData.message || "Failed to create agency. Please try again.";
-                    Swal.fire({
-                        text: errorMessage,
-                        icon: "error",
-                        buttonsStyling: false,
-                        confirmButtonText: "Ok, got it!",
-                        customClass: {
-                            confirmButton: "btn btn-primary"
-                        }
-                    });
-                },
-                formDataType: 'json'
+                onError: (err) => {
+                    Swal.fire("Error", err.message || "Failed to create agency", "error");
+                }
             });
 
-            // Instantiate the FormSubmitHandler for the Edit Agency modal
             const editAgencyFormHandler = new FormSubmitHandler({
                 formSelector: '#kt_modal_edit_agency_form',
                 submitButtonSelector: '#kt_edit_agency_submit_button',
-                apiEndpoint: "/api/Agency", // This will be set dynamically when editing
-                method: 'PUT', // Default method, will be overridden for specific agency
-                clearFormOnSuccess: false,
-                onSuccess: (data) => {
-                    Swal.fire({
-                        text: "Agency updated successfully!",
-                        icon: "success",
-                        buttonsStyling: false,
-                        confirmButtonText: "Ok, got it!",
-                        customClass: {
-                            confirmButton: "btn btn-primary"
-                        }
-                    }).then(() => {
-                        const modalElement = document.getElementById('kt_modal_edit_agency');
-                        const modal = bootstrap.Modal.getInstance(modalElement);
-                        if (modal) {
-                            modal.hide();
-                        }
-                        dataTable.reDraw();
-                    });
+                apiEndpoint: '/api/Agency',
+                method: 'PUT',
+                onSuccess: () => {
+                    Swal.fire("Success", "Agency updated!", "success");
+                    bootstrap.Modal.getInstance(document.getElementById('kt_modal_edit_agency')).hide();
+                    dataTable.reDraw();
                 },
-                onError: (errorData) => {
-                    const errorMessage = errorData.message || "Failed to update agency. Please try again.";
-                    Swal.fire({
-                        text: errorMessage,
-                        icon: "error",
-                        buttonsStyling: false,
-                        confirmButtonText: "Ok, got it!",
-                        customClass: {
-                            confirmButton: "btn btn-primary"
-                        }
-                    });
-                },
-                formDataType: 'json'
+                onError: (err) => {
+                    Swal.fire("Error", err.message || "Failed to update agency", "error");
+                }
             });
 
-            // Function to fetch agency data and populate the edit modal
-            async function fetchAndAppendAgencyModal(agencyId) {
-                if (!agencyId) {
-                    console.error("Edit button missing data-id attribute.");
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Agency ID not found for editing.',
-                    });
-                    return;
-                }
+            // Select2 for filter dropdown
+            select2AjaxSearchHandleListener(
+                "[data-kt-agency-table-filter='subscription_id']",
+                { multiple: false },
+                "/api/Subscription",
+                (params) => ({
+                    search: params.term,
+                    page: params.page || 1,
+                    length: 15
+                }),
+                (data, params) => ({
+                    results: data.data,
+                    pagination: { more: ((params.page || 1) * 15) < data.recordsFiltered }
+                }),
+                "Search for subscription",
+                (data) => data.planName,
+                (data) => data.planName
+            );
 
-                toggleBlockUI(); // Show loading indicator
+            // Filter button
+            $("[data-kt-agency-table-filter='filter']").on("click", () => dataTable.reDraw());
+            $("[data-kt-agency-table-filter='reset']").on("click", () => {
+                $("[data-kt-agency-table-filter='subscription_id']").val("").trigger("change");
+                dataTable.clearCustomFilters();
+                dataTable.reDraw();
+            });
 
-                try {
-                    const response = await fetch(`/api/Agency/${agencyId}`);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const agencyData = await response.json();
-
-                    // Populate form fields
-                    $('#kt_modal_edit_agency_form #editAgencyId').val(agencyData.id);
-                    $('#kt_modal_edit_agency_form input[name="Name"]').val(agencyData.name);
-                    $('#kt_modal_edit_agency_form input[name="Domain"]').val(agencyData.domain);
-
-                    // Set the subscription dropdown value
-                    const subscriptionSelect = $('#editAgencySubscriptionSelect');
-                    subscriptionSelect.val(agencyData.subscriptionId || '').trigger('change');
-
-                    // Dynamically set the API endpoint for the edit form handler
-                    editAgencyFormHandler.options.apiEndpoint = `/api/Agency/${agencyId}`;
-
-                } catch (error) {
-                    console.error("Failed to fetch agency details:", error);
-                    Swal.fire({
-                        text: "Could not load agency details. Please try again.",
-                        icon: "error",
-                        buttonsStyling: false,
-                        confirmButtonText: "Ok, got it!",
-                        customClass: {
-                            confirmButton: "btn btn-primary"
-                        }
-                    });
-                } finally {
-                    toggleBlockUI(); // Hide loading indicator
-                }
-            }
-
-            // Initial fetch for subscriptions when the page loads
-            fetchSubscriptionsForDropdown();
+            fetchSubscriptions();
+            initializeAgencyDataTable();
         });
     </script>
 }

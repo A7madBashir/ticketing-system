@@ -1,71 +1,44 @@
-/**
- * Reusable Form Submission Handler for Metronic-themed forms.
- * Handles pure HTML5 form validation, AJAX submission, Metronic loading indicators,
- * and displaying success/error messages using SweetAlert2.
- *
- * Requires Metronic's global JS bundles (plugins.bundle.js, scripts.bundle.js)
- * for indicator functionality.
- * Requires SweetAlert2 for beautiful alerts.
- */
 class FormSubmitHandler {
   constructor(options) {
-    // Default options
     this.options = {
-      formSelector: null, // Required: CSS selector for the form (e.g., '#myFormId')
-      method: null, // method of the form generally post method
-      submitButtonSelector: null, // Required: CSS selector for the submit button
-      apiEndpoint: null, // Required: URL for API submission (e.g., '/api/users')
-      redirectUrl: null, // Optional: URL to redirect to on successful submission
-      clearFormOnSuccess: true, // Optional: Whether to clear form fields after successful submission
-      // Callbacks
-      onBeforeSubmit: (form) => true, // Optional: Callback before submission. Return false to prevent submission.
+      formSelector: null,
+      method: null,
+      submitButtonSelector: null,
+      apiEndpoint: null,
+      redirectUrl: null,
+      clearFormOnSuccess: true,
+      onBeforeSubmit: (form) => true,
       onSuccess: (responseData) => {
         console.log("Form submitted successfully:", responseData);
-      }, // Optional: Callback on success
+      },
       onError: (errorData) => {
         console.error("Form submission error:", errorData);
-      }, // Optional: Callback on error
-      formDataType: "json", // Optional: 'json' or 'formData'. How to send data.
+      },
+      beforeSubmit: null, // ✅ This handles data transformation like converting checkbox
+      formDataType: "json",
     };
 
-    // Merge user-provided options
     Object.assign(this.options, options);
 
-    // Ensure required options are provided
     if (
       !this.options.formSelector ||
       !this.options.submitButtonSelector ||
       !this.options.apiEndpoint
     ) {
-      console.error(
-        "FormSubmitHandler: Missing required options (formSelector, submitButtonSelector, apiEndpoint)."
-      );
+      console.error("FormSubmitHandler: Missing required options.");
       return;
     }
 
     this.form = document.querySelector(this.options.formSelector);
-    this.submitButton = document.querySelector(
-      this.options.submitButtonSelector
-    );
+    this.submitButton = document.querySelector(this.options.submitButtonSelector);
 
-    if (!this.form) {
-      console.error(
-        `FormSubmitHandler: Form not found with selector: ${this.options.formSelector}`
-      );
-      return;
-    }
-    if (!this.submitButton) {
-      console.error(
-        `FormSubmitHandler: Submit button not found with selector: ${this.options.submitButtonSelector}`
-      );
+    if (!this.form || !this.submitButton) {
+      console.error("FormSubmitHandler: Form or submit button not found.");
       return;
     }
 
-    // Check if SweetAlert2 is available
     if (typeof Swal === "undefined") {
-      console.error(
-        "FormSubmitHandler: SweetAlert2 library (Swal) not found. Please include it."
-      );
+      console.error("FormSubmitHandler: SweetAlert2 library (Swal) not found.");
       return;
     }
 
@@ -77,9 +50,8 @@ class FormSubmitHandler {
   }
 
   handleSubmit(event) {
-    event.preventDefault(); // Prevent default form submission
+    event.preventDefault();
 
-    // Execute onBeforeSubmit callback
     if (
       typeof this.options.onBeforeSubmit === "function" &&
       !this.options.onBeforeSubmit(this.form)
@@ -90,11 +62,9 @@ class FormSubmitHandler {
 
     this.showLoadingIndicator();
 
-    // Use pure HTML5 form validation
     if (!this.form.checkValidity()) {
-      this.form.reportValidity(); // This shows the native browser validation messages
+      this.form.reportValidity();
       this.hideLoadingIndicator();
-      // No SweetAlert2 here for client-side validation errors, as browser messages are immediate.
       return;
     }
 
@@ -103,27 +73,40 @@ class FormSubmitHandler {
 
   submitForm() {
     const url = this.options.apiEndpoint;
-    const method = this.options.method || "POST"; // Default to POST if not specified
+    const method = this.options.method || "POST";
     let body;
     let headers = {};
 
+    // Step 1: Convert form data to plain JS object
+    const formData = new FormData(this.form);
+    let data = {};
+    formData.forEach((value, key) => {
+      data[key] = value;
+    });
+
+    // ✅ Step 2: Call beforeSubmit to transform values (like checkboxes)
+    if (typeof this.options.beforeSubmit === "function") {
+      const modified = this.options.beforeSubmit(data);
+      if (modified && typeof modified === "object") {
+        data = modified;
+      }
+    }
+
+    console.log("✅ Final form data to submit:", data); // Optional debug
+
+    // Step 3: Build request body
     if (this.options.formDataType === "json") {
-      const formData = new FormData(this.form);
-      const data = {};
-      // Convert FormData to plain object for JSON serialization
-      formData.forEach((value, key) => {
-        // This simple conversion works for flat forms.
-        // For nested objects or arrays, more complex logic is needed.
-        data[key] = value;
-      });
       body = JSON.stringify(data);
       headers["Content-Type"] = "application/json";
     } else {
-      // formData
-      body = new FormData(this.form);
-      // No Content-Type header needed for FormData; browser sets it correctly with boundary
+      const finalFormData = new FormData();
+      for (const key in data) {
+        finalFormData.append(key, data[key]);
+      }
+      body = finalFormData;
     }
 
+    // Step 4: Submit
     fetch(url, {
       method: method,
       headers: headers,
@@ -131,29 +114,26 @@ class FormSubmitHandler {
     })
       .then((response) => {
         if (!response.ok) {
-          // If response is not OK (e.g., 400, 500), try to read error details
-          return response.json().then((err) => Promise.reject(err)); // Reject with error object
+          return response.json().then((err) => Promise.reject(err));
         }
-        // Always try to parse JSON, even if response is empty (e.g., 204 No Content)
-        return response.json().catch(() => ({})); // Return empty object if no JSON to parse
+        return response.json().catch(() => ({}));
       })
       .then((data) => {
         this.hideLoadingIndicator();
-        this.displaySuccessAlert(
-          "Operation completed successfully!",
-          "Success!"
-        );
+        this.displaySuccessAlert("Operation completed successfully!", "Success!");
 
         if (this.options.clearFormOnSuccess) {
           this.form.reset();
         }
+
         if (typeof this.options.onSuccess === "function") {
           this.options.onSuccess(data);
         }
+
         if (this.options.redirectUrl) {
           setTimeout(() => {
             window.location.href = this.options.redirectUrl;
-          }, 1500); // Small delay for message
+          }, 1500);
         }
       })
       .catch((error) => {
@@ -162,23 +142,22 @@ class FormSubmitHandler {
         let errorTitle = "Error!";
 
         if (typeof error === "object" && error !== null) {
-          // Common error response patterns from ASP.NET Core APIs (ProblemDetails or custom)
           if (error.title) errorTitle = error.title;
           if (error.detail) errorMessage = error.detail;
           else if (error.errors) {
-            // For validation errors from .NET Core
             errorMessage = Object.values(error.errors).flat().join("<br/>");
-            if (!errorTitle || errorTitle === "Error!")
-              errorTitle = "Validation Errors!";
-          } else if (error.message)
-            errorMessage = error.message; // Generic message
-          else if (error.status)
-            errorMessage = `Server responded with status: ${error.status}`; // For non-JSON errors
+            if (!errorTitle || errorTitle === "Error!") errorTitle = "Validation Errors!";
+          } else if (error.message) {
+            errorMessage = error.message;
+          } else if (error.status) {
+            errorMessage = `Server responded with status: ${error.status}`;
+          }
         } else if (typeof error === "string") {
           errorMessage = error;
         }
-        console.log(error);
+
         this.displayErrorAlert(errorMessage, errorTitle);
+
         if (typeof this.options.onError === "function") {
           this.options.onError(error);
         }
@@ -195,31 +174,21 @@ class FormSubmitHandler {
     this.submitButton.disabled = false;
   }
 
-  /**
-   * Displays a SweetAlert2 success message.
-   * @param {string} text - The main message text.
-   * @param {string} title - The title of the alert.
-   */
   displaySuccessAlert(text, title = "Success!") {
     Swal.fire({
       icon: "success",
       title: title,
       text: text,
       showConfirmButton: false,
-      timer: 2500, // Auto-close after 2.5 seconds
+      timer: 2500,
     });
   }
 
-  /**
-   * Displays a SweetAlert2 error message.
-   * @param {string} text - The main message text. Can contain HTML (e.g., <br/>).
-   * @param {string} title - The title of the alert.
-   */
   displayErrorAlert(text, title = "Error!") {
     Swal.fire({
       icon: "error",
       title: title,
-      html: text, // Use html to render <br/> or other HTML tags
+      html: text,
       confirmButtonText: "Ok",
     });
   }

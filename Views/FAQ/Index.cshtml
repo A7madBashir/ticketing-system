@@ -241,84 +241,34 @@
         $(document).ready(function () {
             let dataTable;
 
-            // Initialize DataTable
             function initializeFaqsDataTable() {
                 dataTable = new DataTableSSR("/api/FAQ", [
-                    { 
-                        data: "question", 
-                        name: "Question",
-                        class: "faq-question",
-                        render: (data) => data || "—"
-                    },
-                    { 
-                        data: "answer", 
-                        name: "Answer",
-                        class: "faq-answer",
-                        render: (data) => data || "—"
-                    },
-                    { 
-                        data: "agencyName", 
-                        name: "Agency",
-                        render: (data) => data || "—"
-                    },
-                    { 
-                        data: null, 
-                        class: "text-end",
-                        render: (data) => `
-                            <span class="text-action" data-kt-docs-table-filter="edit_row" item-id="${data.id}">
-                                Edit
-                            </span>
-                            <span class="text-action delete" data-kt-docs-table-filter="delete_row" item-id="${data.id}">
-                                Delete
-                            </span>
-                        `
+                    { data: "question", name: "Question", class: "faq-question", render: (data) => data || "—" },
+                    { data: "answer", name: "Answer", class: "faq-answer", render: (data) => data || "—" },
+                    { data: "agencyName", name: "Agency", render: (data) => data || "—" },
+                    { data: null, class: "text-end" }
+                ], [
+                    {
+                        targets: -1,
+                        render: function (data, full, row) {
+                            return dataTable.generateEditLinkDataTableRow("#", null, [`item-id='${row.id}'`]) +
+                                   " | " +
+                                   dataTable.generateDeleteLinkDataTableRow(row.id);
+                        }
                     }
                 ]);
 
-                dataTable.initDataTableObj("#data-table", null, null, [{
-                    event: "draw",
-                    action: () => {
-                        // Attach edit event to text links
-                        $("[data-kt-docs-table-filter='edit_row']").on("click", function (e) {
-                            e.preventDefault();
-                            const faqId = $(this).attr("item-id");
-                            fetchAndPopulateEditModal(faqId);
-                            $("#kt_modal_edit_faq").modal("show");
-                        });
-
-                        // Attach delete event to text links
-                        $("[data-kt-docs-table-filter='delete_row']").on("click", function (e) {
-                            e.preventDefault();
-                            const faqId = $(this).attr("item-id");
-                            
-                            Swal.fire({
-                                title: "Are you sure?",
-                                text: "This FAQ will be permanently deleted!",
-                                icon: "warning",
-                                showCancelButton: true,
-                                confirmButtonText: "Yes, delete it!",
-                                cancelButtonText: "No, cancel!",
-                                reverseButtons: true
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    $.ajax({
-                                        url: `/api/FAQ/${faqId}`,
-                                        type: "DELETE",
-                                        success: function() {
-                                            Swal.fire("Deleted!", "FAQ has been deleted.", "success");
-                                            dataTable.reDraw();
-                                        },
-                                        error: function(xhr) {
-                                            Swal.fire("Error!", xhr.responseJSON?.message || "Could not delete FAQ", "error");
-                                        }
-                                    });
-                                }
-                            });
-                        });
+                dataTable.initDataTableObj("#data-table", null, null, [
+                    {
+                        event: "draw",
+                        action: () => {
+                            dataTable.deleteRowsBtnEvents("[data-kt-docs-table-filter='delete_row']", null, 0);
+                            dataTable.initialTooltip();
+                            handleEditModalListener();
+                        }
                     }
-                }]);
+                ]);
 
-                // Custom search and filters
                 dataTable.customSearchDataTable("[data-kt-table-filter='search']");
                 dataTable.customizeDataTableQueryParams = () => ({
                     filters: {
@@ -327,7 +277,14 @@
                 });
             }
 
-            // Fetch FAQ data for edit modal
+            function handleEditModalListener() {
+                $("#data-table tr [data-kt-docs-table-filter='edit_row']").on("click", async (e) => {
+                    let id = e.currentTarget.getAttribute("item-id");
+                    $("#kt_modal_edit_faq").modal("show");
+                    await fetchAndPopulateEditModal(id);
+                });
+            }
+
             async function fetchAndPopulateEditModal(faqId) {
                 try {
                     const response = await fetch(`/api/FAQ/${faqId}`);
@@ -347,7 +304,6 @@
                 }
             }
 
-            // Initialize Select2 dropdowns for Agencies
             function initializeSelect2Dropdowns() {
                 select2AjaxSearchHandleListener(
                     "#kt_modal_add_faq_form select[name='AgencyId']",
@@ -372,7 +328,6 @@
                 );
             }
 
-            // Form handlers for Add/Edit
             const addFaqFormHandler = new FormSubmitHandler({
                 formSelector: "#kt_modal_add_faq_form",
                 submitButtonSelector: "#kt_add_faq_submit_button",
@@ -391,7 +346,7 @@
             const editFaqFormHandler = new FormSubmitHandler({
                 formSelector: "#kt_modal_edit_faq_form",
                 submitButtonSelector: "#kt_edit_faq_submit_button",
-                apiEndpoint: "/api/FAQ", // Dynamically set
+                apiEndpoint: "/api/FAQ",
                 method: "PUT",
                 onSuccess: () => {
                     Swal.fire("Success", "FAQ updated successfully!", "success");
@@ -408,7 +363,6 @@
                 }
             });
 
-            // Filter button events
             $("[data-kt-faq-table-filter='filter']").on("click", () => dataTable.reDraw());
             $("[data-kt-faq-table-filter='reset']").on("click", () => {
                 $("[data-kt-faq-table-filter='agency_id']").val("").trigger("change");
@@ -416,7 +370,6 @@
                 dataTable.reDraw();
             });
 
-            // Initialize everything
             initializeFaqsDataTable();
             initializeSelect2Dropdowns();
         });

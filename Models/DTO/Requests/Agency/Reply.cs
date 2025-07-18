@@ -4,8 +4,8 @@ namespace TicketingSystem.Models.DTO.Requests.Replies
 {
     public class CreateReplyRequest : ICreateRequest
     {
-        public Ulid TicketId { get; set; }
-        public Ulid UserId { get; set; }
+        public string TicketId { get; set; }
+        public string UserId { get; set; }
         public required string Content { get; set; }
         public bool IsInternal { get; set; }
         public bool IsChatbotReply { get; set; }
