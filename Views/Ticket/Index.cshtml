@@ -14,15 +14,6 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        /* Status/Priority badges */
-        .badge-status-open { background-color: #E1F0FF; color: #3699FF; }
-        .badge-status-inprogress { background-color: #FFF4DE; color: #FFA800; }
-        .badge-status-resolved { background-color: #C9F7F5; color: #1BC5BD; }
-        .badge-priority-low { background-color: #E8FFF3; color: #50CD89; }
-        .badge-priority-medium { background-color: #E1F0FF; color: #3699FF; }
-        .badge-priority-high { background-color: #FFF4DE; color: #FFA800; }
-        .badge-priority-critical { background-color: #FFE2E5; color: #F64E60; }
-        /* Loading overlay */
         .modal-loading-overlay {
             position: absolute;
             top: 0;
@@ -380,9 +371,9 @@
                         data: "status", 
                         name: "Status", // Keep PascalCase
                         render: (data) => {
-                            let badgeClass = "badge-status-open";
-                            if (data === "InProgress") badgeClass = "badge-status-inprogress";
-                            if (data === "Resolved") badgeClass = "badge-status-resolved";
+                            let badgeClass = "badge badge-primary";
+                            if (data === "InProgress") badgeClass = "badge badge-warning";
+                            if (data === "Resolved") badgeClass = "badge badge-success";
                             return data ? `<span class="badge ${badgeClass}">${data}</span>` : "—";
                         }
                     },
@@ -391,9 +382,9 @@
                         name: "Priority", // Keep PascalCase
                         render: (data) => {
                             let badgeClass = "badge-priority-low";
-                            if (data === "Medium") badgeClass = "badge-priority-medium";
-                            if (data === "High") badgeClass = "badge-priority-high";
-                            if (data === "Critical") badgeClass = "badge-priority-critical";
+                            if (data === "Medium") badgeClass = "badge badge-primary";
+                            if (data === "High") badgeClass = "badge badge-warning";
+                            if (data === "Critical") badgeClass = "badge badge-danger";
                             return data ? `<span class="badge ${badgeClass}">${data}</span>` : "—";
                         }
                     },
