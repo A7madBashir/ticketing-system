@@ -1,4 +1,6 @@
-using System;
+using TicketingSystem.Models.Common.BaseEntity;
+using TicketingSystem.Models.DTO.Responses.Agency;
+using TicketingSystem.Models.DTO.Responses.User;
 
 namespace TicketingSystem.Models.DTO.Responses.Agency
 {
@@ -11,5 +13,7 @@ namespace TicketingSystem.Models.DTO.Responses.Agency
         public TimeSpan AverageResponseTime { get; set; }
         public float CustomerSatisfactionScore { get; set; }
         public DateTime CreateTime { get; set; }
+        public virtual AgencyResponse? Agency { get; set; }
+        public virtual UserResponse? Agent { get; set; }
     }
 }

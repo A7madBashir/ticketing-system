@@ -318,10 +318,10 @@
             function initializeAnalyticsDataTable() {
                 analyticsDataTable = new DataTableSSR("/api/analytic", [
                     { 
-                        data: "agentId", 
-                        name: "AgentId",
+                        data: "agent", 
+                        name: "Agent",
                         render: function(data, type, row) {
-                            return `<span class="text-gray-800 fw-bold">${data}</span>`;
+                            return `<span class="text-gray-800 fw-bold">${data.email}</span>`;
                         }
                     },
                     { 
@@ -345,7 +345,7 @@
                             if (minutes > 0 || hours > 0) formatted += `${minutes}m `;
                             formatted += `${seconds}s`;
                             
-                            return `<span class="text-gray-600">${formatted}</span>`;
+                            return `<span class="text-gray-600">${data}</span>`;
                         }
                     },
                     { 
@@ -353,10 +353,10 @@
                         name: "CustomerSatisfactionScore",
                         render: function(data) {
                             let badgeClass = 'badge-light-danger';
-                            if (data >= 80) badgeClass = 'badge-light-success';
-                            else if (data >= 50) badgeClass = 'badge-light-warning';
+                            if (data >= 3.5) badgeClass = 'badge-light-success';
+                            else if (data >= 3) badgeClass = 'badge-light-warning';
                             
-                            return `<span class="badge ${badgeClass}">${data}%</span>`;
+                            return `<span class="badge ${badgeClass}">${data}</span>`;
                         }
                     },
                     { 

@@ -11,7 +11,6 @@ using System.Linq; // Ensure System.Linq is present for Where, FirstOrDefault, e
 using System.Threading.Tasks; // For async/await
 using TicketingSystem.Services;
 using TicketingSystem.Models.Identity;
-using TicketingSystem.Services.Repositories;
 
 
 namespace TicketingSystem.Controllers.Api;
@@ -22,7 +21,8 @@ public class ReplyController(
     ITicketRepository ticketRepository,
     IIdentityService identityService, // Renamed for consistency with field
     Mapper mapper
-) : CrudController<
+)
+ : CrudController<
     Reply,
     Ulid,
     ReplyResponse, // Corrected to ReplyResponse (not ReplyResponseDto)

@@ -6,12 +6,15 @@ using TicketingSystem.Models.DTO.Requests.Agency;
 using TicketingSystem.Models.DTO.Responses.Agency;
 using TicketingSystem.Models.Entities.Agency;
 using TicketingSystem.Services.Repositories;
+using TicketingSystem.Models.Identity;
+using TicketingSystem.Services;
 
 namespace TicketingSystem.Controllers.Api;
 
 public class AnalyticController(
     IAnalyticRepository repository,
     IAgencyRepository agencyRepository,
+    IIdentityService identityService,
     Mapper mapper
 )
     : CrudController<
@@ -24,6 +27,7 @@ public class AnalyticController(
 {
     private readonly IAnalyticRepository _repository = repository;
     private readonly IAgencyRepository _agencyRepository = agencyRepository;
+    private readonly IIdentityService _identityService = identityService;
 
     protected override IQueryable<Analytic>? BuildBaseQuery(DataTableRequest req)
     {
@@ -31,7 +35,8 @@ public class AnalyticController(
         var query = _repository.Query();
 
         // This ensures that when Agency data is fetched, its associated Subscription data is also loaded.
-        query = query.Include(a => a.Agency);
+        query = query.Include(a => a.Agency)
+                     .Include(a => a.Agent);
 
         if (req.Filters.Count > 0)
         {
