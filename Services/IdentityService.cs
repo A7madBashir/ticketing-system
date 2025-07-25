@@ -41,7 +41,7 @@ public interface IIdentityService
     Task<bool> IsAdmin(ClaimsPrincipal claims);
     Task<bool> IsAgent(User user);
     Task<bool> IsAdmin(User user);
-    Task<User> GetOrAddUser(string email, string phone, string name);
+    Task<User> GetOrAddUser(string email, string? phone, string name);
 }
 
 public class IdentityService(UserManager<User> userManager, IUserRepository repository)
@@ -187,10 +187,10 @@ public class IdentityService(UserManager<User> userManager, IUserRepository repo
         throw new NotImplementedException();
     }
 
-    public async Task<User> GetOrAddUser(string email, string phone, string name)
+    public async Task<User> GetOrAddUser(string email, string? phone, string name)
     {
         var ut = await _repository.FirstOrDefaultAsync(u =>
-            u.UserName == email || u.UserName == phone
+            u.UserName == email
         );
         if (ut is not null)
         {
@@ -202,7 +202,7 @@ public class IdentityService(UserManager<User> userManager, IUserRepository repo
             Email = email,
             PhoneNumber = phone,
             FirstName = name,
-            UserName = string.IsNullOrEmpty(email) ? phone : email,
+            UserName = email,
             CreatedAt = DateTime.Now,
         };
 

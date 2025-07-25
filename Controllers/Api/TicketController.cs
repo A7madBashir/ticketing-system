@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Linq.Expressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -92,6 +93,11 @@ public class TicketController(
         return await base.Create(createDto);
     }
 
+    protected override Expression<Func<Ticket, object>> GetDefaultOrderBy()
+    {
+        return e => e.CreateTime;
+    }
+
     [AllowAnonymous]
     [ApiKeyAuthorize]
     [HttpPost("AgencyTicket")]
@@ -152,6 +158,7 @@ public class TicketController(
             Description = request.Content,
             AgencyId = (Ulid)CurrentAgencyId,
             Status = "Open",
+            Priority = "Low",
             CreatedById = user.Id,
             OriginatedFromChatbot = true,
         };

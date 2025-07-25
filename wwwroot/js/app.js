@@ -24,7 +24,7 @@ function isEmptyOrSpaces(str) {
 function formatDateTime(dateTime) {
   if (isEmptyOrSpaces(dateTime)) return "";
 
-  return moment(dateTime).format("YYYY-MM-DD HH:MM A").toLocaleString();
+  return moment(dateTime).format("YYYY-MM-DD hh:mmM A").toLocaleString();
 }
 
 function successSwal2(title, message, cb = () => {}, options) {

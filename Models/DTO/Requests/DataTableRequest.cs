@@ -7,7 +7,7 @@ public class DataTableRequest
     public int Draw { get; set; } = 1;
 
     public string? SortColumn { get; set; }
-    public string SortDirection { get; set; } = "asc";
+    public string SortDirection { get; set; } = "desc";
     public bool OrderByDescending => SortDirection?.ToLower() == "desc";
 
     public string? Search { get; set; }

@@ -256,13 +256,16 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h2 class="fw-bolder">Edit Ticket</h2>
-                <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal" aria-label="Close modal">
-                    <span class="svg-icon svg-icon-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                            <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="black" />
-                            <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="black" />
-                        </svg>
-                    </span>
+                <div class="">
+                    <span id="createTime" class="px-2 fs-5"></span>
+                    <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal" aria-label="Close modal">
+                        <span class="svg-icon svg-icon-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <rect opacity="0.5" x="6" y="17.3137" width="16" height="2" rx="1" transform="rotate(-45 6 17.3137)" fill="black" />
+                                <rect x="7.41422" y="6" width="16" height="2" rx="1" transform="rotate(45 7.41422 6)" fill="black" />
+                            </svg>
+                        </span>
+                    </div>
                 </div>
             </div>
             <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
@@ -381,7 +384,7 @@
                         data: "priority", 
                         name: "Priority", // Keep PascalCase
                         render: (data) => {
-                            let badgeClass = "badge-priority-low";
+                            let badgeClass = "badge badge-info";
                             if (data === "Medium") badgeClass = "badge badge-primary";
                             if (data === "High") badgeClass = "badge badge-warning";
                             if (data === "Critical") badgeClass = "badge badge-danger";
@@ -468,6 +471,7 @@
                     // Populate the form fields. Selectors now match PascalCase HTML name attributes.
                     // Values come from camelCase API response.
                     $("#editTicketId").val(ticket.id);
+                    $("#kt_modal_edit_ticket #createTime").text(formatDateTime(ticket.createTime));
                     $("#kt_modal_edit_ticket_form input[name='Title']").val(ticket.title);
                     $("#kt_modal_edit_ticket_form textarea[name='Description']").val(ticket.description || "");
                     $("#kt_modal_edit_ticket_form select[name='Status']").val(ticket.status).trigger("change");
@@ -475,8 +479,11 @@
                     $("#kt_modal_edit_ticket_form select[name='Priority']").val(ticket.priority || "Medium").trigger("change"); 
                     
                     // Category select element append option to select
-                    $("#kt_modal_edit_ticket_form [name='CategoryId']").select2("trigger", "select", { data: { "text": ticket.category?.name, "id": ticket.category?.id }, name: ticket.category?.name })
-                    
+                    if(ticket.category)
+                        $("#kt_modal_edit_ticket_form [name='CategoryId']").select2("trigger", "select", { data: { "text": ticket.category?.name, "id": ticket.category?.id }, name: ticket.category?.name })
+                    else 
+                        $("#kt_modal_edit_ticket_form [name='CategoryId']").val(undefined).trigger("change")
+
                     // Static Agency data model
                     $("#editTicketAgencyId").val(ticket.agency?.id);
                     $("#editTicketAgency").val(ticket.agency?.name || "—");
