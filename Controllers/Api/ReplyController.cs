@@ -6,6 +6,7 @@ using TicketingSystem.Models.DTO.Requests.Replies;
 using TicketingSystem.Models.DTO.Responses.Replies;
 using TicketingSystem.Models.Entities.Agency;
 using TicketingSystem.Services;
+using TicketingSystem.Services.Repositories;
 
 namespace TicketingSystem.Controllers.Api;
 

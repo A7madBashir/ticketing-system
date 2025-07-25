@@ -7,15 +7,12 @@ using TicketingSystem.Models.DTO.Responses.Agency;
 using TicketingSystem.Models.Entities.Agency;
 using TicketingSystem.Services;
 using TicketingSystem.Services.Repositories;
-using TicketingSystem.Models.Identity;
-using TicketingSystem.Services;
 
 namespace TicketingSystem.Controllers.Api;
 
 public class AnalyticController(
     IAnalyticRepository repository,
     IAgencyRepository agencyRepository,
-    IIdentityService identityService,
     IIdentityService identityService,
     Mapper mapper
 )
@@ -29,7 +26,6 @@ public class AnalyticController(
 {
     private readonly IAnalyticRepository _repository = repository;
     private readonly IAgencyRepository _agencyRepository = agencyRepository;
-    private readonly IIdentityService _identityService = identityService;
     private readonly IIdentityService _identityService = identityService;
 
     protected override async Task<IQueryable<Analytic>?> BuildBaseQuery(DataTableRequest req)
