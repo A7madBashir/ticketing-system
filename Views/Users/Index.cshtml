@@ -244,6 +244,7 @@
             @* <td>Username</td> *@
             <td>Name</td>
             <td>Email</td>
+            <td>Agency</td>
             <td>Last Login At</td>
             <td></td>
           </tr>
@@ -307,8 +308,6 @@
                   <option></option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                  <option value="Prefer not to say">Prefer not to say</option>
                 </select>
               </div>
               <div class="col-md-6 fv-row">
@@ -331,8 +330,16 @@
             </div>
             <div class="row g-9 mb-7">
               <div class="col-md-6 fv-row"> @* Still use col-md-6 to align with the grid, even if it's alone *@
-                <label class="required fw-bold fs-6 mb-2">Date of Birth</label>
-                <input type="date" name="DateOfBirth" class="form-control form-control-solid" required />
+                <label class="fw-bold fs-6 mb-2">Date of Birth</label>
+                <input type="date" name="DateOfBirth" class="form-control form-control-solid" />
+              </div>
+              <div class="col-md-6 fv-row">
+                <label class="required fw-bold fs-6 mb-2">Agency</label>
+                <select name="agencyId" class="form-select form-select-solid fw-bolder" data-kt-select2="true"
+                  data-placeholder="Select Agency" data-allow-clear="true" data-kt-category-table-filter="agency_id">
+                  <option></option>
+                  <!-- Dynamically loaded -->
+                </select>
               </div>
             </div>
             <div class="row g-9 mb-7">
@@ -417,8 +424,6 @@
                   <option></option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                  <option value="Prefer not to say">Prefer not to say</option>
                 </select>
               </div>
               <div class="col-md-6 fv-row">
@@ -441,40 +446,49 @@
             </div>
             <div class="row g-9 mb-7">
               <div class="col-md-6 fv-row">
-                <label class="required fw-bold fs-6 mb-2">Date of Birth</label>
-                <input type="date" name="DateOfBirth" class="form-control form-control-solid" required />
+                <label class="fw-bold fs-6 mb-2">Date of Birth</label>
+                <input type="date" name="DateOfBirth" class="form-control form-control-solid" />
+              </div>
+              <div class="col-md-6 fv-row">
+                <label class="required fw-bold fs-6 mb-2">Agency</label>
+                <select name="agencyId" class="form-select form-select-solid fw-bolder" data-kt-select2="true"
+                  data-placeholder="Select Agency" data-allow-clear="true" data-kt-category-table-filter="agency_id">
+                  <option></option>
+                  <!-- Dynamically loaded -->
+                </select>
               </div>
             </div>
             <div class="row g-9 mb-7">
-            <div class="col-md-6 fv-row"> @* Still use col-md-6 to align with the grid, even if it's alone *@
-              <label class="required fw-bold fs-6 mb-2">Password</label>
-              <input type="password" name="Password" class="form-control form-control-solid" required />
-            </div>
-            <div class="col-md-6 fv-row"> @* Still use col-md-6 to align with the grid, even if it's alone *@
-              <label class="required fw-bold fs-6 mb-2">Confirm Password</label>
-              <input type="password" name="ConfirmPassword" class="form-control form-control-solid" required />
+              <div class="col-md-6 fv-row"> @* Still use col-md-6 to align with the grid, even if it's alone *@
+                <label class="required fw-bold fs-6 mb-2">Password</label>
+                <input type="password" name="Password" class="form-control form-control-solid" required />
+              </div>
+              <div class="col-md-6 fv-row"> @* Still use col-md-6 to align with the grid, even if it's alone *@
+                <label class="required fw-bold fs-6 mb-2">Confirm Password</label>
+                <input type="password" name="ConfirmPassword" class="form-control form-control-solid" required />
+              </div>
             </div>
           </div>
+          <div class="text-center pt-15">
+            <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="kt_edit_user_submit_button">
+              <span class="indicator-label">Save Changes</span>
+              <span class="indicator-progress">Please wait...
+                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+              </span>
+            </button>
+          </div>
+        </form>
       </div>
-      <div class="text-center pt-15">
-        <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal">Cancel</button>
-        <button type="submit" class="btn btn-primary" id="kt_edit_user_submit_button">
-          <span class="indicator-label">Save Changes</span>
-          <span class="indicator-progress">Please wait...
-            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
-          </span>
-        </button>
-      </div>
-      </form>
     </div>
   </div>
-</div>
 </div>
 
 @section Scripts {
   <script src="~/lib/metronic/plugins/custom/datatables/datatables.bundle.js"></script> @* Adjust path as needed *@
   <script src="~/js/dataTable/init.js"></script> @* Adjust path as needed *@
   <script src="~/js/forms/form-submit-handler.js"></script> @* Adjust path as needed *@
+  <script src="~/js/forms/ajaxSelect2Handler.js"></script>
 
   <script>
     $(document).ready(function () {
@@ -528,16 +542,16 @@
           responsivePriority: 1, // Make sure this column is always visible on smaller screens
           render: function (data, type, row) {
             return `
-                          <button class="btn btn-sm btn-info view-btn" data-id="${row.id}" title="View Details">
-                              <i class="bi bi-eye"></i> View
-                          </button>
-                          <button class="btn btn-sm btn-warning edit-btn" data-id="${row.id}" title="Edit User">
-                              <i class="bi bi-pencil"></i> Edit
-                          </button>
-                          <button class="btn btn-sm btn-danger delete-btn" data-id="${row.id}" title="Delete User">
-                              <i class="bi bi-trash"></i> Delete
-                          </button>
-                      `;
+                            <button class="btn btn-sm btn-info view-btn" data-id="${row.id}" title="View Details">
+                                <i class="bi bi-eye"></i> View
+                            </button>
+                            <button class="btn btn-sm btn-warning edit-btn" data-id="${row.id}" title="Edit User">
+                                <i class="bi bi-pencil"></i> Edit
+                            </button>
+                            <button class="btn btn-sm btn-danger delete-btn" data-id="${row.id}" title="Delete User">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
+                        `;
           }
         }
       ];
@@ -546,8 +560,18 @@
         dataTable = new DataTableSSR("/api/User", [
           { data: "name", "name": "Name", class: "" },
           { data: "email", "name": "Email", class: "" },
+          { data: "agency", "name": "Agency", class: "" },
           { data: "lastLoginAt", "name": "LastLoginAt", class: "" },
           { "data": null, class: "text-end" }], [
+          {
+            targets: -3,
+            render: function (data) {
+              if (data)
+                return data.name;
+              else
+                return `<span class="text-gray-400 fs-7">Not specified</span>`
+            }
+          },
           {
             targets: -1,
             render: function (data, full, row) {
@@ -574,7 +598,7 @@
             await fetchAndAppendUserModal(userId)
           })
         }
-          
+
         dataTable.customSearchDataTable("[data-kt-table-filter='search']")
 
         // Attach event handlers for action buttons inside the table
@@ -620,6 +644,36 @@
       // Initialize the DataTable on page load
       initializeUsersDataTable();
 
+      function initializeSelectListeners() {
+        select2AjaxSearchHandleListener(
+          "#kt_modal_add_user_form [name='agencyId']",
+          { multiple: false, dropdownParent: $("#kt_modal_add_user")[0] },
+          "/api/Agency",
+          (params) => ({ search: params.term, length: 15, draw: 1, page: (params.page + 1) || 1 }),
+          (data, params) => ({
+            results: data.data,
+            pagination: {
+              more: ((params.page || 1) * 15) < data.recordsFiltered
+            }
+          }),
+          "Search for an agency"
+        );
+
+        select2AjaxSearchHandleListener(
+          "#kt_modal_edit_user_form [name='agencyId']",
+          { multiple: false, dropdownParent: $("#kt_modal_edit_user")[0] },
+          "/api/Agency",
+          (params) => ({ search: params.term, length: 15, draw: 1, page: (params.page + 1) || 1 }),
+          (data, params) => ({
+            results: data.data,
+            pagination: {
+              more: ((params.page || 1) * 15) < data.recordsFiltered
+            }
+          }),
+          "Search for an agency"
+        );
+      }
+
       const addUserFormHandler = new FormSubmitHandler({
         formSelector: '#kt_modal_add_user_form',
         submitButtonSelector: '#kt_add_user_submit_button',
@@ -652,7 +706,7 @@
       const editUserFormHandler = new FormSubmitHandler({
         formSelector: '#kt_modal_edit_user_form',
         submitButtonSelector: '#kt_edit_user_submit_button',
-        apiEndpoint: "", // This will be set dynamically in your population logic
+        apiEndpoint: "/api/User", // This will be set dynamically in your population logic
         clearFormOnSuccess: false, // Typically don't clear form on edit success, modal closes instead
         onSuccess: (data) => {
           console.log("User updated successfully:", data);
@@ -720,6 +774,15 @@
             // If Select2 is initialized, you need to trigger its update:
             $(genderSelect).trigger('change');
           }
+          const agencySelect = form.querySelector('[name="agencyId"]');
+          if (userData.agency) {
+            agencySelect.value = userData.agency.id || '';
+            // If Select2 is initialized, you need to trigger its update:
+            $(agencySelect).select2("trigger", "select", { data: { "text": userData.agency?.name, "id": userData.agency?.id }, name: userData.agency?.name })
+          }
+          else {
+            $(agencySelect).val(undefined).trigger('change')
+          }
 
           // 3. Dynamically set the API endpoint for update
           editUserFormHandler.options.apiEndpoint = `/api/User/${userId}`; // Or your PUT/PATCH endpoint
@@ -744,6 +807,7 @@
       }
       // --- END CONCEPTUAL JAVASCRIPT ---
 
+      setTimeout(initializeSelectListeners,2e3)
     });
   </script>
 }

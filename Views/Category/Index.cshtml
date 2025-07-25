@@ -301,7 +301,11 @@
                     $("#kt_modal_edit_category_form input[name='Name']").val(category.name);
                     $("#kt_modal_edit_category_form textarea[name='Description']").val(category.description || "");
                     $("#kt_modal_edit_category_form select[name='AgencyId']").val(category?.agency?.id).trigger("change");
-
+                    if(category.agency)
+                        $("#kt_modal_edit_category_form select[name='AgencyId']").select2("trigger", "select", { data: { "text": category?.agency?.name, "id": category?.agency?.id }, name: category?.agency?.name })
+                    else 
+                        $("#kt_modal_edit_category_form select[name='AgencyId']").val(undefined).trigger("change")
+                    
                     editCategoryFormHandler.options.apiEndpoint = `/api/Category/${categoryId}`;
                 } catch (error) {
                     console.error("Error loading category:", error);

@@ -92,8 +92,3 @@ function formatResult(data) {
 function formatSelection(data) {
   return data.name || data.text || data.id;
 }
-
-// Dummy isEmptyOrSpaces function for completeness, assuming it exists elsewhere
-function isEmptyOrSpaces(str) {
-  return str === null || str.match(/^ *$/) !== null;
-}

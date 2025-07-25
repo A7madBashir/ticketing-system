@@ -268,7 +268,7 @@
                     <div class="row mb-7">
                         <label class="col-lg-4 required fw-bold fs-6">Agency</label>
                         <div class="col-lg-8">
-                            <select name="AgencyId" class="form-select form-select-solid" required>
+                            <select name="AgencyId" class="form-select form-select-solid" required data-placeholder="Select an agency">
                                 @* Agency options will be populated via JavaScript *@
                             </select>
                         </div>
@@ -280,6 +280,16 @@
                                 <input class="form-check-input" type="checkbox" name="Enabled" id="editEnabledSwitch" />
                                 <label class="form-check-label" for="editEnabledSwitch">
                                     Enabled
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-7">
+                        <label class="col-lg-4 fw-bold fs-6">Api Key</label>
+                        <div class="col-lg-8">
+                            <div class="form-check form-switch form-check-custom form-check-solid">
+                                <label class="form-check-label badge badge-light-danger fs-5" id="apiKeyVal">
+                                    
                                 </label>
                             </div>
                         </div>
@@ -388,7 +398,8 @@
 
                     $("#editIntegrationId").val(integration.id);
                     $("#kt_modal_edit_integration_form input[name='Name']").val(integration.name);
-                    $("#kt_modal_edit_integration_form select[name='AgencyId']").val(integration.agencyId).trigger("change");
+                    $("#kt_modal_edit_integration_form label#apiKeyVal").text(integration.apiKey);
+                    $("#kt_modal_edit_integration_form select[name='AgencyId']").select2("trigger", "select", { data: { "text": integration?.agency?.name, "id": integration?.agency?.id }, name: integration?.agency?.name });
                     $("#editEnabledSwitch").prop("checked", integration.enabled);
 
                     editIntegrationFormHandler.options.apiEndpoint = "/api/integration/" + integration.id;
