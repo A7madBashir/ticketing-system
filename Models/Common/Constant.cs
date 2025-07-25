@@ -21,3 +21,11 @@ public static class AuthenticationSchema
     public const string Bearer = "Bearer";
     public const string Identity = "Identity.Application";
 }
+
+
+public static class AuthenticationPolicy
+{
+    public const string AdminOnly = "AdminOnly";
+    public const string AgentAccess = "AgentAccess";
+}
+

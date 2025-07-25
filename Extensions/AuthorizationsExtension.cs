@@ -14,6 +14,30 @@ public static class AuthorizationsExtension
     )
     {
         services
+            .AddCors(options =>
+            {
+                options.AddPolicy(
+                    "AllowAll",
+                    policy =>
+                    {
+                        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                    }
+                );
+            })
+            .AddAuthorization(options =>
+            {
+                // Policy for users who are Admins
+                options.AddPolicy(
+                    AuthenticationPolicy.AdminOnly,
+                    policy => policy.RequireRole(Roles.Admin)
+                );
+
+                // Policy for users who are EITHER an Agent OR an Admin
+                options.AddPolicy(
+                    AuthenticationPolicy.AgentAccess,
+                    policy => policy.RequireRole(Roles.Admin, Roles.Agent)
+                );
+            })
             .AddAuthentication(AuthenticationSchema.Identity)
             .AddJwtBearer(
                 JwtBearerDefaults.AuthenticationScheme,
@@ -69,6 +93,7 @@ public static class AuthorizationsExtension
                     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
                 }
             );
+        ;
 
         return services;
     }
