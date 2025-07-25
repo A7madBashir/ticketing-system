@@ -10,7 +10,7 @@ public class Ticket : BaseEntity
     public string? Description { get; set; }
     public string? Status { get; set; }
     public string? Priority { get; set; }
-    public Ulid CategoryId { get; set; }
+    public Ulid? CategoryId { get; set; }
     public Ulid CreatedById { get; set; }
     public Ulid AgencyId { get; set; }
     public bool OriginatedFromChatbot { get; set; }

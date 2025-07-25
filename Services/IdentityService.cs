@@ -37,6 +37,11 @@ public interface IIdentityService
     Task<LoginResponse> RefreshUserRefreshToken(string refreshToken, string ipAddress = "");
 
     Task<User?> GetUser(ClaimsPrincipal claims);
+    Task<bool> IsAgent(ClaimsPrincipal claims);
+    Task<bool> IsAdmin(ClaimsPrincipal claims);
+    Task<bool> IsAgent(User user);
+    Task<bool> IsAdmin(User user);
+    Task<User> GetOrAddUser(string email, string phone, string name);
 }
 
 public class IdentityService(UserManager<User> userManager, IUserRepository repository)
@@ -85,6 +90,40 @@ public class IdentityService(UserManager<User> userManager, IUserRepository repo
     public Task<User?> GetUserByPhoneNumberAsync(string phoneNumber)
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<bool> IsAdmin(ClaimsPrincipal claims)
+    {
+        var user = await GetUser(claims);
+        if (user is null)
+            return false;
+
+        return await _userManager.IsInRoleAsync(user, Roles.Admin);
+    }
+
+    public async Task<bool> IsAgent(ClaimsPrincipal claims)
+    {
+        var user = await GetUser(claims);
+        if (user is null)
+            return false;
+
+        return await _userManager.IsInRoleAsync(user, Roles.Agent);
+    }
+
+    public async Task<bool> IsAdmin(User user)
+    {
+        if (user is null)
+            return false;
+
+        return await _userManager.IsInRoleAsync(user, Roles.Admin);
+    }
+
+    public async Task<bool> IsAgent(User user)
+    {
+        if (user is null)
+            return false;
+
+        return await _userManager.IsInRoleAsync(user, Roles.Agent);
     }
 
     public Task<LoginResponse> LoginUserAsync(
@@ -146,5 +185,34 @@ public class IdentityService(UserManager<User> userManager, IUserRepository repo
     public Task<bool> RevokeRefreshToken(string username, string token, string ipAddress = "")
     {
         throw new NotImplementedException();
+    }
+
+    public async Task<User> GetOrAddUser(string email, string phone, string name)
+    {
+        var ut = await _repository.FirstOrDefaultAsync(u =>
+            u.UserName == email || u.UserName == phone
+        );
+        if (ut is not null)
+        {
+            return ut;
+        }
+
+        var newUser = new User
+        {
+            Email = email,
+            PhoneNumber = phone,
+            FirstName = name,
+            UserName = string.IsNullOrEmpty(email) ? phone : email,
+            CreatedAt = DateTime.Now,
+        };
+
+        var re = await _userManager.CreateAsync(newUser);
+        if (re.Succeeded)
+        {
+            await _userManager.AddToRoleAsync(newUser, Roles.User);
+            return newUser;
+        }
+
+        throw new Exception("Failed to add or get user");
     }
 }

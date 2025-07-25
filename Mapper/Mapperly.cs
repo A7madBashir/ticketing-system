@@ -217,7 +217,9 @@ public partial class Mapper
     public partial ReplyResponse ToBaseResponse(Reply source);
 
     public partial Reply ToEntity(CreateReplyRequest source);
+
     public partial Reply ToEntity(EditReplyRequest source);
+
     public partial void UpdateReplyEntity(EditReplyRequest source, Reply target);
 
     //Analytic (Corrected spelling from Analtyic to Analytic)
@@ -260,6 +262,7 @@ public partial class Mapper
         nameof(Integration.AgencyId),
         Use = nameof(ParseUlid)
     )]
+    [MapperIgnoreTarget(nameof(Integration.ApiKey))]
     public partial Integration ToEntity(CreateIntegrationRequest source);
 
     [MapProperty(
@@ -267,5 +270,6 @@ public partial class Mapper
         nameof(Integration.AgencyId),
         Use = nameof(ParseUlid)
     )]
+    [MapperIgnoreTarget(nameof(Integration.ApiKey))]
     public partial Integration ToEntity(UpdateIntegrationRequest source);
 }

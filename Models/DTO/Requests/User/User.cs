@@ -9,6 +9,7 @@ public class RegisterUser : ICreateRequest
 
     [EmailAddress]
     public string? Email { get; set; }
+    public string? AgencyId { get; set; }
 
     [Phone]
     public string PhoneNumber { get; set; }
@@ -16,7 +17,7 @@ public class RegisterUser : ICreateRequest
     public string? Nationality { get; set; }
     public string? PassportNumber { get; set; }
     public string? Job { get; set; }
-    public DateTime DateOfBirth { get; set; }
+    public DateTime? DateOfBirth { get; set; }
 
     public string Password { get; set; }
 

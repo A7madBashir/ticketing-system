@@ -89,6 +89,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseCors("AllowAll");
+
 app.UseOpenApi();
 app.UseAuthentication();
 app.UseAuthorization();

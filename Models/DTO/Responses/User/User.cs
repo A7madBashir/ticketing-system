@@ -1,3 +1,5 @@
+using TicketingSystem.Models.DTO.Responses.Agency;
+
 namespace TicketingSystem.Models.DTO.Responses.User;
 
 public class UserResponse : BaseResponse
@@ -11,6 +13,7 @@ public class UserResponse : BaseResponse
     public string? Job { get; set; }
     public string? Nationality { get; set; }
     public string? Name { get; set; }
+    public AgencyResponse? Agency { get; set; }
     public DateTime? DateOfBirth { get; set; }
     public DateTime CreatedAt { get; set; }
     public new DateTime? CreateTime { get; set; }
