@@ -1,6 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using OneOf;
 using OneOf.Types;
+using TicketingSystem.Filters;
+using TicketingSystem.Models.Common;
+using Microsoft.AspNetCore.Authorization;
+using TicketingSystem.Filters;
+using TicketingSystem.Models.Common;
 using TicketingSystem.Models.DTO.Requests;
 using TicketingSystem.Models.DTO.Requests.Agency;
 using TicketingSystem.Models.DTO.Responses.Agency;
@@ -10,6 +15,7 @@ using TicketingSystem.Services.Repositories;
 
 namespace TicketingSystem.Controllers.Api;
 
+[Authorize(Policy = AuthenticationPolicy.AdminOnly)]
 public class AnalyticController(
     IAnalyticRepository repository,
     IAgencyRepository agencyRepository,

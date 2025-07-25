@@ -1,7 +1,9 @@
 using System.Linq;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TicketingSystem.Filters;
 using TicketingSystem.Models.Common;
 using TicketingSystem.Models.DTO.Requests;
 using TicketingSystem.Models.DTO.Requests.Agency;
@@ -12,6 +14,7 @@ using TicketingSystem.Services.Repositories;
 
 namespace TicketingSystem.Controllers.Api;
 
+[Authorize(Policy = AuthenticationPolicy.AdminOnly)]
 // AgencyController inherits from CrudController, specializing it for Agency entities.
 // It uses Ulid as the primary key type.
 public class AgencyController(

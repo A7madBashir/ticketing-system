@@ -42,6 +42,8 @@
                             class="menu-section text-muted text-uppercase fs-8 ls-1">Applications</span></div>
                 </div>
 
+                @if (User.IsInRole("Admin")) 
+                    {
                 <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
                     <span class="menu-link">
                         <span class="menu-icon">
@@ -96,6 +98,7 @@
                         </div>
                     </div>
                 </div>
+                     }
 
                 <div class="menu-item">
                     <a class="menu-link" href="/Ticket">
@@ -105,7 +108,8 @@
                         <span class="menu-title">Ticket</span>
                     </a>
                 </div>
-                
+                @if (User.IsInRole("Admin")) 
+                    {
                 <div class="menu-item">
                     <a class="menu-link" href="/Agency">
                         <span class="menu-icon">
@@ -114,7 +118,9 @@
                         <span class="menu-title">Agencies</span>
                     </a>
                 </div>
-                
+                }
+                @if (User.IsInRole("Admin")) 
+                    {
                 <div class="menu-item">
                     <a class="menu-link" href="/Subscriptions">
                         <span class="menu-icon">
@@ -123,7 +129,9 @@
                         <span class="menu-title">Subscriptions</span>
                     </a>
                 </div>
-                
+                }
+                                @if (User.IsInRole("Admin")) 
+                    {
                 <div class="menu-item">
                     <a class="menu-link" href="/Category">
                         <span class="menu-icon">
@@ -132,6 +140,7 @@
                         <span class="menu-title">Categories</span>
                     </a>
                 </div>
+                }
                 
                 <div class="menu-item">
                     <a class="menu-link" href="/Reply">
@@ -142,6 +151,8 @@
                     </a>
                 </div>
                 
+                    @if (User.IsInRole("Admin")) 
+                    {
                 <div class="menu-item">
                     <a class="menu-link" href="/integration">
                         <span class="menu-icon">
@@ -150,7 +161,9 @@
                         <span class="menu-title">Integration</span>
                     </a>
                 </div>
-                
+                }
+                                @if (User.IsInRole("Admin")) 
+                    {
                 <div class="menu-item">
                     <a class="menu-link" href="/Analytic">
                         <span class="menu-icon">
@@ -159,6 +172,7 @@
                         <span class="menu-title">Analytics</span>
                     </a>
                 </div>
+                    }
                 
                 <div class="menu-item">
                     <a class="menu-link" href="FAQ">

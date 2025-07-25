@@ -15,6 +15,7 @@ using TicketingSystem.Services.Repositories;
 
 namespace TicketingSystem.Controllers.Api;
 
+[Authorize(Policy = AuthenticationPolicy.AdminOnly)]
 public class UserController(
     UserManager<User> userManager,
     RoleManager<Role> roleManager,
