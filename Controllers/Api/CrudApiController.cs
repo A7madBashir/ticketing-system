@@ -29,6 +29,7 @@ public abstract class CrudController<TEntity, T, TResponse, TCreateRequest, TUpd
     protected readonly IRepository<TEntity, T> _repository;
     private readonly Mapper _mapper;
     private readonly DataTableHandler<TEntity, T> _dataTable;
+    protected Ulid? CurrentAgencyId => (Ulid)HttpContext.Items["AgencyId"]!;
 
     // Constructor injection
     public CrudController(IRepository<TEntity, T> repository, Mapper mapper)
@@ -81,7 +82,7 @@ public abstract class CrudController<TEntity, T, TResponse, TCreateRequest, TUpd
     /// </summary>
     /// <param name="initialQuery">The initial IQueryable from the repository.</param>
     /// <returns>The IQueryable after applying custom includes/filters.</returns>
-    protected virtual IQueryable<TEntity>? BuildBaseQuery(DataTableRequest req)
+    protected virtual async Task<IQueryable<TEntity>?> BuildBaseQuery(DataTableRequest req)
     {
         // By default, do nothing and return the initial query.
         // Derived classes will override this to add .Include(), .Where(), etc.
@@ -146,7 +147,7 @@ public abstract class CrudController<TEntity, T, TResponse, TCreateRequest, TUpd
     /// </summary>
     /// <param name="entity">The Entity model after mapped from dto client model.</param>
     /// <returns>Success if creation should proceed, Error with message if it should be prevented.</returns>
-    protected virtual Task<OneOf<Success, Error<string>>> BeforeUpdateEntityAsync(TEntity entity)
+    protected virtual Task<OneOf<Success, Error<string>>> BeforeUpdateEntityAsync(TEntity entity,TEntity oldEntity)
     {
         return Task.FromResult<OneOf<Success, Error<string>>>(new Success()); // Default: allow creation
     }
@@ -187,7 +188,7 @@ public abstract class CrudController<TEntity, T, TResponse, TCreateRequest, TUpd
     // --- CRUD Endpoints ---
 
     [HttpGet]
-    public async Task<ActionResult<PaginatedResponse<TResponse>>> DataTable(
+    public virtual async Task<ActionResult<PaginatedResponse<TResponse>>> DataTable(
         [FromQuery] DataTableRequest req
     )
     {
@@ -210,7 +211,7 @@ public abstract class CrudController<TEntity, T, TResponse, TCreateRequest, TUpd
             req.Page,
             req.Count,
             req.Draw,
-            BuildBaseQuery(req),
+            await BuildBaseQuery(req),
             req.Search,
             GetSearchableProperties(),
             GetInitialWhereClause(),
@@ -324,7 +325,7 @@ public abstract class CrudController<TEntity, T, TResponse, TCreateRequest, TUpd
         var entity = _mapper.ToEntity<TEntity, T>(updateDto);
 
         // Execute BeforeCreate hook
-        var beforeUpdateEntity = await BeforeUpdateEntityAsync(entity);
+        var beforeUpdateEntity = await BeforeUpdateEntityAsync(entity,existingEntity);
         if (beforeUpdateEntity.IsT1)
         {
             return BadRequest(beforeUpdateEntity.Value); // Return error from hook

@@ -1,17 +1,18 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using OneOf;
 using OneOf.Types;
+using TicketingSystem.Helper;
+using TicketingSystem.Models.Common;
 using TicketingSystem.Models.DTO.Requests;
 using TicketingSystem.Models.DTO.Requests.Integrations;
 using TicketingSystem.Models.DTO.Responses.Integrations;
-using TicketingSystem.Models.Integrations; // For Integration entity
+using TicketingSystem.Models.Integrations;
 using TicketingSystem.Services.Repositories;
-using TicketingSystem;
-using System.Linq; // For LINQ methods like Where, FirstOrDefault
-using System.Threading.Tasks; // For async/await
 
 namespace TicketingSystem.Controllers.Api;
 
+[Authorize(Policy = AuthenticationPolicy.AdminOnly)]
 public class IntegrationController(
     IIntegrationsRepository repository,
     IAgencyRepository agencyRepository,
@@ -34,7 +35,7 @@ public class IntegrationController(
     // private readonly IIntegrationRepository _repository = repository; // REMOVE OR COMMENT OUT
     // private readonly IAgencyRepository _agencyRepository = agencyRepository; // REMOVE OR COMMENT OUT
 
-    protected override IQueryable<Integration>? BuildBaseQuery(DataTableRequest req)
+    protected override async Task<IQueryable<Integration>?> BuildBaseQuery(DataTableRequest req)
     {
         // Use 'repository' directly from the primary constructor
         var query = repository.Query();
@@ -47,7 +48,9 @@ public class IntegrationController(
             // Safer way to extract filter value from Dictionary<string, string>
             // req.Filters.FirstOrDefault(r => r.Key == "agencyId").Value can lead to NullReferenceException
             // if "agencyId" key is not found, as FirstOrDefault on a struct returns default struct (empty KeyValuePair).
-            string? agencyIdFilterValue = req.Filters.FirstOrDefault(f => f.Key == "agencyId").Value;
+            string? agencyIdFilterValue = req
+                .Filters.FirstOrDefault(f => f.Key == "agencyId")
+                .Value;
 
             if (
                 !string.IsNullOrEmpty(agencyIdFilterValue) // Check if the value is actually there
@@ -83,6 +86,22 @@ public class IntegrationController(
             return new Error<string>("Agency with the provided ID does not exist."); // More specific error message
         }
 
+        return new Success();
+    }
+
+    protected override async Task<OneOf<Success, Error<string>>> BeforeCreateEntityAsync(Integration entity)
+    {
+        entity.ApiKey = ApiKeyGenerator.Generate();
+
+        return new Success();
+    }
+
+    protected override async Task<OneOf<Success, Error<string>>> BeforeUpdateEntityAsync(
+        Integration entity,
+        Integration oldEntity
+    )
+    {
+        entity.ApiKey = oldEntity.ApiKey;
         return new Success();
     }
 

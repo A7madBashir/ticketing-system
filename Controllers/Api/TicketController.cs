@@ -1,9 +1,14 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using OneOf;
 using OneOf.Types;
+using TicketingSystem.Filters;
+using TicketingSystem.Models.Common;
+using TicketingSystem.Models.DTO.Requests;
 using TicketingSystem.Models.DTO.Requests.Ticket;
 using TicketingSystem.Models.DTO.Responses.Ticket;
 using TicketingSystem.Models.Entities.Tickets;
@@ -13,6 +18,7 @@ using TicketingSystem.Services.Repositories;
 
 namespace TicketingSystem.Controllers.Api;
 
+[Authorize(Policy = AuthenticationPolicy.AgentAccess)]
 public class TicketController(
     ILogger<TicketController> logger,
     ITicketRepository repository,
@@ -33,6 +39,128 @@ public class TicketController(
     private readonly ICategoryRepository _categoryRepository = categoryRepository;
     private readonly UserManager<User> _userManager = userManager;
     private readonly IIdentityService _identityService = identityService;
+    private readonly Mapper _mapper = mapper;
+
+    protected override async Task<IQueryable<Ticket>>? BuildBaseQuery(DataTableRequest req)
+    {
+        // Get the base query from the repository (which typically returns an AsNoTracking query)
+        var query = _repository.Query(
+            [nameof(Ticket.Agency), nameof(Ticket.CreatedBy), nameof(Ticket.Category)]
+        );
+
+        // This ensures that when Agency data is fetched, its associated Subscription data is also loaded.
+        query = query.Include(a => a.Agency);
+
+        var currentUser = (await _identityService.GetUser(User))!;
+
+        var isAdmin = await _identityService.IsAdmin(currentUser);
+        var IsAgent = await _identityService.IsAgent(currentUser);
+
+        if (IsAgent && !isAdmin)
+        {
+            var agencyUlid = currentUser.AgencyId;
+            if (agencyUlid is null)
+            {
+                throw new ArgumentNullException("Agent not authorized");
+            }
+            else
+            {
+                query = query.Where(q => q.AgencyId == agencyUlid);
+            }
+        }
+
+        return query;
+    }
+
+    public override async Task<ActionResult<TicketResponse>> Create(
+        [FromBody] CreateTicketRequest createDto
+    )
+    {
+        // is admin
+        var isAdmin = await _identityService.IsAdmin(User);
+        if (!isAdmin)
+        {
+            var currentUser = (await _identityService.GetUser(User))!;
+            if (currentUser.AgencyId is null)
+            {
+                return Unauthorized();
+            }
+
+            createDto.AgencyId = currentUser.AgencyId.ToString()!;
+        }
+
+        return await base.Create(createDto);
+    }
+
+    [AllowAnonymous]
+    [ApiKeyAuthorize]
+    [HttpPost("AgencyTicket")]
+    public async Task<IActionResult> AnonymousTicket([FromBody] CreateAnonymousTicket request)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(
+                ErrorResponse.OnlyMessage(
+                    HttpContext,
+                    ModelState,
+                    ErrorCodes.InvalidModelState,
+                    "Please try again"
+                )
+            );
+        }
+
+        // generate agency new ticket
+        var user = await _identityService.GetOrAddUser(
+            request.Email,
+            request.PhoneNumber,
+            request.Name
+        );
+        // validate fields
+        // check user existent or not
+        // handle new user
+        if (user is null)
+        {
+            return BadRequest(
+                ErrorResponse.OnlyMessage(
+                    HttpContext,
+                    ModelState,
+                    "Failed to add user",
+                    "Please try again later"
+                )
+            );
+        }
+
+        if (CurrentAgencyId is null)
+        {
+            return BadRequest(
+                ErrorResponse.OnlyMessage(
+                    HttpContext,
+                    ModelState,
+                    "Failed to get agency",
+                    "Please try again later"
+                )
+            );
+        }
+
+        user.AgencyId = CurrentAgencyId;
+        await _userManager.UpdateAsync(user);
+        var userResponse = _mapper.ToUserProfile(user);
+
+        var ticket = new Ticket
+        {
+            Title = userResponse.Name + ": " + "new issue",
+            Description = request.Content,
+            AgencyId = (Ulid)CurrentAgencyId,
+            Status = "Open",
+            CreatedById = user.Id,
+            OriginatedFromChatbot = true,
+        };
+
+        await _repository.AddAsync(ticket);
+        // handle new ticket with default values
+
+        return Ok();
+    }
 
     protected override async Task<OneOf<Success, Error<string>>> BeforeCreateAsync(
         CreateTicketRequest createDto

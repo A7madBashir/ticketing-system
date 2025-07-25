@@ -7,7 +7,7 @@ using TicketingSystem.Models.Common;
 namespace TicketingSystem.Controllers.Web;
 
 [ApiExplorerSettings(IgnoreApi = true)]
-[Authorize(Roles = Roles.Admin)]
+[Authorize(Policy = AuthenticationPolicy.AgentAccess)]
 public class WebBaseController : Controller
 {
     public override RedirectToActionResult RedirectToAction(string? actionName)

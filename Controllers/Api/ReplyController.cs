@@ -4,14 +4,8 @@ using OneOf.Types;
 using TicketingSystem.Models.DTO.Requests;
 using TicketingSystem.Models.DTO.Requests.Replies;
 using TicketingSystem.Models.DTO.Responses.Replies;
-using TicketingSystem.Models.Entities.Agency; // Correct namespace for Reply entity
-using TicketingSystem.Models.Entities.Tickets; // For Ticket entity
-using TicketingSystem.Services.Repositories;
-using System.Linq; // Ensure System.Linq is present for Where, FirstOrDefault, etc.
-using System.Threading.Tasks; // For async/await
+using TicketingSystem.Models.Entities.Agency;
 using TicketingSystem.Services;
-using TicketingSystem.Models.Identity;
-
 
 namespace TicketingSystem.Controllers.Api;
 
@@ -22,13 +16,13 @@ public class ReplyController(
     IIdentityService identityService, // Renamed for consistency with field
     Mapper mapper
 )
- : CrudController<
-    Reply,
-    Ulid,
-    ReplyResponse, // Corrected to ReplyResponse (not ReplyResponseDto)
-    CreateReplyRequest,
-    EditReplyRequest
->(repository, mapper)
+    : CrudController<
+        Reply,
+        Ulid,
+        ReplyResponse, // Corrected to ReplyResponse (not ReplyResponseDto)
+        CreateReplyRequest,
+        EditReplyRequest
+    >(repository, mapper)
 {
     // These fields are now redundant with C# 12 primary constructors,
     // as 'repository' and 'ticketRepository' are directly accessible within the class scope.
@@ -37,15 +31,32 @@ public class ReplyController(
     private readonly ITicketRepository _ticketRepository = ticketRepository; // Renamed to match constructor param
     private readonly IIdentityService _identityService = identityService;
 
-    protected override IQueryable<Reply>? BuildBaseQuery(DataTableRequest req)
+    protected override async Task<IQueryable<Reply>?> BuildBaseQuery(DataTableRequest req)
     {
         // Get the base query from the repository (which typically returns an AsNoTracking query)
         var query = _repository.Query();
 
         // Always include Ticket and User navigation properties for replies
         // This ensures related data is loaded for display and mapping
-        query = query.Include(r => r.Ticket)
-                     .Include(r => r.User); // <--- Added include for User
+        query = query.Include(r => r.Ticket).Include(r => r.User); // <--- Added include for User
+
+        var currentUser = (await _identityService.GetUser(User))!;
+
+        var isAdmin = await _identityService.IsAdmin(currentUser);
+        var IsAgent = await _identityService.IsAgent(currentUser);
+
+        if (IsAgent && !isAdmin)
+        {
+            var agencyUlid = currentUser.AgencyId;
+            if (agencyUlid is null)
+            {
+                throw new ArgumentNullException("Agent not authorized");
+            }
+            else
+            {
+                query = query.Where(q => q.Ticket!.AgencyId == agencyUlid);
+            }
+        }
 
         if (req.Filters.Count > 0)
         {
@@ -82,7 +93,30 @@ public class ReplyController(
             return new Error<string>("TicketId not exist");
         }
 
-        createDto.UserId = (await _identityService.GetUser(User))!.Id.ToString();
+        var currentUser = (await _identityService.GetUser(User))!;
+        createDto.UserId = currentUser.Id.ToString();
+
+        var isAdmin = await _identityService.IsAdmin(currentUser);
+        var IsAgent = await _identityService.IsAgent(currentUser);
+
+        if (IsAgent && !isAdmin)
+        {
+            var userAgencyId = currentUser.AgencyId;
+            if (userAgencyId is null)
+            {
+                return new Error<string>("Agent not authorized");
+            }
+
+            var ticketAgencyId = (
+                await _ticketRepository.FirstOrDefaultAsync(r => r.Id == TicketUlid)
+            )!.AgencyId;
+
+            if (ticketAgencyId != userAgencyId)
+            {
+                return new Error<string>("Agent not authorized agency ulid");
+            }
+        }
+
         return new Success();
     }
 

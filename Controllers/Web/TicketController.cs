@@ -4,9 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using TicketingSystem.Models.Common;
 
 namespace TicketingSystem.Controllers.Web;
 
+[Authorize(Policy = AuthenticationPolicy.AgentAccess)]
 public class TicketController(ILogger<TicketController> logger) : WebBaseController
 {
     private readonly ILogger<TicketController> _logger = logger;

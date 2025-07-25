@@ -7,15 +7,21 @@ using TicketingSystem.Models.DTO.Requests;
 using TicketingSystem.Models.DTO.Requests.Agency;
 using TicketingSystem.Models.DTO.Responses.Agency;
 using TicketingSystem.Models.Entities.Agency;
+using TicketingSystem.Services;
 using TicketingSystem.Services.Repositories;
 
 namespace TicketingSystem.Controllers.Api;
 
 // AgencyController inherits from CrudController, specializing it for Agency entities.
 // It uses Ulid as the primary key type.
-public class AgencyController(IAgencyRepository repository, Mapper mapper)
-    : CrudController<Agency, Ulid, AgencyResponse, CreateAgency, EditAgency>(repository, mapper)
+public class AgencyController(
+    IAgencyRepository repository,
+    IIdentityService identityService,
+    Mapper mapper
+) : CrudController<Agency, Ulid, AgencyResponse, CreateAgency, EditAgency>(repository, mapper)
 {
+    private readonly IIdentityService _identityService = identityService;
+
     // Private fields to hold injected dependencies (can also use protected fields from base if available)
     private readonly IAgencyRepository _agencyRepository = repository;
     private readonly Mapper _mapper = mapper; // Still needed for DataTable selector and potentially other mappings
@@ -38,7 +44,7 @@ public class AgencyController(IAgencyRepository repository, Mapper mapper)
     /// single Get operations and the DataTable endpoint.
     /// </summary>
     /// <returns>An IQueryable<Agency> with necessary includes applied.</returns>
-    protected override IQueryable<Agency>? BuildBaseQuery(DataTableRequest req)
+    protected override async Task<IQueryable<Agency>?> BuildBaseQuery(DataTableRequest req)
     {
         // Get the base query from the repository (which typically returns an AsNoTracking query)
         var query = _agencyRepository.Query();
@@ -46,6 +52,23 @@ public class AgencyController(IAgencyRepository repository, Mapper mapper)
         // Eager load the 'Subscription' navigation property.
         // This ensures that when Agency data is fetched, its associated Subscription data is also loaded.
         query = query.Include(a => a.Subscription);
+        var currentUser = (await _identityService.GetUser(User))!;
+
+        var isAdmin = await _identityService.IsAdmin(currentUser);
+        var IsAgent = await _identityService.IsAgent(currentUser);
+
+        if (IsAgent && !isAdmin)
+        {
+            var agencyUlid = currentUser.AgencyId;
+            if (agencyUlid is null)
+            {
+                throw new ArgumentNullException("Agent not authorized");
+            }
+            else
+            {
+                query = query.Where(q => q.Id == agencyUlid);
+            }
+        }
 
         if (req.Filters.Count > 0)
         {
