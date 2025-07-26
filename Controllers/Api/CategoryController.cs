@@ -1,8 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using OneOf;
 using OneOf.Types;
-using Microsoft.AspNetCore.Authorization;
-using TicketingSystem.Filters;
 using TicketingSystem.Models.Common;
 using TicketingSystem.Models.DTO.Requests;
 using TicketingSystem.Models.DTO.Requests.Category;
@@ -13,7 +11,6 @@ using TicketingSystem.Services.Repositories;
 
 namespace TicketingSystem.Controllers.Api;
 
-[Authorize(Policy = AuthenticationPolicy.AdminOnly)]
 public class CategoryController(
     ICategoryRepository repository,
     IAgencyRepository agencyRepository,

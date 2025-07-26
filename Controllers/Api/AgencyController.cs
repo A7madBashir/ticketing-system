@@ -14,7 +14,6 @@ using TicketingSystem.Services.Repositories;
 
 namespace TicketingSystem.Controllers.Api;
 
-[Authorize(Policy = AuthenticationPolicy.AdminOnly)]
 // AgencyController inherits from CrudController, specializing it for Agency entities.
 // It uses Ulid as the primary key type.
 public class AgencyController(
